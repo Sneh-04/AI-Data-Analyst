@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ai_data_analyst
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+ml:
+  service:
+    base-url: http://localhost:8000
+
+jwt:
+  secret: change-me-in-production
+  expiration-ms: 86400000
+
+storage:
+  local-path: /tmp/ai-data-analyst/uploads
