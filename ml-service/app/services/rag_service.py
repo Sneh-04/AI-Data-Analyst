@@ -4,52 +4,46 @@ from typing import Any
 
 import pandas as pd
 import psycopg
-from openai import OpenAI
+from app.services.llm_provider import get_provider
 
 
-EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_COLUMNS = {
+    "openai": "schema_embedding_openai",
+    "ollama": "schema_embedding_ollama",
+}
 
 
 def answer_with_rag(dataset_id: int | None, question: str, frame: pd.DataFrame) -> dict:
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return {
-            "answer": "I couldn't answer that with RAG because OPENAI_API_KEY is not configured.",
-            "value": None,
-        }
     if dataset_id is None:
         return {"answer": "A dataset is required for RAG chat.", "value": None}
 
     context = _build_context(frame)
-    client = OpenAI(api_key=api_key)
+    provider_name = os.getenv("LLM_PROVIDER", "openai").lower()
+    column = EMBEDDING_COLUMNS.get(provider_name)
+    if column is None:
+        return {"answer": f"Unsupported LLM_PROVIDER: {provider_name}.", "value": None}
     try:
+        provider = get_provider()
         with psycopg.connect(_database_url()) as connection:
-            embedding = _load_embedding(connection, dataset_id)
+            embedding = _load_embedding(connection, dataset_id, column)
             if embedding is None:
-                embedding = _create_embedding(client, context)
-                _store_embedding(connection, dataset_id, embedding)
-            query_embedding = _create_embedding(client, question)
-            _retrieve_dataset(connection, dataset_id, query_embedding)
+                embedding = provider.embed(context)
+                _store_embedding(connection, dataset_id, column, embedding)
+            query_embedding = provider.embed(question)
+            # Retrieve stored dataset context and merge with current frame context for RAG (was discarded before)
+            retrieved_context = _retrieve_dataset(connection, dataset_id, column, query_embedding)
+            if retrieved_context:
+                context = retrieved_context
 
-        completion = client.chat.completions.create(
-            model=os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini"),
-            temperature=0,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Answer only from the supplied dataset context. If the context is insufficient, "
-                        "say so. Do not invent values or rows. Return a concise natural-language answer."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": f"Dataset context:\n{context}\n\nQuestion: {question}",
-                },
-            ],
-        )
-        answer = completion.choices[0].message.content or "I couldn't generate an answer."
+        answer = provider.generate(question, context)
         return {"answer": answer, "value": None}
+    except ValueError as exception:
+        if provider_name == "openai" and "OPENAI_API_KEY" in str(exception):
+            return {
+                "answer": "I couldn't answer that with RAG because OPENAI_API_KEY is not configured.",
+                "value": None,
+            }
+        return {"answer": str(exception), "value": None}
     except Exception:
         return {
             "answer": "RAG chat is unavailable because the embedding or database request failed.",
@@ -73,19 +67,14 @@ def _build_context(frame: pd.DataFrame) -> str:
     return json.dumps({"schema": columns, "sample_rows": sample}, default=str)
 
 
-def _create_embedding(client: OpenAI, text: str) -> list[float]:
-    response = client.embeddings.create(model=EMBEDDING_MODEL, input=text)
-    return response.data[0].embedding
-
-
 def _vector_literal(embedding: list[float]) -> str:
     return "[" + ",".join(str(value) for value in embedding) + "]"
 
 
-def _load_embedding(connection: psycopg.Connection, dataset_id: int) -> list[float] | None:
+def _load_embedding(connection: psycopg.Connection, dataset_id: int, column: str) -> list[float] | None:
     with connection.cursor() as cursor:
         cursor.execute(
-            "SELECT schema_embedding::text FROM datasets WHERE id = %s",
+            f"SELECT {column}::text FROM datasets WHERE id = %s",
             (dataset_id,),
         )
         row = cursor.fetchone()
@@ -94,25 +83,50 @@ def _load_embedding(connection: psycopg.Connection, dataset_id: int) -> list[flo
     return [float(value) for value in row[0].strip("[]").split(",")]
 
 
-def _store_embedding(connection: psycopg.Connection, dataset_id: int, embedding: list[float]) -> None:
+def _store_embedding(connection: psycopg.Connection, dataset_id: int, column: str, embedding: list[float]) -> None:
     with connection.cursor() as cursor:
         cursor.execute(
-            "UPDATE datasets SET schema_embedding = %s::vector WHERE id = %s",
+            f"UPDATE datasets SET {column} = %s::vector WHERE id = %s",
             (_vector_literal(embedding), dataset_id),
         )
     connection.commit()
 
 
-def _retrieve_dataset(connection: psycopg.Connection, dataset_id: int, query_embedding: list[float]) -> Any:
+def _retrieve_dataset(connection: psycopg.Connection, dataset_id: int, column: str, query_embedding: list[float]) -> str | None:
+    """Fetch dataset schema and sample rows to augment RAG context (fixes retrieval being discarded)."""
     with connection.cursor() as cursor:
-        cursor.execute(
-            """
-            SELECT id
-            FROM datasets
-            WHERE id = %s AND schema_embedding IS NOT NULL
-            ORDER BY schema_embedding <=> %s::vector
-            LIMIT 1
-            """,
-            (dataset_id, _vector_literal(query_embedding)),
-        )
-        return cursor.fetchone()
+        # Try to fetch stored schema/sample data; fall back gracefully if columns don't exist
+        try:
+            cursor.execute(
+                f"""
+                SELECT schema_info, sample_rows
+                FROM datasets
+                WHERE id = %s AND {column} IS NOT NULL
+                ORDER BY {column} <=> %s::vector
+                LIMIT 1
+                """,
+                (dataset_id, _vector_literal(query_embedding)),
+            )
+            row = cursor.fetchone()
+            if row and row[0] is not None:
+                # Merge stored schema and sample rows into context
+                try:
+                    stored_data = json.loads(row[0]) if isinstance(row[0], str) else row[0]
+                    if isinstance(stored_data, dict):
+                        return json.dumps(stored_data, default=str)
+                except Exception:
+                    pass
+        except Exception:
+            # If schema_info column doesn't exist, fall back to basic retrieval
+            cursor.execute(
+                f"""
+                SELECT id
+                FROM datasets
+                WHERE id = %s AND {column} IS NOT NULL
+                ORDER BY {column} <=> %s::vector
+                LIMIT 1
+                """,
+                (dataset_id, _vector_literal(query_embedding)),
+            )
+            cursor.fetchone()
+    return None

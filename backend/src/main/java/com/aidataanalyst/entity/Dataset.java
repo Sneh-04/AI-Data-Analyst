@@ -10,6 +10,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -44,6 +45,14 @@ public class Dataset {
 
     @Column(name = "health_score")
     private Integer healthScore;
+
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Column(name = "schema_embedding_openai", columnDefinition = "vector(1536)")
+    private List<Double> schemaEmbeddingOpenai;
+
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Column(name = "schema_embedding_ollama", columnDefinition = "vector(768)")
+    private List<Double> schemaEmbeddingOllama;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

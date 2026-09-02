@@ -10,3 +10,4 @@ reportlab
 openpyxl
 openai
 psycopg[binary]
+httpx

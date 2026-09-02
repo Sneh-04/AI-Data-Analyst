@@ -118,7 +118,7 @@ CREATE INDEX idx_forecasts_dataset ON forecasts(dataset_id);
 CREATE INDEX idx_chat_messages_session ON chat_messages(session_id);
 CREATE INDEX idx_audit_user ON audit_log(user_id);
 
--- pgvector extension for Phase 3 RAG-based chat upgrade (embeddings over
--- dataset schema + row samples). Left commented until that phase starts.
+-- pgvector embeddings are provider-specific because embedding dimensions differ.
 CREATE EXTENSION IF NOT EXISTS vector;
-ALTER TABLE datasets ADD COLUMN schema_embedding vector(1536);
+ALTER TABLE datasets ADD COLUMN schema_embedding_openai vector(1536);
+ALTER TABLE datasets ADD COLUMN schema_embedding_ollama vector(768);

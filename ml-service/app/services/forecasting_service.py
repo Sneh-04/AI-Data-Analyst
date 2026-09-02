@@ -39,6 +39,17 @@ def _rmse(actual: np.ndarray, predicted: np.ndarray) -> float:
     return float(np.sqrt(np.mean((np.array(actual) - np.array(predicted)) ** 2)))
 
 
+def _mase(actual: np.ndarray, predicted: np.ndarray, train_series: pd.Series) -> float:
+    """Mean Absolute Scaled Error: more robust than MAPE for near-zero values (Hewamalage et al. 2022)."""
+    actual, predicted = np.array(actual), np.array(predicted)
+    mae = np.mean(np.abs(actual - predicted))
+    # Compute MAE of one-step naive forecast on training series
+    naive_mae = np.mean(np.abs(np.diff(train_series.values)))
+    if naive_mae == 0:
+        return float("nan") if mae == 0 else float("inf")
+    return float(mae / naive_mae)
+
+
 def _fit_holt(train: pd.Series, horizon: int):
     model = ExponentialSmoothing(train, trend="add", seasonal=None).fit()
     return model.forecast(horizon)
@@ -54,7 +65,26 @@ def _fit_sarima(train: pd.Series, horizon: int, seasonal_periods=7):
     return model.forecast(horizon)
 
 
-CANDIDATES = {"holt": _fit_holt, "arima": _fit_arima, "sarima": _fit_sarima}
+def _fit_naive(train: pd.Series, horizon: int):
+    """Naive baseline: repeat last observed value for all forecast periods (Hewamalage et al. 2022)."""
+    last_value = train.iloc[-1]
+    return pd.Series([last_value] * horizon, index=range(horizon))
+
+
+def _fit_seasonal_naive(train: pd.Series, horizon: int, seasonal_periods: int = 7):
+    """Seasonal naive baseline: repeat value from seasonal_periods steps ago, cycling if needed (Hewamalage et al. 2022)."""
+    forecast = []
+    train_len = len(train)
+    for i in range(horizon):
+        idx = train_len - seasonal_periods + (i % seasonal_periods)
+        if idx >= 0:
+            forecast.append(train.iloc[idx])
+        else:
+            forecast.append(train.iloc[-1])
+    return pd.Series(forecast, index=range(horizon))
+
+
+CANDIDATES = {"naive": _fit_naive, "seasonal_naive": _fit_seasonal_naive, "holt": _fit_holt, "arima": _fit_arima, "sarima": _fit_sarima}
 
 
 def run_forecast(df: pd.DataFrame, date_col: str, value_col: str, periods: int, model: str = "auto") -> dict:
@@ -78,15 +108,19 @@ def run_forecast(df: pd.DataFrame, date_col: str, value_col: str, periods: int, 
     for name, fit_fn in CANDIDATES.items():
         try:
             preds = fit_fn(train, holdout_size)
-            mape_val, rmse_val = _mape(test.values, preds.values), _rmse(test.values, preds.values)
+            mape_val = _mape(test.values, preds.values)
+            rmse_val = _rmse(test.values, preds.values)
+            mase_val = _mase(test.values, preds.values, train)
             scores[name] = {
                 "mape": round(mape_val, 2) if np.isfinite(mape_val) else None,
                 "rmse": round(rmse_val, 2) if np.isfinite(rmse_val) else None,
+                "mase": round(mase_val, 2) if np.isfinite(mase_val) else None,
             }
         except Exception as e:
-            scores[name] = {"mape": None, "rmse": None, "error": str(e)}
+            scores[name] = {"mape": None, "rmse": None, "mase": None, "error": str(e)}
 
-    best_model = min(scores, key=lambda k: scores[k]["mape"] if scores[k]["mape"] is not None else float("inf"))
+    # Select best model by MASE (more robust than MAPE for unstable values; Hewamalage et al. 2022)
+    best_model = min(scores, key=lambda k: scores[k]["mase"] if scores[k]["mase"] is not None else float("inf"))
     final_forecast = CANDIDATES[best_model](series, periods)
 
     return {

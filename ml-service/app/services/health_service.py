@@ -2,13 +2,43 @@ import numpy as np
 import pandas as pd
 
 
-def calculate_health_score(df: pd.DataFrame) -> dict:
+# Sentinel values that encode missing data in real-world datasets (Mohammed et al. 2024)
+SENTINEL_MISSING_VALUES = {"-99", "-999", "n/a", "na", "none", "unknown", "null", "?", "missing", ""}
+
+
+def calculate_health_score(df: pd.DataFrame, weights: dict | None = None) -> dict:
+    """Calculate data quality score with optional custom weights (enables version tracking/trending).
+    
+    Args:
+        df: Input DataFrame
+        weights: Optional dict with keys 'completeness', 'uniqueness', 'consistency', 'outliers'
+                 must sum to 1.0. Defaults to equal-weighted hardcoded baseline.
+    """
     if df is None or df.empty:
         return {"score": 0, "grade": "N/A", "completeness": 0, "uniqueness": 0,
-                "consistency": 0, "outliers_score": 0, "issues": ["No dataset loaded."]}
+                "consistency": 0, "outliers_score": 0, "issues": ["No dataset loaded."],
+                "sentinel_missing_count": 0, "weights_used": None}
+
+    # Validate and set weights
+    default_weights = {"completeness": 0.35, "uniqueness": 0.25, "consistency": 0.20, "outliers": 0.20}
+    if weights is not None:
+        weight_sum = sum(weights.values())
+        if not (0.99 <= weight_sum <= 1.01):  # Allow small floating point error
+            raise ValueError(f"Weights must sum to 1.0, got {weight_sum}")
+        weights_to_use = weights
+    else:
+        weights_to_use = default_weights
 
     total_cells = df.shape[0] * df.shape[1]
     total_nulls = int(df.isnull().sum().sum())
+
+    # Count sentinel missing values in object/string columns (fixes completeness overestimation)
+    sentinel_missing_count = 0
+    for col in df.select_dtypes(include=["object"]).columns:
+        for val in df[col].dropna():
+            if isinstance(val, str) and val.strip().lower() in SENTINEL_MISSING_VALUES:
+                sentinel_missing_count += 1
+    total_nulls += sentinel_missing_count
 
     completeness = max(0, (1 - (total_nulls / total_cells if total_cells > 0 else 0)) * 100)
 
@@ -35,7 +65,10 @@ def calculate_health_score(df: pd.DataFrame) -> dict:
     outliers_score = max(0, (1 - outlier_ratio) * 100)
 
     final_score = int(round(
-        completeness * 0.35 + uniqueness * 0.25 + consistency * 0.20 + outliers_score * 0.20
+        completeness * weights_to_use["completeness"] + 
+        uniqueness * weights_to_use["uniqueness"] + 
+        consistency * weights_to_use["consistency"] + 
+        outliers_score * weights_to_use["outliers"]
     ))
 
     if final_score >= 90:
@@ -52,6 +85,8 @@ def calculate_health_score(df: pd.DataFrame) -> dict:
     issues = []
     if total_nulls > 0:
         issues.append(f"Found {total_nulls} missing values across columns.")
+    if sentinel_missing_count > 0:
+        issues.append(f"Found {sentinel_missing_count} placeholder values (e.g. '-99', 'N/A') that may represent hidden missing data.")
     if dup_rows > 0:
         issues.append(f"Found {dup_rows} duplicate rows in the dataset.")
     if outlier_count > 0:
@@ -66,4 +101,6 @@ def calculate_health_score(df: pd.DataFrame) -> dict:
         "completeness": round(completeness, 1), "uniqueness": round(uniqueness, 1),
         "consistency": round(consistency, 1), "outliers_score": round(outliers_score, 1),
         "issues": issues,
+        "sentinel_missing_count": sentinel_missing_count,
+        "weights_used": weights_to_use,
     }

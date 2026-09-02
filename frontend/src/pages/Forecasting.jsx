@@ -80,13 +80,14 @@ export default function Forecasting() {
             <div className="card">
               <h3>Model comparison (backtested on holdout)</h3>
               <table>
-                <thead><tr><th>Model</th><th>MAPE</th><th>RMSE</th></tr></thead>
+                <thead><tr><th>Model</th><th>MAPE</th><th>RMSE</th><th>MASE</th></tr></thead>
                 <tbody>
                   {Object.entries(result.model_comparison).map(([name, s]) => (
                     <tr key={name}>
                       <td>{name}{name === result.model_used ? ' ✓' : ''}</td>
                       <td>{s.mape != null ? `${s.mape}%` : '—'}</td>
                       <td>{s.rmse != null ? s.rmse : '—'}</td>
+                      <td>{s.mase != null ? s.mase : '—'}</td>
                     </tr>
                   ))}
                 </tbody>
