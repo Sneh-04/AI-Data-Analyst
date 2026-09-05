@@ -11,25 +11,42 @@ from sklearn.impute import KNNImputer
 from sklearn.ensemble import IsolationForest
 
 
-def fill_missing_values(df: pd.DataFrame, strategy="auto", custom_strategies=None) -> pd.DataFrame:
+def fill_missing_values(df: pd.DataFrame, strategy="auto", custom_strategies=None) -> tuple[pd.DataFrame, list[dict]]:
     cleaned_df = df.copy()
+    repair_log = []
+
+    def record_filled_cells(before_missing: pd.Series, col: str, strategy_used: str) -> None:
+        for row_index in cleaned_df.index[before_missing & cleaned_df[col].notna()]:
+            value = cleaned_df.at[row_index, col]
+            repair_log.append({
+                "row_index": row_index.item() if hasattr(row_index, "item") else row_index,
+                "column": col,
+                "strategy_used": strategy_used,
+                "imputed_value": value.item() if hasattr(value, "item") else value,
+            })
 
     if strategy == "knn":
         numeric_cols = cleaned_df.select_dtypes(include=[np.number]).columns
         if len(numeric_cols) > 0:
+            missing_masks = {col: cleaned_df[col].isna() for col in numeric_cols}
             imputer = KNNImputer(n_neighbors=5)
             cleaned_df[numeric_cols] = imputer.fit_transform(cleaned_df[numeric_cols])
+            for col in numeric_cols:
+                record_filled_cells(missing_masks[col], col, "knn")
         # non-numeric columns still fall back to mode
         for col in cleaned_df.select_dtypes(include=["object", "category"]).columns:
             if cleaned_df[col].isnull().sum() > 0:
+                before_missing = cleaned_df[col].isna()
                 mode_val = cleaned_df[col].mode()
                 cleaned_df[col] = cleaned_df[col].fillna(mode_val[0] if not mode_val.empty else "Unknown")
-        return cleaned_df
+                record_filled_cells(before_missing, col, "mode")
+        return cleaned_df, repair_log
 
     if custom_strategies:
         for col, strat in custom_strategies.items():
             if col not in cleaned_df.columns:
                 continue
+            before_missing = cleaned_df[col].isna()
             if strat == "mean" and pd.api.types.is_numeric_dtype(cleaned_df[col]):
                 cleaned_df[col] = cleaned_df[col].fillna(cleaned_df[col].mean())
             elif strat == "median" and pd.api.types.is_numeric_dtype(cleaned_df[col]):
@@ -42,51 +59,84 @@ def fill_missing_values(df: pd.DataFrame, strategy="auto", custom_strategies=Non
                 cleaned_df[col] = cleaned_df[col].fillna(0)
             elif strat == "drop":
                 cleaned_df = cleaned_df.dropna(subset=[col])
-        return cleaned_df
+            if strat != "drop":
+                record_filled_cells(before_missing, col, strat)
+        return cleaned_df, repair_log
 
     # auto (same default behaviour as original repo)
     for col in cleaned_df.columns:
         if cleaned_df[col].isnull().sum() > 0:
+            before_missing = cleaned_df[col].isna()
             if pd.api.types.is_numeric_dtype(cleaned_df[col]):
                 cleaned_df[col] = cleaned_df[col].fillna(cleaned_df[col].median())
+                strategy_used = "median"
             else:
                 mode_val = cleaned_df[col].mode()
                 cleaned_df[col] = cleaned_df[col].fillna(mode_val[0] if not mode_val.empty else "Unknown")
-    return cleaned_df
+                strategy_used = "mode"
+            record_filled_cells(before_missing, col, strategy_used)
+    return cleaned_df, repair_log
 
 
 def remove_duplicate_rows(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop_duplicates().reset_index(drop=True)
 
 
-def handle_outliers_iqr(df: pd.DataFrame, col: str, factor: float = 1.5) -> pd.DataFrame:
+def handle_outliers_iqr(df: pd.DataFrame, col: str, factor: float = 1.5) -> tuple[pd.DataFrame, list[dict]]:
     cleaned_df = df.copy()
+    repair_log = []
     if pd.api.types.is_numeric_dtype(cleaned_df[col]):
         q1, q3 = cleaned_df[col].quantile(0.25), cleaned_df[col].quantile(0.75)
         iqr = q3 - q1
         lower, upper = q1 - factor * iqr, q3 + factor * iqr
+        original_values = cleaned_df[col].copy()
         cleaned_df[col] = cleaned_df[col].clip(lower, upper)
-    return cleaned_df
+        changed = original_values.notna() & (original_values != cleaned_df[col])
+        for row_index in cleaned_df.index[changed]:
+            value = cleaned_df.at[row_index, col]
+            repair_log.append({
+                "row_index": row_index.item() if hasattr(row_index, "item") else row_index,
+                "column": col,
+                "original_value": original_values.at[row_index].item() if hasattr(original_values.at[row_index], "item") else original_values.at[row_index],
+                "capped_value": value.item() if hasattr(value, "item") else value,
+                "bounds": [float(lower), float(upper)],
+            })
+    return cleaned_df, repair_log
 
 
-def handle_outliers_isolation_forest(df: pd.DataFrame, columns: list[str], contamination=0.05) -> pd.DataFrame:
+def handle_outliers_isolation_forest(df: pd.DataFrame, columns: list[str], contamination=0.05) -> tuple[pd.DataFrame, list[dict]]:
     """NEW: flags multivariate outliers instead of IQR's column-by-column view,
     then caps flagged rows' values at the nearest non-outlier percentile per column."""
     cleaned_df = df.copy()
-    numeric_cols = [c for c in columns if pd.api.types.is_numeric_dtype(cleaned_df[c])]
+    repair_log = []
+    numeric_cols = [c for c in columns if c in cleaned_df.columns and pd.api.types.is_numeric_dtype(cleaned_df[c])]
     if len(numeric_cols) < 1:
-        return cleaned_df
+        return cleaned_df, repair_log
 
     model = IsolationForest(contamination=contamination, random_state=42)
     flags = model.fit_predict(cleaned_df[numeric_cols].fillna(cleaned_df[numeric_cols].median()))
     outlier_mask = flags == -1
 
+    original_values = cleaned_df[numeric_cols].copy()
     for col in numeric_cols:
         lower = cleaned_df.loc[~outlier_mask, col].quantile(0.01)
         upper = cleaned_df.loc[~outlier_mask, col].quantile(0.99)
         cleaned_df.loc[outlier_mask, col] = cleaned_df.loc[outlier_mask, col].clip(lower, upper)
 
-    return cleaned_df
+    for row_index in cleaned_df.index[outlier_mask]:
+        affected_columns = [
+            col for col in numeric_cols
+            if pd.notna(original_values.at[row_index, col])
+            and original_values.at[row_index, col] != cleaned_df.at[row_index, col]
+        ]
+        if affected_columns:
+            repair_log.append({
+                "row_index": row_index.item() if hasattr(row_index, "item") else row_index,
+                "columns_affected": affected_columns,
+                "reason": "multivariate outlier (isolation forest)",
+            })
+
+    return cleaned_df, repair_log
 
 
 def convert_column_types(df: pd.DataFrame, conversions: dict) -> pd.DataFrame:

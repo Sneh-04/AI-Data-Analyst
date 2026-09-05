@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 
@@ -32,7 +35,14 @@ public class MlServiceClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-        return restTemplate.postForObject(mlServiceBaseUrl + path, entity, Map.class);
+        try {
+            return restTemplate.postForObject(mlServiceBaseUrl + path, entity, Map.class);
+        } catch (ResourceAccessException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.GATEWAY_TIMEOUT,
+                    "ML service did not respond in time.",
+                    e);
+        }
     }
 
     public Map<String, Object> cleanDataset(Map<String, Object> body) {

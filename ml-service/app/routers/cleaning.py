@@ -11,8 +11,12 @@ router = APIRouter()
 def clean_dataset(req: CleaningRequest):
     df = pd.DataFrame(req.records)
     original_df = df.copy()
+    repair_log = []
 
-    df = svc.fill_missing_values(df, strategy=req.strategy, custom_strategies=req.custom_strategies)
+    df, missing_repairs = svc.fill_missing_values(
+        df, strategy=req.strategy, custom_strategies=req.custom_strategies
+    )
+    repair_log.extend(missing_repairs)
 
     if req.remove_duplicates:
         df = svc.remove_duplicate_rows(df)
@@ -20,13 +24,23 @@ def clean_dataset(req: CleaningRequest):
     if req.outlier_method == "iqr":
         cols = req.outlier_columns or df.select_dtypes(include="number").columns.tolist()
         for col in cols:
-            df = svc.handle_outliers_iqr(df, col)
+            df, outlier_repairs = svc.handle_outliers_iqr(df, col)
+            repair_log.extend(outlier_repairs)
     elif req.outlier_method == "isolation_forest":
         cols = req.outlier_columns or df.select_dtypes(include="number").columns.tolist()
-        df = svc.handle_outliers_isolation_forest(df, cols)
+        df, outlier_repairs = svc.handle_outliers_isolation_forest(df, cols)
+        repair_log.extend(outlier_repairs)
 
     summary = svc.get_cleaning_summary(original_df, df)
-    return {"cleaned_records": df.to_dict(orient="records"), "summary": summary}
+    # Keep a bounded audit trail so explainability cannot create an oversized response.
+    response = {
+        "cleaned_records": df.to_dict(orient="records"),
+        "summary": summary,
+        "repair_log": repair_log[:500],
+    }
+    if len(repair_log) > 500:
+        response["repair_log_truncated"] = True
+    return response
 
 
 @router.post("/suggest-types")

@@ -87,6 +87,23 @@ def _fit_seasonal_naive(train: pd.Series, horizon: int, seasonal_periods: int = 
 CANDIDATES = {"naive": _fit_naive, "seasonal_naive": _fit_seasonal_naive, "holt": _fit_holt, "arima": _fit_arima, "sarima": _fit_sarima}
 
 
+def _rolling_origin_splits(
+    series: pd.Series, holdout_size: int, n_splits: int = 3
+) -> list[tuple[pd.Series, pd.Series]]:
+    """Build recent-to-earlier rolling-origin train/test splits."""
+    splits = []
+    for split_number in range(1, n_splits + 1):
+        test_end = len(series) - (split_number - 1) * holdout_size
+        test_start = test_end - holdout_size
+        train = series.iloc[:test_start]
+        test = series.iloc[test_start:test_end]
+        if len(train) < 10:
+            break
+        # Keep the most recent split first; earlier origins follow it.
+        splits.append((train, test))
+    return splits
+
+
 def run_forecast(df: pd.DataFrame, date_col: str, value_col: str, periods: int, model: str = "auto") -> dict:
     series = _prep_series(df, date_col, value_col)
     if len(series) < 10:
@@ -100,24 +117,40 @@ def run_forecast(df: pd.DataFrame, date_col: str, value_col: str, periods: int, 
             "forecast": [{"period": i + 1, "value": round(float(v), 2)} for i, v in enumerate(forecast)],
         }
 
-    # auto: backtest each candidate on the last min(periods, 20%) points, pick lowest MAPE
+    # auto: rolling-origin backtest each candidate and pick the lowest MASE
     holdout_size = max(3, min(periods, int(len(series) * 0.2)))
-    train, test = series[:-holdout_size], series[-holdout_size:]
+    n_splits = 2 if len(series) > 5000 else 3  # Limit expensive ARIMA/SARIMA fitting for large series.
+    splits = _rolling_origin_splits(series, holdout_size, n_splits=n_splits)
 
     scores = {}
     for name, fit_fn in CANDIDATES.items():
-        try:
-            preds = fit_fn(train, holdout_size)
-            mape_val = _mape(test.values, preds.values)
-            rmse_val = _rmse(test.values, preds.values)
-            mase_val = _mase(test.values, preds.values, train)
+        metric_values = {"mape": [], "rmse": [], "mase": []}
+        errors = []
+        successful_splits = 0
+        for train, test in splits:
+            try:
+                preds = fit_fn(train, holdout_size)
+                metric_values["mape"].append(_mape(test.values, preds.values))
+                metric_values["rmse"].append(_rmse(test.values, preds.values))
+                metric_values["mase"].append(_mase(test.values, preds.values, train))
+                successful_splits += 1
+            except Exception as e:
+                errors.append(str(e))
+                continue
+
+        if successful_splits:
             scores[name] = {
-                "mape": round(mape_val, 2) if np.isfinite(mape_val) else None,
-                "rmse": round(rmse_val, 2) if np.isfinite(rmse_val) else None,
-                "mase": round(mase_val, 2) if np.isfinite(mase_val) else None,
+                metric: round(float(np.mean([value for value in values if np.isfinite(value)])), 2)
+                if any(np.isfinite(value) for value in values) else None
+                for metric, values in metric_values.items()
             }
-        except Exception as e:
-            scores[name] = {"mape": None, "rmse": None, "mase": None, "error": str(e)}
+        else:
+            scores[name] = {
+                "mape": None,
+                "rmse": None,
+                "mase": None,
+                "error": errors[-1] if errors else "Model failed on all backtest splits.",
+            }
 
     # Select best model by MASE (more robust than MAPE for unstable values; Hewamalage et al. 2022)
     best_model = min(scores, key=lambda k: scores[k]["mase"] if scores[k]["mase"] is not None else float("inf"))
@@ -126,5 +159,6 @@ def run_forecast(df: pd.DataFrame, date_col: str, value_col: str, periods: int, 
     return {
         "model_used": best_model,
         "model_comparison": scores,
+        "backtest_splits_used": len(splits),
         "forecast": [{"period": i + 1, "value": round(float(v), 2)} for i, v in enumerate(final_forecast)],
     }

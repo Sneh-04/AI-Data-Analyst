@@ -6,6 +6,39 @@ import pandas as pd
 SENTINEL_MISSING_VALUES = {"-99", "-999", "n/a", "na", "none", "unknown", "null", "?", "missing", ""}
 
 
+def detect_mnar_signals(df: pd.DataFrame) -> list[str]:
+    if df.shape[1] > 50 or len(df) > 100_000:
+        return []
+
+    signals = []
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+    for col in df.columns:
+        missing = df[col].isnull()
+        if not missing.any():
+            continue
+
+        for other_col in numeric_cols:
+            if other_col == col:
+                continue
+            paired = pd.DataFrame({"missing": missing.astype(int), "value": df[other_col]}).dropna()
+            correlation = paired["missing"].corr(paired["value"])
+            if pd.notna(correlation) and abs(correlation) > 0.3:
+                signals.append(
+                    f"Missingness in '{col}' is correlated with '{other_col}' (r={correlation:.2f}) -- may not be random (MNAR)."
+                )
+
+        midpoint = len(df) // 2
+        if midpoint > 0 and midpoint < len(df):
+            first_rate = missing.iloc[:midpoint].mean()
+            second_rate = missing.iloc[midpoint:].mean()
+            if abs(first_rate - second_rate) > 0.15:
+                signals.append(
+                    f"Missingness in '{col}' differs between the first and second half of rows "
+                    f"({first_rate:.1%} vs {second_rate:.1%}) -- may not be random (MNAR)."
+                )
+    return signals
+
+
 def calculate_health_score(df: pd.DataFrame, weights: dict | None = None) -> dict:
     """Calculate data quality score with optional custom weights (enables version tracking/trending).
     
@@ -17,7 +50,10 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None) -> dic
     if df is None or df.empty:
         return {"score": 0, "grade": "N/A", "completeness": 0, "uniqueness": 0,
                 "consistency": 0, "outliers_score": 0, "issues": ["No dataset loaded."],
-                "sentinel_missing_count": 0, "weights_used": None}
+                "sentinel_missing_count": 0, "weights_used": None, "mnar_signals": []}
+
+    # Surface informative missingness because its pattern can bias downstream analysis.
+    mnar_signals = detect_mnar_signals(df)
 
     # Validate and set weights
     default_weights = {"completeness": 0.35, "uniqueness": 0.25, "consistency": 0.20, "outliers": 0.20}
@@ -93,6 +129,8 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None) -> dic
         issues.append(f"Detected {outlier_count} statistical outlier values in numeric fields.")
     if consistency_penalties > 0:
         issues.append("Detected potential mixed data types in categorical text columns.")
+    if mnar_signals:
+        issues.append("Potential non-random missingness detected -- see mnar_signals for details.")
     if not issues:
         issues.append("No critical data quality issues detected. Dataset is clean!")
 
@@ -103,4 +141,5 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None) -> dic
         "issues": issues,
         "sentinel_missing_count": sentinel_missing_count,
         "weights_used": weights_to_use,
+        "mnar_signals": mnar_signals,
     }
