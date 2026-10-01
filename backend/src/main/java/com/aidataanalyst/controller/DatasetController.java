@@ -6,6 +6,8 @@ import com.aidataanalyst.repository.DatasetRepository;
 import com.aidataanalyst.service.DatasetStorageService;
 import com.aidataanalyst.service.VersioningService;
 import com.aidataanalyst.service.ReportGenerationService;
+import com.aidataanalyst.service.ForecastPersistenceService;
+import com.aidataanalyst.service.ChatPersistenceService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Gateway endpoints consumed by the React frontend. Real implementation
@@ -26,20 +30,28 @@ import java.util.Map;
 @RequestMapping("/api/datasets")
 public class DatasetController {
 
+    private static final Logger LOGGER = Logger.getLogger(DatasetController.class.getName());
+
     private final MlServiceClient mlServiceClient;
     private final DatasetRepository datasetRepository;
     private final DatasetStorageService datasetStorageService;
     private final VersioningService versioningService;
     private final ReportGenerationService reportGenerationService;
+    private final ForecastPersistenceService forecastPersistenceService;
+    private final ChatPersistenceService chatPersistenceService;
 
     public DatasetController(MlServiceClient mlServiceClient, DatasetRepository datasetRepository,
                              DatasetStorageService datasetStorageService, VersioningService versioningService,
-                             ReportGenerationService reportGenerationService) {
+                             ReportGenerationService reportGenerationService,
+                             ForecastPersistenceService forecastPersistenceService,
+                             ChatPersistenceService chatPersistenceService) {
         this.mlServiceClient = mlServiceClient;
         this.datasetRepository = datasetRepository;
         this.datasetStorageService = datasetStorageService;
         this.versioningService = versioningService;
         this.reportGenerationService = reportGenerationService;
+        this.forecastPersistenceService = forecastPersistenceService;
+        this.chatPersistenceService = chatPersistenceService;
     }
 
     @PostMapping("/{id}/clean")
@@ -58,9 +70,16 @@ public class DatasetController {
     }
 
     @PostMapping("/{id}/forecast")
-    public Map<String, Object> forecast(@PathVariable Long id, @RequestBody Map<String, Object> request) {
-        // TODO: persist result into forecasts table
-        return mlServiceClient.runForecast(request);
+    public Map<String, Object> forecast(@PathVariable Long id, @RequestBody Map<String, Object> request,
+                                        Authentication authentication) {
+        Map<String, Object> result = mlServiceClient.runForecast(request);
+        try {
+            forecastPersistenceService.saveForecast(id, (String) request.get("date_column"),
+                    (String) request.get("value_column"), result, authentication.getName());
+        } catch (Exception exception) {
+            LOGGER.log(Level.WARNING, "Unable to persist forecast for dataset " + id, exception);
+        }
+        return result;
     }
 
     @PostMapping("/{id}/insights")
@@ -69,11 +88,18 @@ public class DatasetController {
     }
 
     @PostMapping("/{id}/chat")
-    public Map<String, Object> chat(@PathVariable Long id, @RequestBody Map<String, Object> request) {
-        // TODO: persist user + assistant messages into chat_messages
+    public Map<String, Object> chat(@PathVariable Long id, @RequestBody Map<String, Object> request,
+                                    Authentication authentication) {
         Map<String, Object> chatRequest = new HashMap<>(request);
         chatRequest.put("dataset_id", id);
-        return mlServiceClient.chat(chatRequest);
+        Map<String, Object> result = mlServiceClient.chat(chatRequest);
+        try {
+            chatPersistenceService.recordExchange(id, (String) request.get("question"),
+                    (String) result.get("answer"), authentication.getName());
+        } catch (Exception exception) {
+            LOGGER.log(Level.WARNING, "Unable to persist chat exchange for dataset " + id, exception);
+        }
+        return result;
     }
 
     @GetMapping("/{id}/records")
