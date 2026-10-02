@@ -22,6 +22,7 @@ ml:
 jwt:
   secret: change-me-in-production
   expiration-ms: 86400000
+  refresh-expiration-ms: 2592000000 # 30 days — long-lived since it's revocable server-side (see refresh_tokens table)
 
 storage:
   local-path: /tmp/ai-data-analyst/uploads

@@ -39,18 +39,26 @@ def detect_mnar_signals(df: pd.DataFrame) -> list[str]:
     return signals
 
 
-def calculate_health_score(df: pd.DataFrame, weights: dict | None = None) -> dict:
+def calculate_health_score(df: pd.DataFrame, weights: dict | None = None, previous_score: int | None = None) -> dict:
     """Calculate data quality score with optional custom weights (enables version tracking/trending).
-    
+
     Args:
         df: Input DataFrame
         weights: Optional dict with keys 'completeness', 'uniqueness', 'consistency', 'outliers'
                  must sum to 1.0. Defaults to equal-weighted hardcoded baseline.
+        previous_score: Optional score (0-100) from an earlier dataset_version. A static,
+                 one-shot score can't show whether quality is improving or degrading across
+                 cleaning iterations (Adaptive DQ Scoring, 2024). Pass the prior version's
+                 score (e.g. from DatasetVersion history) to get a drift signal. NOTE: this
+                 only tracks score drift, not the full facet-aware (data/source/system/task/
+                 human) framework Mohammed et al. (2024) call for -- those facets need
+                 metadata this platform doesn't currently collect from a CSV upload alone.
     """
     if df is None or df.empty:
         return {"score": 0, "grade": "N/A", "completeness": 0, "uniqueness": 0,
                 "consistency": 0, "outliers_score": 0, "issues": ["No dataset loaded."],
-                "sentinel_missing_count": 0, "weights_used": None, "mnar_signals": []}
+                "sentinel_missing_count": 0, "weights_used": None, "mnar_signals": [],
+                "score_trend": None, "previous_score": previous_score}
 
     # Surface informative missingness because its pattern can bias downstream analysis.
     mnar_signals = detect_mnar_signals(df)
@@ -134,6 +142,17 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None) -> dic
     if not issues:
         issues.append("No critical data quality issues detected. Dataset is clean!")
 
+    score_trend = None
+    if previous_score is not None:
+        delta = final_score - previous_score
+        if delta > 3:
+            score_trend = "improving"
+        elif delta < -3:
+            score_trend = "declining"
+        else:
+            score_trend = "stable"
+        issues.append(f"Score {score_trend} vs. previous version ({previous_score} -> {final_score}).")
+
     return {
         "score": final_score, "grade": grade,
         "completeness": round(completeness, 1), "uniqueness": round(uniqueness, 1),
@@ -142,4 +161,6 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None) -> dic
         "sentinel_missing_count": sentinel_missing_count,
         "weights_used": weights_to_use,
         "mnar_signals": mnar_signals,
+        "score_trend": score_trend,
+        "previous_score": previous_score,
     }

@@ -12,6 +12,19 @@ CREATE TABLE users (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Opaque, revocable refresh tokens (FIX 12). Only a SHA-256 hash of the raw
+-- token is ever stored, matching how password_hash never stores a plaintext
+-- password. Hibernate's ddl-auto=update creates this table automatically;
+-- it's documented here for schema parity with the rest of the tables.
+CREATE TABLE refresh_tokens (
+    id              BIGSERIAL PRIMARY KEY,
+    user_id         BIGINT NOT NULL REFERENCES users(id),
+    token_hash      VARCHAR(64) UNIQUE NOT NULL,
+    expires_at      TIMESTAMPTZ NOT NULL,
+    revoked         BOOLEAN NOT NULL DEFAULT false,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE workspaces (
     id              BIGSERIAL PRIMARY KEY,
     name            VARCHAR(255) NOT NULL,

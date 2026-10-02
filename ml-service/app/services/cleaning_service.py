@@ -11,19 +11,63 @@ from sklearn.impute import KNNImputer
 from sklearn.ensemble import IsolationForest
 
 
+def _multiple_impute_column(series: pd.Series, n_imputations: int = 5, random_state: int = 42) -> tuple[pd.Series, dict]:
+    """Multiple imputation via bootstrap resampling from the observed distribution.
+    Point estimate (mean across imputations) + uncertainty (std dev across
+    imputations) is reported per cell, instead of the single point-estimate that
+    mean/median/KNN imputation give with no indication of how confident it is
+    (Jäger et al. 2021 -- "uncertainty not modeled" is flagged as a limitation of
+    point-estimate-only imputers across every method they benchmarked).
+    """
+    rng = np.random.RandomState(random_state)
+    observed = series.dropna()
+    missing_idx = series[series.isna()].index
+    if observed.empty or len(missing_idx) == 0:
+        return series, {}
+
+    draws = rng.choice(observed.values, size=(len(missing_idx), n_imputations), replace=True)
+    point_estimates = draws.mean(axis=1)
+    uncertainties = draws.std(axis=1)
+
+    filled = series.copy()
+    filled.loc[missing_idx] = point_estimates
+    uncertainty_map = {idx: float(u) for idx, u in zip(missing_idx, uncertainties)}
+    return filled, uncertainty_map
+
+
 def fill_missing_values(df: pd.DataFrame, strategy="auto", custom_strategies=None) -> tuple[pd.DataFrame, list[dict]]:
     cleaned_df = df.copy()
     repair_log = []
 
-    def record_filled_cells(before_missing: pd.Series, col: str, strategy_used: str) -> None:
+    def record_filled_cells(before_missing: pd.Series, col: str, strategy_used: str, uncertainty_map: dict | None = None) -> None:
         for row_index in cleaned_df.index[before_missing & cleaned_df[col].notna()]:
             value = cleaned_df.at[row_index, col]
-            repair_log.append({
+            entry = {
                 "row_index": row_index.item() if hasattr(row_index, "item") else row_index,
                 "column": col,
                 "strategy_used": strategy_used,
                 "imputed_value": value.item() if hasattr(value, "item") else value,
-            })
+            }
+            if uncertainty_map and row_index in uncertainty_map:
+                entry["imputation_uncertainty"] = round(uncertainty_map[row_index], 4)
+            repair_log.append(entry)
+
+    if strategy == "multiple":
+        for col in cleaned_df.select_dtypes(include=[np.number]).columns:
+            if cleaned_df[col].isnull().sum() > 0:
+                before_missing = cleaned_df[col].isna()
+                filled, uncertainty_map = _multiple_impute_column(cleaned_df[col])
+                cleaned_df[col] = filled
+                record_filled_cells(before_missing, col, "multiple_imputation", uncertainty_map)
+        # Multiple imputation via resampling only applies to numeric columns;
+        # categorical columns still fall back to mode (same as the "knn" branch).
+        for col in cleaned_df.select_dtypes(include=["object", "category"]).columns:
+            if cleaned_df[col].isnull().sum() > 0:
+                before_missing = cleaned_df[col].isna()
+                mode_val = cleaned_df[col].mode()
+                cleaned_df[col] = cleaned_df[col].fillna(mode_val[0] if not mode_val.empty else "Unknown")
+                record_filled_cells(before_missing, col, "mode")
+        return cleaned_df, repair_log
 
     if strategy == "knn":
         numeric_cols = cleaned_df.select_dtypes(include=[np.number]).columns

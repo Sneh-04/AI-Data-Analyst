@@ -59,7 +59,11 @@ public class JwtService {
     }
 
     private SecretKey createSigningKey(String secret) {
-        // TODO: use a production-managed random secret and implement refresh-token rotation.
+        // Refresh-token rotation is implemented separately in RefreshTokenService
+        // (opaque, DB-backed, revocable tokens — not JWTs, so they can be
+        // invalidated server-side before their own expiry).
+        // TODO: still use a production-managed random secret instead of the
+        // placeholder value in application.yml before deploying.
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256")
                     .digest(secret.getBytes(StandardCharsets.UTF_8));

@@ -104,6 +104,58 @@ def _rolling_origin_splits(
     return splits
 
 
+def _compute_meta_features(series: pd.Series) -> dict:
+    """Series characteristics used to shortlist which candidates are worth
+    backtesting, instead of always brute-force fitting all 5 on every split
+    regardless of fit. AutoML-for-time-series tools still struggle to handle
+    series quirks (trend/seasonality/noise) without this kind of guidance
+    (Alsharef et al. 2022), and skipping clearly-inapplicable models reduces
+    the resource cost flagged for foundation/complex models (Liang et al. 2024).
+    """
+    values = series.values.astype(float)
+    n = len(values)
+    diffs = np.diff(values) if n > 1 else np.array([0.0])
+    value_std = np.std(values) + 1e-9
+    noise_ratio = float(np.std(diffs) / value_std)
+
+    trend_strength = 0.0
+    if n > 2:
+        slope = np.polyfit(np.arange(n), values, 1)[0]
+        trend_strength = float(abs(slope) * n / value_std)
+
+    seasonal_strength = 0.0
+    if n >= 14:
+        try:
+            autocorr = pd.Series(values).autocorr(lag=7)
+            seasonal_strength = float(autocorr) if np.isfinite(autocorr) else 0.0
+        except Exception:
+            seasonal_strength = 0.0
+
+    return {
+        "length": n,
+        "noise_ratio": round(noise_ratio, 3),
+        "trend_strength": round(trend_strength, 3),
+        "seasonal_strength": round(seasonal_strength, 3),
+    }
+
+
+def _shortlist_candidates(meta_features: dict) -> list[str]:
+    """naive/holt are always cheap and always included as baselines (Hewamalage
+    et al. 2022). ARIMA needs enough points to fit reliably; SARIMA/seasonal_naive
+    are only worth their extra cost when the series actually shows weekly
+    seasonality -- fitting a seasonal model on a non-seasonal series wastes
+    compute and can still "win" on a noisy single split, which is exactly the
+    overcomplicated-model risk the rolling-origin backtest is meant to guard
+    against.
+    """
+    shortlist = ["naive", "holt", "seasonal_naive"]
+    if meta_features["length"] >= 20:
+        shortlist.append("arima")
+    if meta_features["seasonal_strength"] > 0.3 and meta_features["length"] >= 21:
+        shortlist.append("sarima")
+    return shortlist
+
+
 def run_forecast(df: pd.DataFrame, date_col: str, value_col: str, periods: int, model: str = "auto") -> dict:
     series = _prep_series(df, date_col, value_col)
     if len(series) < 10:
@@ -117,13 +169,17 @@ def run_forecast(df: pd.DataFrame, date_col: str, value_col: str, periods: int, 
             "forecast": [{"period": i + 1, "value": round(float(v), 2)} for i, v in enumerate(forecast)],
         }
 
-    # auto: rolling-origin backtest each candidate and pick the lowest MASE
+    # auto: rolling-origin backtest shortlisted candidates and pick the lowest MASE
     holdout_size = max(3, min(periods, int(len(series) * 0.2)))
     n_splits = 2 if len(series) > 5000 else 3  # Limit expensive ARIMA/SARIMA fitting for large series.
     splits = _rolling_origin_splits(series, holdout_size, n_splits=n_splits)
 
+    meta_features = _compute_meta_features(series)
+    shortlisted_names = _shortlist_candidates(meta_features)
+    candidates_to_run = {name: fn for name, fn in CANDIDATES.items() if name in shortlisted_names}
+
     scores = {}
-    for name, fit_fn in CANDIDATES.items():
+    for name, fit_fn in candidates_to_run.items():
         metric_values = {"mape": [], "rmse": [], "mase": []}
         errors = []
         successful_splits = 0
@@ -160,5 +216,7 @@ def run_forecast(df: pd.DataFrame, date_col: str, value_col: str, periods: int, 
         "model_used": best_model,
         "model_comparison": scores,
         "backtest_splits_used": len(splits),
+        "meta_features": meta_features,
+        "candidates_evaluated": list(candidates_to_run.keys()),
         "forecast": [{"period": i + 1, "value": round(float(v), 2)} for i, v in enumerate(final_forecast)],
     }
