@@ -24,7 +24,7 @@ run_forecast() in two modes:
       be checked against what the best possible single choice would have been
 
 Run: PYTHONPATH=../ml-service python3 forecasting_benchmark.py
-Output: results/forecasting_benchmark.csv (+ printed markdown table)
+Output: raw/summary CSVs and a Markdown report in results/.
 """
 import sys
 import os
@@ -120,6 +120,25 @@ if __name__ == "__main__":
     summary.to_csv(os.path.join(out_dir, "forecasting_benchmark_summary.csv"), index=False)
 
     df = load_real_series()
+    auto_rows = results[results["method"].str.startswith("auto")][["window", "method", "mase"]]
+    report = "\n".join([
+        "# Forecasting benchmark results",
+        "",
+        f"Dataset: statsmodels Mauna Loa CO2, monthly-resampled, n={len(df)}.",
+        f"Walk-forward origins: {N_WINDOWS}; horizon: {HORIZON} months.",
+        "",
+        "## Aggregate metrics",
+        "",
+        summary.to_markdown(index=False, floatfmt=".4f"),
+        "",
+        "## Automatic model selections by origin",
+        "",
+        auto_rows.to_markdown(index=False, floatfmt=".4f"),
+        "",
+    ])
+    with open(os.path.join(out_dir, "forecasting_benchmark_report.md"), "w", encoding="utf-8") as report_file:
+        report_file.write(report)
+
     print(f"\nDataset: statsmodels Mauna Loa CO2, monthly-resampled, n={len(df)} months")
     print(f"Walk-forward windows: {N_WINDOWS}, horizon: {HORIZON} months each\n")
     print(summary.to_markdown(index=False, floatfmt=".4f"))

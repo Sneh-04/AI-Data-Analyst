@@ -7,18 +7,14 @@ Upgrades over the original repo's utils/data_cleaner.py:
 """
 import numpy as np
 import pandas as pd
-from sklearn.impute import KNNImputer
+from sklearn.experimental import enable_iterative_imputer as _enable_iterative_imputer
+from sklearn.impute import IterativeImputer, KNNImputer
 from sklearn.ensemble import IsolationForest
+from sklearn.linear_model import BayesianRidge
 
 
 def _multiple_impute_column(series: pd.Series, n_imputations: int = 5, random_state: int = 42) -> tuple[pd.Series, dict]:
-    """Multiple imputation via bootstrap resampling from the observed distribution.
-    Point estimate (mean across imputations) + uncertainty (std dev across
-    imputations) is reported per cell, instead of the single point-estimate that
-    mean/median/KNN imputation give with no indication of how confident it is
-    (Jäger et al. 2021 -- "uncertainty not modeled" is flagged as a limitation of
-    point-estimate-only imputers across every method they benchmarked).
-    """
+    """Marginal bootstrap baseline used when no feature can inform imputation."""
     rng = np.random.RandomState(random_state)
     observed = series.dropna()
     missing_idx = series[series.isna()].index
@@ -35,7 +31,67 @@ def _multiple_impute_column(series: pd.Series, n_imputations: int = 5, random_st
     return filled, uncertainty_map
 
 
-def fill_missing_values(df: pd.DataFrame, strategy="auto", custom_strategies=None) -> tuple[pd.DataFrame, list[dict]]:
+def _multiple_impute_dataframe(
+    df: pd.DataFrame, n_imputations: int = 5, random_state: int = 42
+) -> tuple[pd.DataFrame, dict]:
+    """Impute numeric columns from other features using stochastic chained models."""
+    numeric_columns = df.select_dtypes(include=[np.number]).columns.tolist()
+    usable_columns = [col for col in numeric_columns if df[col].notna().any()]
+    if not usable_columns:
+        return df.copy(), {}
+
+    missing_masks = df[usable_columns].isna()
+    if not missing_masks.to_numpy().any():
+        return df.copy(), {}
+    if n_imputations < 2:
+        raise ValueError("n_imputations must be at least 2 to estimate between-imputation variability")
+
+    numeric_data = df[usable_columns].astype(float)
+    if len(usable_columns) == 1:
+        col = usable_columns[0]
+        filled_column, uncertainty = _multiple_impute_column(
+            numeric_data[col], n_imputations=n_imputations, random_state=random_state
+        )
+        filled_df = df.copy()
+        filled_df[col] = filled_column
+        return filled_df, {col: uncertainty}
+
+    samples = []
+    for draw in range(n_imputations):
+        imputer = IterativeImputer(
+            estimator=BayesianRidge(),
+            sample_posterior=True,
+            max_iter=10,
+            random_state=random_state + draw,
+        )
+        samples.append(imputer.fit_transform(numeric_data))
+
+    sample_array = np.stack(samples)
+    point_estimates = sample_array.mean(axis=0)
+    uncertainty = sample_array.std(axis=0, ddof=1)
+    missing_array = missing_masks.to_numpy()
+    observed_array = numeric_data.to_numpy()
+    point_estimates[~missing_array] = observed_array[~missing_array]
+    if np.any(missing_array & ~np.isfinite(point_estimates)):
+        raise ValueError("Multiple imputation produced non-finite values for missing numeric cells")
+
+    filled_df = df.copy()
+    uncertainty_by_column = {}
+    for column_index, col in enumerate(usable_columns):
+        missing_positions = np.flatnonzero(missing_array[:, column_index])
+        values = filled_df[col].to_numpy(copy=True)
+        values[missing_positions] = point_estimates[missing_positions, column_index]
+        filled_df[col] = values
+        uncertainty_by_column[col] = {
+            df.index[position]: float(uncertainty[position, column_index])
+            for position in missing_positions
+        }
+    return filled_df, uncertainty_by_column
+
+
+def fill_missing_values(
+    df: pd.DataFrame, strategy="auto", custom_strategies=None, random_state: int = 42
+) -> tuple[pd.DataFrame, list[dict]]:
     cleaned_df = df.copy()
     repair_log = []
 
@@ -53,14 +109,14 @@ def fill_missing_values(df: pd.DataFrame, strategy="auto", custom_strategies=Non
             repair_log.append(entry)
 
     if strategy == "multiple":
+        cleaned_df, uncertainty_by_column = _multiple_impute_dataframe(
+            cleaned_df, random_state=random_state
+        )
         for col in cleaned_df.select_dtypes(include=[np.number]).columns:
-            if cleaned_df[col].isnull().sum() > 0:
-                before_missing = cleaned_df[col].isna()
-                filled, uncertainty_map = _multiple_impute_column(cleaned_df[col])
-                cleaned_df[col] = filled
-                record_filled_cells(before_missing, col, "multiple_imputation", uncertainty_map)
-        # Multiple imputation via resampling only applies to numeric columns;
-        # categorical columns still fall back to mode (same as the "knn" branch).
+            before_missing = df[col].isna()
+            record_filled_cells(
+                before_missing, col, "multiple_imputation", uncertainty_by_column.get(col)
+            )
         for col in cleaned_df.select_dtypes(include=["object", "category"]).columns:
             if cleaned_df[col].isnull().sum() > 0:
                 before_missing = cleaned_df[col].isna()

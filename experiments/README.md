@@ -1,83 +1,88 @@
-# Experiments
+# Reproducible experiments
 
-Real benchmarks against the project's actual code (`ml-service/app/services/`),
-run on real, bundled, publicly available datasets — no network access, no
-fabricated numbers. Every number below came from an actual run; re-run with
-`PYTHONPATH=../ml-service python3 <script>.py` to reproduce.
+The scripts invoke the project's implementation in `ml-service/app/services/`
+and write raw trial/window rows and summaries under `experiments/results/`.
+The datasets are bundled with scikit-learn and statsmodels, so the runs do not
+download data.
 
-New dependencies needed beyond `ml-service/requirements.txt`: `scipy`, `tabulate`
-(`pip install scipy tabulate`).
+## Reproduce
 
-## 1. Imputation benchmark (`imputation_benchmark.py`)
+Use Python 3.13.9 and the pinned dependencies in `requirements.txt`:
 
-**Dataset:** `sklearn.datasets.load_diabetes` (442 patients, 10 real physiological
-features). The `bmi` column is artificially masked under MCAR at 10/20/30% rates
-(10 random-seed trials each), so the true value is always known and RMSE is a
-real ground-truth error, not a proxy.
+```sh
+python3.13 -m venv /tmp/ai-data-analyst-experiments
+. /tmp/ai-data-analyst-experiments/bin/activate
+python -m pip install -r experiments/requirements.txt
+cd experiments
+PYTHONPATH=../ml-service python imputation_benchmark.py
+PYTHONPATH=../ml-service python forecasting_benchmark.py
+```
 
-**Methods (all from `cleaning_service.py`, not reimplemented):** mean, median,
-KNN (k=5), and our "multiple imputation with uncertainty" (bootstrap resampling
-from the observed marginal distribution).
+The recorded run used Python 3.13.9, NumPy 2.3.5, pandas 2.3.3,
+scikit-learn 1.7.2, SciPy 1.16.3, statsmodels 0.14.5, and tabulate 0.9.0.
+The diabetes data description in `sklearn.datasets.load_diabetes()` cites the
+source URL and Efron et al. (2004), but does not state a separate dataset
+license; check the source terms before redistributing the data.
 
-| mask_rate | method | mean_rmse | uncertainty_spearman |
-|---|---|---|---|
-| 0.10–0.30 | **knn_k5** | **0.042–0.044** (best) | n/a |
-| 0.10–0.30 | mean | 0.047–0.048 | n/a |
-| 0.10–0.30 | median | 0.047–0.049 | n/a |
-| 0.10–0.30 | multiple_imputation | 0.050–0.053 (**worst**) | **0.02–0.05** (≈0, not meaningfully calibrated) |
+## Imputation
 
-**Honest finding — this is a real weakness, not a win:** our "uncertainty-aware"
-multiple imputation is currently *worse* than plain mean/median, and its
-per-cell uncertainty does **not** correlate with actual error (Spearman ≈ 0.03,
-should be meaningfully positive for a calibrated estimate). Root cause: it
-resamples from the target column's own marginal distribution only — it never
-looks at the other 9 correlated features, which is exactly why KNN (which does)
-wins by a clear margin. The current implementation adds variance without
-adding the cross-feature signal that would make it accurate. **This means the
-"uncertainty-aware imputation ✅" status claimed earlier in this project's audit
-was wrong to call a clean win — it's implemented and testable, but the method
-itself needs to become feature-aware (e.g. regress-then-resample-residuals, a
-real MICE step) before it's a defensible research contribution.**
+**Question:** Does conditioning on other observed features reduce reconstruction
+error versus the previous marginal-bootstrap implementation?
 
-## 2. Forecasting benchmark (`forecasting_benchmark.py`)
+**Data/protocol:** scikit-learn's bundled diabetes dataset (442 rows, 10
+standardized predictor columns); mask only `bmi` under MCAR at 10%, 20%, and
+30%. For each rate, use 10 mask seeds (42–51) and the same masked cells across
+methods. The other nine features remain observed. RMSE is measured only at
+masked cells. The table reports the mean and sample standard deviation of the
+10 trial RMSEs. Uncertainty Spearman is calculated per trial between reported
+spread and absolute error on masked cells, then averaged.
 
-**Dataset:** statsmodels' built-in Mauna Loa CO2 series (real atmospheric
-measurements 1958–2001, resampled to monthly, 526 points) — genuine trend +
-genuine annual seasonality + real noise.
+The production `multiple` strategy uses five stochastic scikit-learn
+`IterativeImputer` runs with `BayesianRidge` and posterior sampling. The
+previous five-draw marginal bootstrap is retained as a baseline. KNN uses
+five neighbors and all ten columns. These are point-reconstruction comparisons;
+the iterative strategy's between-imputation standard deviation is descriptive
+spread, not a calibrated interval or total-variance estimate.
 
-**Evaluation:** 6 walk-forward windows (expanding training window, 12-month
-horizon each), using the project's actual `run_forecast()` for `"auto"` mode
-and every individual `CANDIDATES` model for comparison.
+The generated table is
+[`imputation_benchmark_report.md`](results/imputation_benchmark_report.md);
+raw trials and the machine-generated numeric summary are
+[`imputation_benchmark_raw.csv`](results/imputation_benchmark_raw.csv) and
+[`imputation_benchmark_summary.csv`](results/imputation_benchmark_summary.csv).
 
-| method | mean MASE | std MASE |
-|---|---|---|
-| **auto (ours)** | **2.136** (best) | 0.459 |
-| naive | 2.290 | 0.480 |
-| arima | 2.685 | 1.052 |
-| sarima | 3.175 | 1.142 |
-| seasonal_naive | 3.275 | 0.477 |
-| holt | 7.409 (worst) | 3.916 |
+**Result:** Conditioning improves mean RMSE over the old marginal bootstrap at
+all tested rates. It does not consistently beat KNN: KNN has lower mean RMSE at
+20% and 30%. The uncertainty/error rank correlations remain close to zero, so
+this experiment does not support an uncertainty-calibration claim. This is a
+single-dataset, single-target MCAR experiment; it says nothing about MAR, MNAR,
+other data distributions, or inferential validity of multiple imputation.
 
-**Honest finding — this is a real, positive, defensible result:** `auto` beats
-every individual fixed-model baseline, including plain naive, on mean MASE
-across 6 independent windows. It isn't a trivial win from always picking naive
-either — per-window detail shows it actually switches to `arima` or
-`seasonal_naive` when the meta-features justify it (window 2 and 3), and still
-comes out ahead on average. **This is the strongest evidence-backed claim in
-the project so far** and the one most ready to go into a paper's results
-section as-is.
+## Forecasting
 
-## What this does NOT cover yet (honest gaps)
+**Data/protocol:** statsmodels' bundled Mauna Loa CO2 observations (1958–2001),
+resampled to monthly means (526 points). The script evaluates six expanding
+training origins with a 12-month horizon; at each origin, automatic selection
+and each fixed candidate use the same training data and horizon. `auto` uses
+the project's actual `run_forecast()` implementation.
 
-- **RAG / chat retrieval quality** — no eval here; needs a live LLM API key and
-  a labeled question-answer set, which this sandbox can't exercise.
-- **Data quality / drift scoring** — no eval here; "is the health score
-  actually a good proxy for real data quality" needs a labeled corpus of
-  known-good vs known-bad datasets, which doesn't exist yet.
-- **Statistical significance testing** — the tables above report means/stds
-  over small windows (6-10), not paired significance tests (e.g. Diebold-Mariano
-  for the forecasting comparison). Worth adding before a paper submission.
-- **Single dataset per benchmark** — one real dataset each, not a panel. The
-  forecasting result in particular should be checked against at least one more
-  real series (e.g. a monthly retail/economic series) before claiming it
-  generalizes beyond CO2's specific trend+seasonality shape.
+The auto selector chose naive at four origins, seasonal naive at one, and
+ARIMA at one. These six origins come from one series and are not independent
+series-level replications. The result is descriptive evidence on Mauna Loa CO2,
+not evidence of generalization or statistical significance. The generated
+aggregate and per-origin tables are in
+[`forecasting_benchmark_report.md`](results/forecasting_benchmark_report.md).
+Raw origins and aggregate summary are
+[`forecasting_benchmark_raw.csv`](results/forecasting_benchmark_raw.csv) and
+[`forecasting_benchmark_summary.csv`](results/forecasting_benchmark_summary.csv).
+
+## Research basis and open gaps
+
+The imputation design and its limitations are mapped to verified papers in
+[`research-matrix.md`](../research/research-matrix.md). The next experiments
+should add multiple datasets and explicit MAR/MNAR mechanisms, and evaluate
+uncertainty with interval coverage and width before describing it as calibrated.
+See the
+[`implementation roadmap`](../research/implementation-roadmap.md)
+for remaining priorities. No significance test is reported: the current small
+set of highly related forecasting origins does not justify treating them as
+independent replicates.

@@ -56,6 +56,7 @@ export default function Cleaning() {
         <select value={strategy} onChange={e => setStrategy(e.target.value)} style={{ marginRight: 16 }}>
           <option value="auto">Auto (median / mode)</option>
           <option value="knn">KNN imputation</option>
+          <option value="multiple">Iterative Bayesian imputation (experimental)</option>
         </select>
 
         <label>Outlier handling: </label>

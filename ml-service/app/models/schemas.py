@@ -10,7 +10,7 @@ class DatasetPayload(BaseModel):
 
 
 class CleaningRequest(DatasetPayload):
-    strategy: str = Field("auto", description="'auto' | 'knn' | 'custom'")
+    strategy: str = Field("auto", description="'auto' | 'knn' | 'multiple' | 'custom'")
     custom_strategies: Optional[Dict[str, str]] = None
     remove_duplicates: bool = True
     outlier_method: str = Field("iqr", description="'iqr' | 'isolation_forest' | 'none'")
