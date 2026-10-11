@@ -1,0 +1,9 @@
+Frozen raw rows: 1728
+Prior raw rows: 1728
+Rows with keys only in frozen run: 0
+Rows with keys only in prior run: 0
+rmse: 454 differing matched rows; maximum absolute finite difference=0.0791638393319
+n_masked: 0 differing matched rows; maximum absolute finite difference=0
+coverage90: 112 differing matched rows; maximum absolute finite difference=0.0666666666667
+interval_width: 288 differing matched rows; maximum absolute finite difference=0.152820714679
+uncertainty_spearman: 493 differing matched rows; maximum absolute finite difference=0.109767545813

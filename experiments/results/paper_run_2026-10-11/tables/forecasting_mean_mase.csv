@@ -1,0 +1,12 @@
+method,mean_mase,n_series,evaluation_windows
+arima,1.6697515,6,48
+auto,1.46740692,6,48
+auto_legacy,1.6088026,6,48
+auto_no_shortlist,1.51893502,6,48
+auto_with_ensemble,1.52309008,6,48
+ensemble,2.19965464,6,48
+holt,3.33810607,6,48
+naive,2.4605135,6,48
+oracle_best_fixed,1.05735304,6,48
+sarima,1.8112839,4,32
+seasonal_naive,3.96773243,4,32

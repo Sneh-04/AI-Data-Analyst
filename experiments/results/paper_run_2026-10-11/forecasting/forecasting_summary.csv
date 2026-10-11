@@ -1,0 +1,12 @@
+method,mean_mase,mean_seconds_per_window,median_mase,rel_mase_vs_naive_geomean,mean_rank,windows_scored
+naive,2.4605,,2.1504,1.0,6.7083,48
+seasonal_naive,3.9677,,3.1644,1.2432,8.375,32
+holt,3.3381,,1.7944,0.9838,6.0312,48
+arima,1.6698,,1.3184,0.6209,4.3021,48
+sarima,1.8113,,0.9061,0.4224,4.5938,32
+ensemble,2.1997,,1.9782,0.8709,6.4062,48
+auto,1.4674,0.3089,0.8712,0.491,3.9479,48
+auto_legacy,1.6088,0.1925,1.3106,0.6014,4.4167,48
+auto_no_shortlist,1.5189,0.3908,0.8712,0.5025,4.1562,48
+auto_with_ensemble,1.5231,0.4101,0.9383,0.5189,4.0521,48
+oracle_best_fixed,1.0574,,0.7968,0.3888,,48

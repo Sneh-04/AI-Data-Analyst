@@ -1,0 +1,66 @@
+# Imputation Mice Comparisons
+
+Paired MICE (`mice_multiple_NEW`) versus each baseline, taken from the saved `imputation_significance.csv`; negative `mean_rmse_diff` favors MICE.
+
+| dataset       | mechanism   | method                 |   mean_rmse_diff |   new_wins |   pairs |       p_raw |      p_holm |
+|---------------|-------------|------------------------|------------------|------------|---------|-------------|-------------|
+| breast_cancer | MAR         | iterative_single       |       0.233631   |          0 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MAR         | knn5                   |       0.075142   |          6 |      24 | 0.00200093  | 0.0200093   |
+| breast_cancer | MAR         | marginal_bootstrap_OLD |      -0.643838   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MAR         | mean                   |      -0.595522   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MAR         | median                 |      -0.703287   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MCAR        | iterative_single       |       0.00997374 |          7 |      24 | 0.113961    | 0.455845    |
+| breast_cancer | MCAR        | knn5                   |      -0.0993224  |         23 |      24 | 2.38419e-07 | 7.15256e-06 |
+| breast_cancer | MCAR        | marginal_bootstrap_OLD |      -0.554249   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MCAR        | mean                   |      -0.458713   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MCAR        | median                 |      -0.483786   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MNAR        | iterative_single       |       0.0179362  |          8 |      24 | 0.0137793   | 0.0882338   |
+| breast_cancer | MNAR        | knn5                   |      -0.140007   |         23 |      24 | 2.38419e-07 | 7.15256e-06 |
+| breast_cancer | MNAR        | marginal_bootstrap_OLD |      -0.605416   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MNAR        | mean                   |      -0.574025   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| breast_cancer | MNAR        | median                 |      -0.66281    |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MAR         | iterative_single       |       0.0469988  |          0 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MAR         | knn5                   |      -0.112005   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MAR         | marginal_bootstrap_OLD |      -0.291196   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MAR         | mean                   |      -0.19019    |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MAR         | median                 |      -0.273436   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MCAR        | iterative_single       |       0.00873308 |         10 |      24 | 0.390247    | 0.991515    |
+| diabetes      | MCAR        | knn5                   |      -0.107602   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MCAR        | marginal_bootstrap_OLD |      -0.343362   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MCAR        | mean                   |      -0.252078   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MCAR        | median                 |      -0.294771   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MNAR        | iterative_single       |      -0.00600467 |         14 |      24 | 0.330505    | 0.991515    |
+| diabetes      | MNAR        | knn5                   |      -0.188129   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MNAR        | marginal_bootstrap_OLD |      -0.511115   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MNAR        | mean                   |      -0.466652   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| diabetes      | MNAR        | median                 |      -0.556977   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MAR         | iterative_single       |       0.0232125  |          6 |      24 | 0.0126048   | 0.0882338   |
+| iris          | MAR         | knn5                   |       0.0432371  |          4 |      24 | 0.00224578  | 0.0202121   |
+| iris          | MAR         | marginal_bootstrap_OLD |      -0.632194   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MAR         | mean                   |      -0.547435   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MAR         | median                 |      -0.412516   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MCAR        | iterative_single       |       0.0306757  |          5 |      24 | 0.00064981  | 0.00714791  |
+| iris          | MCAR        | knn5                   |      -0.0320878  |         19 |      24 | 0.00350428  | 0.0280342   |
+| iris          | MCAR        | marginal_bootstrap_OLD |      -0.559515   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MCAR        | mean                   |      -0.464064   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MCAR        | median                 |      -0.482909   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MNAR        | iterative_single       |       0.0733711  |          0 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MNAR        | knn5                   |      -0.011988   |         11 |      24 | 0.583806    | 0.991515    |
+| iris          | MNAR        | marginal_bootstrap_OLD |      -0.591013   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MNAR        | mean                   |      -0.55161    |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| iris          | MNAR        | median                 |      -0.457352   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MAR         | iterative_single       |       0.0715829  |          0 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MAR         | knn5                   |       0.0477101  |          4 |      24 | 0.000322342 | 0.0038681   |
+| wine          | MAR         | marginal_bootstrap_OLD |      -0.35454    |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MAR         | mean                   |      -0.251161   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MAR         | median                 |      -0.287295   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MCAR        | iterative_single       |      -0.0250986  |         12 |      24 | 0.0787293   | 0.393646    |
+| wine          | MCAR        | knn5                   |       0.0319404  |          3 |      24 | 2.01464e-05 | 0.000261903 |
+| wine          | MCAR        | marginal_bootstrap_OLD |      -0.3016     |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MCAR        | mean                   |      -0.197748   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MCAR        | median                 |      -0.215885   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MNAR        | iterative_single       |       0.0391096  |          0 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MNAR        | knn5                   |       0.0268315  |          1 |      24 | 2.38419e-07 | 7.15256e-06 |
+| wine          | MNAR        | marginal_bootstrap_OLD |      -0.395304   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MNAR        | mean                   |      -0.356207   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |
+| wine          | MNAR        | median                 |      -0.398987   |         24 |      24 | 1.19209e-07 | 7.15256e-06 |

@@ -1,0 +1,11 @@
+a,b,mean_mase_diff(a-b),a_wins,pairs,p_value,p_holm
+auto,naive,-0.99311,36,48,8e-05,0.00063
+auto,arima,-0.20234,16,48,0.11094,0.44374
+auto,ensemble,-0.73225,38,48,2e-05,0.00018
+auto,auto_legacy,-0.1414,9,48,0.08438,0.4219
+auto,auto_no_shortlist,-0.05153,2,48,0.17971,0.47362
+auto,auto_with_ensemble,-0.05568,1,48,0.31731,0.47362
+ensemble,naive,-0.26086,33,48,0.00674,0.0472
+auto,oracle_best_fixed,0.41005,0,48,2e-05,0.00018
+auto,sarima,-0.16839,14,32,0.15787,0.47362
+auto[co2 only],auto_legacy[co2 only],-1.03148,8,8,0.00781,0.0472

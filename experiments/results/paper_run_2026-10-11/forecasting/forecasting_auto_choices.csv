@@ -1,0 +1,7 @@
+series,arima,holt,naive,sarima
+co2,0,0,0,8
+cpi,2,4,0,2
+nile,8,0,0,0
+realgdp,0,8,0,0
+sunspots,7,0,1,0
+unemp,3,5,0,0
