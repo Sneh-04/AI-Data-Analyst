@@ -9,6 +9,7 @@ export default function Insights() {
   const [error, setError] = useState(null)
 
   if (records.length === 0) return <p>Upload a dataset first.</p>
+  if (!datasetId) return <p>Upload this dataset to the platform before generating insights.</p>
 
   const run = async () => {
     setLoading(true)

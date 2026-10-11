@@ -3,6 +3,7 @@ import pandas as pd
 
 
 # Sentinel values that encode missing data in real-world datasets (Mohammed et al. 2024)
+NUMERIC_SENTINELS = (-9999.0, -999.0, -99.0, 9999.0, 99999.0)
 SENTINEL_MISSING_VALUES = {"-99", "-999", "n/a", "na", "none", "unknown", "null", "?", "missing", ""}
 
 
@@ -39,6 +40,28 @@ def detect_mnar_signals(df: pd.DataFrame) -> list[str]:
     return signals
 
 
+def _numeric_sentinel_count(series: pd.Series) -> int:
+    """Count common numeric placeholders only when they are outside the column's range."""
+    values = series.dropna()
+    if len(values) < 10:
+        return 0
+
+    count = 0
+    for sentinel in NUMERIC_SENTINELS:
+        sentinel_mask = values == sentinel
+        sentinel_count = int(sentinel_mask.sum())
+        if sentinel_count == 0:
+            continue
+        remaining = values[~sentinel_mask]
+        if len(remaining) < 5:
+            continue
+        low, high = remaining.quantile(0.05), remaining.quantile(0.95)
+        spread = max(high - low, 1e-9)
+        if sentinel < low - spread or sentinel > high + spread:
+            count += sentinel_count
+    return count
+
+
 def calculate_health_score(df: pd.DataFrame, weights: dict | None = None, previous_score: int | None = None) -> dict:
     """Calculate data quality score with optional custom weights (enables version tracking/trending).
 
@@ -46,10 +69,9 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None, previo
         df: Input DataFrame
         weights: Optional dict with keys 'completeness', 'uniqueness', 'consistency', 'outliers'
                  must sum to 1.0. Defaults to equal-weighted hardcoded baseline.
-        previous_score: Optional score (0-100) from an earlier dataset_version. A static,
-                 one-shot score can't show whether quality is improving or degrading across
-                 cleaning iterations (Adaptive DQ Scoring, 2024). Pass the prior version's
-                 score (e.g. from DatasetVersion history) to get a drift signal. NOTE: this
+        previous_score: Optional score (0-100) from the most recent stored health assessment.
+                 A static, one-shot score can't show whether quality is improving or degrading
+                 across cleaning iterations (Adaptive DQ Scoring, 2024). NOTE: this
                  only tracks score drift, not the full facet-aware (data/source/system/task/
                  human) framework Mohammed et al. (2024) call for -- those facets need
                  metadata this platform doesn't currently collect from a CSV upload alone.
@@ -66,6 +88,10 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None, previo
     # Validate and set weights
     default_weights = {"completeness": 0.35, "uniqueness": 0.25, "consistency": 0.20, "outliers": 0.20}
     if weights is not None:
+        if set(weights) != set(default_weights):
+            raise ValueError(f"Weights must contain exactly these keys: {', '.join(default_weights)}")
+        if any(not np.isfinite(value) or value < 0 for value in weights.values()):
+            raise ValueError("Weights must be finite and non-negative.")
         weight_sum = sum(weights.values())
         if not (0.99 <= weight_sum <= 1.01):  # Allow small floating point error
             raise ValueError(f"Weights must sum to 1.0, got {weight_sum}")
@@ -78,10 +104,12 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None, previo
 
     # Count sentinel missing values in object/string columns (fixes completeness overestimation)
     sentinel_missing_count = 0
-    for col in df.select_dtypes(include=["object"]).columns:
+    for col in df.select_dtypes(include=["object", "string"]).columns:
         for val in df[col].dropna():
             if isinstance(val, str) and val.strip().lower() in SENTINEL_MISSING_VALUES:
                 sentinel_missing_count += 1
+    for col in df.select_dtypes(include=[np.number]).columns:
+        sentinel_missing_count += _numeric_sentinel_count(df[col])
     total_nulls += sentinel_missing_count
 
     completeness = max(0, (1 - (total_nulls / total_cells if total_cells > 0 else 0)) * 100)
@@ -90,7 +118,7 @@ def calculate_health_score(df: pd.DataFrame, weights: dict | None = None, previo
     uniqueness = max(0, (1 - (dup_rows / len(df) if len(df) > 0 else 0)) * 100)
 
     consistency_penalties = 0
-    for col in df.select_dtypes(include=["object"]).columns:
+    for col in df.select_dtypes(include=["object", "string"]).columns:
         numeric_convertible = pd.to_numeric(df[col], errors="coerce").notnull().sum()
         if 0 < numeric_convertible < len(df) * 0.8:
             consistency_penalties += 10

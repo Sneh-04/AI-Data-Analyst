@@ -15,6 +15,7 @@ export default function Forecasting() {
   const [error, setError] = useState(null)
 
   if (records.length === 0) return <p>Upload a dataset first.</p>
+  if (!datasetId) return <p>Upload this dataset to the platform before forecasting.</p>
 
   const run = async () => {
     setLoading(true)
@@ -48,10 +49,13 @@ export default function Forecasting() {
           onChange={e => setPeriods(Number(e.target.value))} style={{ width: 70, marginRight: 16 }} />
         <label>Model: </label>
         <select value={model} onChange={e => setModel(e.target.value)}>
-          <option value="auto">Auto (best of 3)</option>
+          <option value="auto">Auto (rolling-origin backtest)</option>
+          <option value="naive">Naive (last value)</option>
+          <option value="seasonal_naive">Seasonal naive</option>
           <option value="holt">Holt's linear trend</option>
           <option value="arima">ARIMA</option>
           <option value="sarima">SARIMA</option>
+          <option value="ensemble">Equal-weight ensemble</option>
         </select>
         <div style={{ marginTop: 16 }}>
           <button onClick={run} disabled={loading}>{loading ? 'Forecasting...' : 'Run forecast'}</button>
@@ -76,9 +80,23 @@ export default function Forecasting() {
             </div>
           </div>
 
+          {result.meta_features && (
+            <div className="card">
+              <h3>How the model was chosen</h3>
+              <p style={{ fontSize: 13 }}>
+                Series: {result.meta_features.length} points, seasonal period {result.seasonal_period},
+                seasonal strength {result.meta_features.seasonal_strength}, trend strength {result.meta_features.trend_strength}.
+                Backtested {result.candidates_evaluated?.length} shortlisted candidates over {result.backtest_splits_used} rolling-origin splits;
+                {result.selection_metric
+                  ? ` the lowest average ${result.selection_metric} wins.`
+                  : ` ${result.selection_message || 'No valid selection metric was available.'}`}
+              </p>
+            </div>
+          )}
+
           {result.model_comparison && (
             <div className="card">
-              <h3>Model comparison (backtested on holdout)</h3>
+              <h3>Model comparison (rolling-origin backtest)</h3>
               <table>
                 <thead><tr><th>Model</th><th>MAPE</th><th>RMSE</th><th>MASE</th></tr></thead>
                 <tbody>

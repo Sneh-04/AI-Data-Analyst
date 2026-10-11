@@ -9,6 +9,7 @@ export default function Chat() {
   const [loading, setLoading] = useState(false)
 
   if (records.length === 0) return <p>Upload a dataset first.</p>
+  if (!datasetId) return <p>Upload this dataset to the platform before chatting with it.</p>
 
   const send = async () => {
     if (!question.trim()) return

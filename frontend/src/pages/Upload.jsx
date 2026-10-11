@@ -10,12 +10,18 @@ export default function Upload() {
   const [uploadError, setUploadError] = React.useState('')
   const navigate = useNavigate()
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0]
     if (!file) return
+    setDatasetId(null)
     setSelectedFile(file)
     setUploadError('')
-    loadFile(file)
+    try {
+      await loadFile(file)
+    } catch (error) {
+      setSelectedFile(null)
+      setUploadError(error.message)
+    }
   }
 
   const uploadFile = async () => {
@@ -61,16 +67,18 @@ export default function Upload() {
         {datasetId && <p style={{ color: '#8bd5a7', fontSize: 13 }}>Persisted dataset #{datasetId}</p>}
         {uploadError && <p style={{ color: '#e27b7b', fontSize: 13 }}>{uploadError}</p>}
         {records.length > 0 && (
-          <button style={{ marginTop: 8 }} onClick={() => navigate('/overview')}>
+          <button style={{ marginTop: 8 }} onClick={() => navigate('/overview')} disabled={!datasetId}>
             Continue to Overview →
           </button>
         )}
+        {records.length > 0 && !datasetId && <p style={{ color: '#d4a04f', fontSize: 13 }}>
+          Upload this dataset to the platform before starting analysis.
+        </p>}
       </div>
       <div className="card">
         <p style={{ color: '#a9adba', fontSize: 13 }}>
-          In production this uploads to Spring Boot, which streams the file to object storage,
-          inserts a row into <code>datasets</code>, and returns a <code>dataset_id</code>. This scaffold
-          parses the CSV client-side so every page below has real data to call the ML service with.
+          CSV data is previewed locally, then persisted through the authenticated Spring Boot API.
+          Analysis pages are enabled after the upload has been stored.
         </p>
       </div>
     </div>

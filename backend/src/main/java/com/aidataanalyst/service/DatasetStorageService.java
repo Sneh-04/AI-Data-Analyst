@@ -56,17 +56,13 @@ public class DatasetStorageService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid dataset storage path");
         }
         try {
-            List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
-            if (lines.isEmpty() || lines.get(0).isBlank()) {
+            List<List<String>> rows = CsvParser.parseRows(Files.readString(file, StandardCharsets.UTF_8));
+            if (rows.isEmpty() || rows.get(0).isEmpty() || rows.get(0).get(0).isBlank()) {
                 return List.of();
             }
-            List<String> headers = parseLine(lines.get(0));
+            List<String> headers = rows.get(0).stream().map(String::trim).toList();
             List<Map<String, Object>> records = new ArrayList<>();
-            for (String line : lines.subList(1, lines.size())) {
-                if (line.isBlank()) {
-                    continue;
-                }
-                List<String> values = parseLine(line);
+            for (List<String> values : rows.subList(1, rows.size())) {
                 Map<String, Object> record = new LinkedHashMap<>();
                 for (int index = 0; index < headers.size(); index++) {
                     String value = index < values.size() ? values.get(index).trim() : "";
@@ -83,25 +79,6 @@ public class DatasetStorageService {
     private String escapeCsv(Object value) {
         String text = value == null ? "" : String.valueOf(value);
         return '"' + text.replace("\"", "\"\"") + '"';
-    }
-
-    private List<String> parseLine(String line) {
-        List<String> values = new ArrayList<>();
-        StringBuilder value = new StringBuilder();
-        boolean quoted = false;
-        for (int index = 0; index < line.length(); index++) {
-            char character = line.charAt(index);
-            if (character == '"') {
-                quoted = !quoted;
-            } else if (character == ',' && !quoted) {
-                values.add(value.toString());
-                value.setLength(0);
-            } else {
-                value.append(character);
-            }
-        }
-        values.add(value.toString());
-        return values;
     }
 
     private Object parseValue(String value) {

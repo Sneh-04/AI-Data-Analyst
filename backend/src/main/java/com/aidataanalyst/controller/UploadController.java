@@ -7,6 +7,7 @@ import com.aidataanalyst.repository.DatasetRepository;
 import com.aidataanalyst.repository.UserRepository;
 import com.aidataanalyst.repository.WorkspaceRepository;
 import com.aidataanalyst.service.DatasetStorageService;
+import com.aidataanalyst.service.CsvParser;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -57,8 +59,13 @@ public class UploadController {
         String storageName = UUID.randomUUID() + ".csv";
         try {
             byte[] content = file.getBytes();
+            CsvShape shape;
+            try {
+                shape = inspect(content);
+            } catch (IllegalArgumentException exception) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+            }
             storageService.store(storageName, content);
-            CsvShape shape = inspect(content);
             Dataset dataset = datasetRepository.save(new Dataset(
                     workspace.getId(), user.getId(), file.getOriginalFilename(), storageName,
                     shape.rowCount(), shape.columnCount()));
@@ -74,21 +81,11 @@ public class UploadController {
 
     private CsvShape inspect(byte[] content) {
         String text = new String(content, java.nio.charset.StandardCharsets.UTF_8);
-        String[] lines = text.split("\\R");
-        if (lines.length == 0 || lines[0].isBlank()) {
+        List<List<String>> rows = CsvParser.parseRows(text);
+        if (rows.isEmpty() || rows.get(0).isEmpty() || rows.get(0).get(0).isBlank()) {
             return new CsvShape(0, 0);
         }
-        int rows = 0;
-        for (int index = 1; index < lines.length; index++) {
-            if (!lines[index].isBlank()) {
-                rows++;
-            }
-        }
-        return new CsvShape(rows, countColumns(lines[0]));
-    }
-
-    private int countColumns(String header) {
-        return header.isBlank() ? 0 : header.split(",", -1).length;
+        return new CsvShape(rows.size() - 1, rows.get(0).size());
     }
 
     private record CsvShape(int rowCount, int columnCount) {

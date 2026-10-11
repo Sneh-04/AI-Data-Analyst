@@ -5,6 +5,7 @@ import { datasetApi } from '../api/client.js'
 export default function Overview() {
   const { records, headers, datasetId } = useDataset()
   const [health, setHealth] = useState(null)
+  const [scoreHistory, setScoreHistory] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [useCustomWeights, setUseCustomWeights] = useState(false)
@@ -18,21 +19,30 @@ export default function Overview() {
 
   const recomputeHealth = async (payload) => {
     setLoading(true)
-    datasetApi.healthScore(datasetId, payload)
-      .then(setHealth)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false))
+    setError(null)
+    try {
+      const result = await datasetApi.healthScore(datasetId, payload)
+      setHealth(result)
+      setScoreHistory(await datasetApi.healthScoreHistory(datasetId))
+    } catch (e) {
+      setError(e.response?.data?.message || e.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
-    if (records.length === 0) return
+    if (records.length === 0 || !datasetId) return
+    if (useCustomWeights && Math.abs(Object.values(weights).reduce((sum, weight) => sum + weight, 0) - 1) >= 0.001) return
     const payload = { records }
     if (useCustomWeights) payload.weights = weights
-    recomputeHealth(payload)
-  }, [records, useCustomWeights, weights])
+    const timer = setTimeout(() => recomputeHealth(payload), 300)
+    return () => clearTimeout(timer)
+  }, [records, datasetId, useCustomWeights, weights])
 
   const handleWeightChange = (key, value) => {
-    const num = parseFloat(value) || 0
+    const parsed = parseFloat(value)
+    const num = Number.isFinite(parsed) ? parsed : 0
     const newWeights = { ...weights, [key]: num }
     setWeights(newWeights)
     const sum = Object.values(newWeights).reduce((a, b) => a + b, 0)
@@ -49,6 +59,7 @@ export default function Overview() {
   }
 
   if (records.length === 0) return <p>Upload a dataset first.</p>
+  if (!datasetId) return <p>Upload this dataset to the platform before assessing its health.</p>
 
   return (
     <div>
@@ -116,10 +127,37 @@ export default function Overview() {
                 Found {health.sentinel_missing_count} placeholder values (e.g. '-99', 'N/A', 'none') that may represent hidden missing data.
               </p>
             )}
+            {health.score_trend && (
+              <p style={{ marginTop: 12, fontSize: 12, color: health.score_trend === 'declining' ? '#e06c75' : '#52b788' }}>
+                Quality trend vs. the previous check ({health.previous_score}%): {health.score_trend}.
+              </p>
+            )}
+            {health.mnar_signals?.length > 0 && (
+              <ul className="issues" style={{ marginTop: 12 }}>
+                {health.mnar_signals.map((signal, i) => <li key={i}>{signal}</li>)}
+              </ul>
+            )}
             <ul className="issues" style={{ marginTop: 16 }}>
-              {health.issues.map((issue, i) => <li key={i}>{issue}</li>)}
+              {(health.issues || []).map((issue, i) => <li key={i}>{issue}</li>)}
             </ul>
           </>
+        )}
+      </div>
+      <div className="card">
+        <h3>Health-score history</h3>
+        {scoreHistory.length === 0 ? <p>No health assessments recorded yet.</p> : (
+          <table>
+            <thead><tr><th>Assessed</th><th>Score</th><th>Grade</th></tr></thead>
+            <tbody>
+              {scoreHistory.map(entry => (
+                <tr key={entry.id}>
+                  <td>{new Date(entry.assessedAt).toLocaleString()}</td>
+                  <td>{entry.score}%</td>
+                  <td>{entry.grade}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field
 
 
@@ -24,8 +24,11 @@ class TypeConversionRequest(DatasetPayload):
 class ForecastRequest(DatasetPayload):
     date_column: str
     value_column: str
-    periods: int = 30
-    model: str = Field("auto", description="'auto' | 'holt' | 'arima' | 'sarima' | 'prophet'")
+    periods: int = Field(30, ge=1, le=365)
+    model: Literal["auto", "naive", "seasonal_naive", "holt", "arima", "sarima", "ensemble"] = Field(
+        "auto",
+        description="'auto' | 'naive' | 'seasonal_naive' | 'holt' | 'arima' | 'sarima' | 'ensemble'",
+    )
 
 
 class InsightsRequest(DatasetPayload):

@@ -12,6 +12,8 @@ from sklearn.impute import IterativeImputer, KNNImputer
 from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import BayesianRidge
 
+_MICE_MAX_CELLS = 2_000_000
+
 
 def _multiple_impute_column(series: pd.Series, n_imputations: int = 5, random_state: int = 42) -> tuple[pd.Series, dict]:
     """Marginal bootstrap baseline used when no feature can inform imputation."""
@@ -56,6 +58,9 @@ def _multiple_impute_dataframe(
         filled_df[col] = filled_column
         return filled_df, {col: uncertainty}
 
+    observed_values = numeric_data.to_numpy()
+    lower_bounds = np.nanmin(observed_values, axis=0)
+    upper_bounds = np.nanmax(observed_values, axis=0)
     samples = []
     for draw in range(n_imputations):
         imputer = IterativeImputer(
@@ -63,6 +68,9 @@ def _multiple_impute_dataframe(
             sample_posterior=True,
             max_iter=10,
             random_state=random_state + draw,
+            min_value=lower_bounds,
+            max_value=upper_bounds,
+            skip_complete=True,
         )
         samples.append(imputer.fit_transform(numeric_data))
 
@@ -109,15 +117,36 @@ def fill_missing_values(
             repair_log.append(entry)
 
     if strategy == "multiple":
-        cleaned_df, uncertainty_by_column = _multiple_impute_dataframe(
-            cleaned_df, random_state=random_state
+        numeric_cols = list(cleaned_df.select_dtypes(include=[np.number]).columns)
+        cols_with_gaps = [col for col in numeric_cols if cleaned_df[col].isna().any()]
+        observed_cols = [col for col in numeric_cols if cleaned_df[col].notna().any()]
+        feature_aware = (
+            cols_with_gaps
+            and len(observed_cols) >= 2
+            and cleaned_df[numeric_cols].size <= _MICE_MAX_CELLS
         )
-        for col in cleaned_df.select_dtypes(include=[np.number]).columns:
-            before_missing = df[col].isna()
-            record_filled_cells(
-                before_missing, col, "multiple_imputation", uncertainty_by_column.get(col)
+        if feature_aware:
+            missing_masks = {col: cleaned_df[col].isna() for col in cols_with_gaps}
+            cleaned_df, uncertainty_by_column = _multiple_impute_dataframe(
+                cleaned_df, random_state=random_state
             )
-        for col in cleaned_df.select_dtypes(include=["object", "category"]).columns:
+            for col in cols_with_gaps:
+                record_filled_cells(
+                    missing_masks[col],
+                    col,
+                    "multiple_imputation",
+                    uncertainty_by_column.get(col),
+                )
+        else:
+            for col in cols_with_gaps:
+                before_missing = cleaned_df[col].isna()
+                cleaned_df[col], uncertainty_map = _multiple_impute_column(
+                    cleaned_df[col], random_state=random_state
+                )
+                record_filled_cells(
+                    before_missing, col, "multiple_imputation_marginal_fallback", uncertainty_map
+                )
+        for col in cleaned_df.select_dtypes(include=["object", "category", "string"]).columns:
             if cleaned_df[col].isnull().sum() > 0:
                 before_missing = cleaned_df[col].isna()
                 mode_val = cleaned_df[col].mode()
@@ -129,12 +158,14 @@ def fill_missing_values(
         numeric_cols = cleaned_df.select_dtypes(include=[np.number]).columns
         if len(numeric_cols) > 0:
             missing_masks = {col: cleaned_df[col].isna() for col in numeric_cols}
-            imputer = KNNImputer(n_neighbors=5)
-            cleaned_df[numeric_cols] = imputer.fit_transform(cleaned_df[numeric_cols])
-            for col in numeric_cols:
+            usable_cols = [col for col in numeric_cols if cleaned_df[col].notna().any()]
+            if usable_cols:
+                imputer = KNNImputer(n_neighbors=5)
+                cleaned_df[usable_cols] = imputer.fit_transform(cleaned_df[usable_cols])
+            for col in usable_cols:
                 record_filled_cells(missing_masks[col], col, "knn")
         # non-numeric columns still fall back to mode
-        for col in cleaned_df.select_dtypes(include=["object", "category"]).columns:
+        for col in cleaned_df.select_dtypes(include=["object", "category", "string"]).columns:
             if cleaned_df[col].isnull().sum() > 0:
                 before_missing = cleaned_df[col].isna()
                 mode_val = cleaned_df[col].mode()

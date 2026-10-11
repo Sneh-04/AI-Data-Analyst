@@ -11,6 +11,8 @@ export default function Cleaning() {
   const [error, setError] = useState(null)
   const [versions, setVersions] = useState([])
   const [restoring, setRestoring] = useState(null)
+  const [repairLog, setRepairLog] = useState([])
+  const [repairTruncated, setRepairTruncated] = useState(false)
 
   const loadVersions = async () => {
     if (!datasetId) return
@@ -27,6 +29,7 @@ export default function Cleaning() {
   }, [datasetId])
 
   if (records.length === 0) return <p>Upload a dataset first.</p>
+  if (!datasetId) return <p>Upload this dataset to the platform before cleaning it.</p>
 
   const runCleaning = async () => {
     setLoading(true)
@@ -40,6 +43,8 @@ export default function Cleaning() {
       })
       setRecords(result.cleaned_records)
       setSummary(result.summary)
+      setRepairLog(result.repair_log || [])
+      setRepairTruncated(Boolean(result.repair_log_truncated))
       await loadVersions()
     } catch (e) {
       setError(e.message)
@@ -56,7 +61,7 @@ export default function Cleaning() {
         <select value={strategy} onChange={e => setStrategy(e.target.value)} style={{ marginRight: 16 }}>
           <option value="auto">Auto (median / mode)</option>
           <option value="knn">KNN imputation</option>
-          <option value="multiple">Iterative Bayesian imputation (experimental)</option>
+          <option value="multiple">Multiple imputation (MICE-style, uncertainty reported)</option>
         </select>
 
         <label>Outlier handling: </label>
@@ -80,6 +85,31 @@ export default function Cleaning() {
             <div className="metric"><div className="value">{summary.nulls_fixed}</div><div className="label">Nulls fixed</div></div>
             <div className="metric"><div className="value">{summary.cleaned_rows}</div><div className="label">Rows remaining</div></div>
           </div>
+        </div>
+      )}
+
+      {repairLog.length > 0 && (
+        <div className="card">
+          <h3>Repair log ({repairLog.length}{repairTruncated ? '+' : ''} automated changes)</h3>
+          <p style={{ fontSize: 12, color: '#a9adba' }}>
+            The cleaner records each repair. Multiple-imputation uncertainty is the spread across imputations,
+            not a calibrated prediction interval.
+          </p>
+          <table>
+            <thead><tr><th>Row</th><th>Column</th><th>Method</th><th>New value</th><th>Uncertainty</th></tr></thead>
+            <tbody>
+              {repairLog.slice(0, 15).map((entry, i) => (
+                <tr key={i}>
+                  <td>{entry.row_index}</td>
+                  <td>{entry.column ?? (entry.columns_affected || []).join(', ')}</td>
+                  <td>{entry.strategy_used ?? entry.reason}</td>
+                  <td>{entry.imputed_value ?? entry.capped_value ?? '—'}</td>
+                  <td>{entry.imputation_uncertainty != null ? `± ${entry.imputation_uncertainty}` : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {(repairLog.length > 15 || repairTruncated) && <p style={{ fontSize: 12 }}>Showing the first 15 entries.</p>}
         </div>
       )}
 

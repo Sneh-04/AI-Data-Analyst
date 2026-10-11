@@ -52,6 +52,14 @@ CREATE TABLE datasets (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE dataset_health_scores (
+    id              BIGSERIAL PRIMARY KEY,
+    dataset_id      BIGINT NOT NULL REFERENCES datasets(id) ON DELETE CASCADE,
+    score           INTEGER NOT NULL CHECK (score BETWEEN 0 AND 100),
+    grade           VARCHAR(32) NOT NULL,
+    assessed_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Every cleaning operation is versioned instead of silently overwriting data
 CREATE TABLE dataset_versions (
     id              BIGSERIAL PRIMARY KEY,
@@ -126,6 +134,7 @@ CREATE TABLE audit_log (
 );
 
 CREATE INDEX idx_datasets_workspace ON datasets(workspace_id);
+CREATE INDEX idx_health_scores_dataset_time ON dataset_health_scores(dataset_id, assessed_at DESC, id DESC);
 CREATE INDEX idx_versions_dataset ON dataset_versions(dataset_id);
 CREATE INDEX idx_forecasts_dataset ON forecasts(dataset_id);
 CREATE INDEX idx_chat_messages_session ON chat_messages(session_id);

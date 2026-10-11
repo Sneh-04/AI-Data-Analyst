@@ -90,4 +90,12 @@ public class Dataset {
     public Integer getColumnCount() {
         return columnCount;
     }
+
+    public Integer getHealthScore() {
+        return healthScore;
+    }
+
+    public void setHealthScore(Integer healthScore) {
+        this.healthScore = healthScore;
+    }
 }

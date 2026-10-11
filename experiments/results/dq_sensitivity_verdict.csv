@@ -1,0 +1,7 @@
+corruption,"spearman(level,score)",score_drop_at_20pct,responds
+duplicate_rows,-0.978,4.2,False
+missing_nan,-0.994,7.3,True
+outliers,-0.979,4.1,False
+placeholder_num,-0.99,10.6,True
+placeholder_str,-0.99,17.5,True
+type_mixing,-0.832,10.3,True
