@@ -40,7 +40,9 @@
       "T1224",
       "T1302",
       "T1382"
-    ]
+    ],
+    "selection_inputs": "Eligibility uses series length; selected indices use source order only. The subset was frozen before any forecast model was run, without using model scores or runtimes.",
+    "selection_precedes_model_evaluation": true
   },
   "source": {
     "archive": "m3_monthly_dataset.zip",

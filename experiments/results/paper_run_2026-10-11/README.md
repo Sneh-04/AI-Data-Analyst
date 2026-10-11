@@ -1,8 +1,7 @@
 # Paper run reproducibility and forecasting extension
 
 This run-specific note supersedes any earlier environment/result summaries for
-the frozen evidence in this directory. Existing repository documentation was
-left unchanged under the read-only constraint.
+the frozen evidence in this directory.
 
 ## Canonical imputation evidence and reproducibility
 
@@ -55,8 +54,9 @@ upper bound (five degrees of freedom) is
 0.05230352; the percentile-bootstrap upper bound
 is 0.00000000. The fixed non-inferiority
 margin is 0.05 MASE. **Non-inferiority not
-established** because both bounds are required to be below the margin. This
-does not support an equivalence claim. Full paired per-series results are in
+established**: the t upper bound narrowly exceeds the margin, and both bounds
+are required to be below the margin. This does not support an equivalence
+claim. Full paired per-series results are in
 [`followup_tables/six_series_shortlisting_by_series.csv`](followup_tables/six_series_shortlisting_by_series.csv).
 
 Mean measured runtime per forecast window in this six-series run was
@@ -71,7 +71,9 @@ windows per series, with a horizon of 18. Source:
 [M3 Monthly Dataset, DOI 10.5281/zenodo.4656298](https://zenodo.org/records/4656298),
 licensed CC BY 4.0. Series selection is specified in
 [`forecasting_m3/m3_environment.json`](forecasting_m3/m3_environment.json);
-the selected input observations and raw forecasts are also saved there.
+eligibility and source order determine the evenly spaced subset, which was
+frozen before any model was run. The selected input observations and raw
+forecasts are also saved there.
 
 On M3, Auto's mean per-series MASE was 1.97262782
 versus 1.95390802 without shortlisting (paired
@@ -84,6 +86,27 @@ runtime Wilcoxon p=2.6702881e-05). This is
 descriptive timing evidence on the selected subset; see
 [`followup_tables/m3_series_results.csv`](followup_tables/m3_series_results.csv)
 for all series-level scores.
+
+Against fixed ARIMA on the same 20 M3 series, Auto's paired mean per-series
+MASE difference (Auto minus ARIMA) was
+0.05690859
+(9 Auto wins of 20 pairs;
+raw p=0.784126281738, Holm-adjusted p=1).
+This comparison was not significant after Holm correction.
+
+The same fixed +0.05 MASE non-inferiority
+analysis was applied to the 20 per-series Auto-minus-no-shortlist differences.
+The mean difference was 0.01871981; the
+one-sided 95% t upper bound (df=19) was
+0.04802643, and the percentile-bootstrap
+upper bound was 0.05261873. **Non-inferiority
+not established** because the bootstrap bound exceeds the margin, despite the
+t bound being below it. The same test on six series narrowly failed because
+its t upper bound was 0.05230352, above the
+margin. The M3 extension applies the already-fixed margin; its result does
+not erase the six-series failure. See
+[`followup_tables/m3_shortlisting_noninferiority.csv`](followup_tables/m3_shortlisting_noninferiority.csv)
+for the generated calculation.
 
 ## Generated evidence and reproducibility
 

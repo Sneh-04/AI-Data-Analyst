@@ -305,6 +305,74 @@ def make_m3_tables() -> None:
         "alternatives; negative differences favor Auto. Series may share M3 domains.",
     )
 
+    shortlist_differences = (
+        wide["auto"] - wide["auto_no_shortlist"]
+    ).dropna().to_numpy(dtype=float)
+    n_shortlist = len(shortlist_differences)
+    if n_shortlist != 20:
+        raise ValueError(
+            f"Expected 20 paired M3 series for the non-inferiority analysis; "
+            f"found {n_shortlist}."
+        )
+    shortlist_mean = float(shortlist_differences.mean())
+    shortlist_t_upper = shortlist_mean + float(
+        stats.t.ppf(0.95, df=n_shortlist - 1)
+    ) * float(stats.sem(shortlist_differences))
+    shortlist_rng = np.random.default_rng(BOOTSTRAP_SEED)
+    shortlist_bootstrap_indices = shortlist_rng.integers(
+        0, n_shortlist, size=(BOOTSTRAP_REPLICATES, n_shortlist)
+    )
+    shortlist_bootstrap_upper = float(
+        np.quantile(
+            shortlist_differences[shortlist_bootstrap_indices].mean(axis=1),
+            0.95,
+            method="linear",
+        )
+    )
+    shortlist_ni_established = (
+        shortlist_t_upper < NONINFERIORITY_MARGIN
+        and shortlist_bootstrap_upper < NONINFERIORITY_MARGIN
+    )
+    shortlist_ni = pd.DataFrame(
+        [
+            {
+                "series_count": n_shortlist,
+                "paired_difference_definition": (
+                    "Auto minus auto_no_shortlist MASE"
+                ),
+                "mean_paired_mase_difference": shortlist_mean,
+                "one_sided_95pct_t_upper_df19": shortlist_t_upper,
+                "one_sided_95pct_bootstrap_upper": shortlist_bootstrap_upper,
+                "bootstrap_method": (
+                    "Nonparametric percentile bootstrap resampling series "
+                    f"differences; {BOOTSTRAP_REPLICATES} replicates; "
+                    f"seed {BOOTSTRAP_SEED}"
+                ),
+                "noninferiority_margin": NONINFERIORITY_MARGIN,
+                "noninferiority_established": shortlist_ni_established,
+            }
+        ]
+    ).round(8)
+    shortlist_ni_note = (
+        "Frozen M3 evidence; one paired observation per series is Auto minus "
+        "auto_no_shortlist MASE averaged over that series' four saved rolling "
+        "windows. The +0.05 MASE margin was fixed before M3 results existed. "
+        "As in the six-series analysis, both the one-sided t upper bound "
+        "(df=19) and nonparametric percentile-bootstrap upper bound must be "
+        "below the margin to establish non-inferiority. "
+        + (
+            "Non-inferiority established."
+            if shortlist_ni_established
+            else "Non-inferiority not established."
+        )
+    )
+    write_table(
+        TABLES_DIR,
+        "m3_shortlisting_noninferiority",
+        shortlist_ni,
+        shortlist_ni_note,
+    )
+
     runtime_wide = per_series.pivot(
         index="series", columns="method", values="mean_seconds_per_window"
     )
@@ -444,6 +512,7 @@ def write_followup_readme() -> None:
     m3_brute = m3_summary.loc[m3_summary["method"] == "auto_no_shortlist"].iloc[0]
     m3_mean_row = m3_shortlist.loc[m3_shortlist["series"] == "MEAN"].iloc[0]
     ni = read_csv(TABLES_DIR / "six_series_shortlisting_noninferiority.csv").iloc[0]
+    m3_ni = read_csv(TABLES_DIR / "m3_shortlisting_noninferiority.csv").iloc[0]
     six_series = read_csv(TABLES_DIR / "six_series_shortlisting_by_series.csv")
     six_series_raw = read_csv(RUN_DIR / "forecasting" / "forecasting_raw.csv")
     six_series_count = int(six_series["series"].nunique())
@@ -457,13 +526,13 @@ def write_followup_readme() -> None:
     m3_shortlist_comparison = m3_comparisons.loc[
         m3_comparisons["model"] == "auto_no_shortlist"
     ].iloc[0]
+    m3_arima = m3_comparisons.loc[m3_comparisons["model"] == "arima"].iloc[0]
     old = prior_env
     current = env
     text = f"""# Paper run reproducibility and forecasting extension
 
 This run-specific note supersedes any earlier environment/result summaries for
-the frozen evidence in this directory. Existing repository documentation was
-left unchanged under the read-only constraint.
+the frozen evidence in this directory.
 
 ## Canonical imputation evidence and reproducibility
 
@@ -503,8 +572,9 @@ upper bound (five degrees of freedom) is
 {ni['one_sided_95pct_t_upper_df5']:.8f}; the percentile-bootstrap upper bound
 is {ni['one_sided_95pct_bootstrap_upper']:.8f}. The fixed non-inferiority
 margin is {ni['noninferiority_margin']:.2f} MASE. **Non-inferiority not
-established** because both bounds are required to be below the margin. This
-does not support an equivalence claim. Full paired per-series results are in
+established**: the t upper bound narrowly exceeds the margin, and both bounds
+are required to be below the margin. This does not support an equivalence
+claim. Full paired per-series results are in
 [`followup_tables/six_series_shortlisting_by_series.csv`](followup_tables/six_series_shortlisting_by_series.csv).
 
 Mean measured runtime per forecast window in this six-series run was
@@ -519,7 +589,9 @@ windows per series, with a horizon of {m3_env['evaluation']['horizon']}. Source:
 [{m3_env['source']['title']}, DOI {m3_env['source']['doi']}]({m3_env['source']['url']}),
 licensed {m3_env['source']['license']}. Series selection is specified in
 [`forecasting_m3/m3_environment.json`](forecasting_m3/m3_environment.json);
-the selected input observations and raw forecasts are also saved there.
+eligibility and source order determine the evenly spaced subset, which was
+frozen before any model was run. The selected input observations and raw
+forecasts are also saved there.
 
 On M3, Auto's mean per-series MASE was {m3_auto['mean_series_mase']:.8f}
 versus {m3_brute['mean_series_mase']:.8f} without shortlisting (paired
@@ -532,6 +604,27 @@ runtime Wilcoxon p={m3_runtime_summary['paired_wilcoxon_p']:.12g}). This is
 descriptive timing evidence on the selected subset; see
 [`followup_tables/m3_series_results.csv`](followup_tables/m3_series_results.csv)
 for all series-level scores.
+
+Against fixed ARIMA on the same 20 M3 series, Auto's paired mean per-series
+MASE difference (Auto minus ARIMA) was
+{m3_arima['mean_series_mase_diff_auto_minus_model']:.8f}
+({m3_arima['auto_wins']} Auto wins of {m3_arima['pairs']} pairs;
+raw p={m3_arima['p_raw']:.12g}, Holm-adjusted p={m3_arima['p_holm']:.12g}).
+This comparison was not significant after Holm correction.
+
+The same fixed +{m3_ni['noninferiority_margin']:.2f} MASE non-inferiority
+analysis was applied to the 20 per-series Auto-minus-no-shortlist differences.
+The mean difference was {m3_ni['mean_paired_mase_difference']:.8f}; the
+one-sided 95% t upper bound (df=19) was
+{m3_ni['one_sided_95pct_t_upper_df19']:.8f}, and the percentile-bootstrap
+upper bound was {m3_ni['one_sided_95pct_bootstrap_upper']:.8f}. **Non-inferiority
+not established** because the bootstrap bound exceeds the margin, despite the
+t bound being below it. The same test on six series narrowly failed because
+its t upper bound was {ni['one_sided_95pct_t_upper_df5']:.8f}, above the
+margin. The M3 extension applies the already-fixed margin; its result does
+not erase the six-series failure. See
+[`followup_tables/m3_shortlisting_noninferiority.csv`](followup_tables/m3_shortlisting_noninferiority.csv)
+for the generated calculation.
 
 ## Generated evidence and reproducibility
 
