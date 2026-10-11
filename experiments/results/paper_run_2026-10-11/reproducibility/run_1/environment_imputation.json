@@ -1,0 +1,22 @@
+{
+  "imputation": {
+    "mechanisms": [
+      "MCAR",
+      "MAR",
+      "MNAR"
+    ],
+    "n_imputations": 5,
+    "n_trials": 12,
+    "rates": [
+      0.1,
+      0.3
+    ],
+    "seed": 42
+  },
+  "numpy": "2.5.3",
+  "pandas": "3.0.6",
+  "python": "3.14.5",
+  "scikit-learn": "1.9.1",
+  "scipy": "1.18.1",
+  "statsmodels": "0.15.0"
+}

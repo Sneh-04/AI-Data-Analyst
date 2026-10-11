@@ -1,0 +1,31 @@
+  0/288 configs, 1s
+  24/288 configs, 16s
+  48/288 configs, 30s
+  72/288 configs, 46s
+  96/288 configs, 67s
+  120/288 configs, 85s
+  144/288 configs, 104s
+  168/288 configs, 121s
+  192/288 configs, 135s
+  216/288 configs, 152s
+  240/288 configs, 157s
+  264/288 configs, 162s
+
+Mean RMSE (standardised units) by mechanism, averaged over datasets/rates/trials:
+| mechanism   |   iterative_single |   knn5 |   marginal_bootstrap_OLD |   mean |   median |   mice_multiple_NEW |
+|:------------|-------------------:|-------:|-------------------------:|-------:|---------:|--------------------:|
+| MAR         |             0.6809 | 0.7612 |                   1.2552 | 1.1708 |   1.1938 |              0.7747 |
+| MCAR        |             0.6509 | 0.7087 |                   1.0966 | 1.0001 |   1.0263 |              0.657  |
+| MNAR        |             1.1599 | 1.2694 |                   1.7168 | 1.6782 |   1.7101 |              1.191  |
+
+Uncertainty calibration (nominal coverage 0.90):
+|                                    |   coverage90 |   spearman |
+|:-----------------------------------|-------------:|-----------:|
+| ('MAR', 'marginal_bootstrap_OLD')  |        0.811 |     -0.046 |
+| ('MAR', 'mice_multiple_NEW')       |        0.848 |      0.31  |
+| ('MCAR', 'marginal_bootstrap_OLD') |        0.878 |      0.034 |
+| ('MCAR', 'mice_multiple_NEW')      |        0.89  |      0.393 |
+| ('MNAR', 'marginal_bootstrap_OLD') |        0.585 |     -0.079 |
+| ('MNAR', 'mice_multiple_NEW')      |        0.666 |      0.405 |
+
+Total runtime 167s

@@ -1,0 +1,2 @@
+series_count,paired_difference_definition,mean_paired_mase_difference,one_sided_95pct_t_upper_df5,one_sided_95pct_bootstrap_upper,bootstrap_method,noninferiority_margin,noninferiority_established,auto_mean_seconds_per_window,no_shortlist_mean_seconds_per_window
+6,Auto minus auto_no_shortlist MASE,-0.0515281,0.05230352,0.0,Nonparametric percentile bootstrap resampling series differences; 200000 replicates; seed 20261011,0.05,False,0.30891051,0.39076093

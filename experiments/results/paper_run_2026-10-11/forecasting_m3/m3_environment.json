@@ -1,0 +1,53 @@
+{
+  "environment": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "python": "3.14.5",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1",
+    "statsmodels": "0.15.0"
+  },
+  "evaluation": {
+    "horizon": 18,
+    "minimum_training_points": 30,
+    "raw_rows": 640,
+    "seasonal_period": 12,
+    "series_count": 20,
+    "windows_per_series": 4
+  },
+  "selection": {
+    "eligible_series": 1043,
+    "minimum_series_length": 102,
+    "rule": "From eligible M3 Monthly series in source order, select 20 indices equally spaced from first to last using numpy.linspace with integer indices. Eligibility is series length >= 30 + 4*18 = 102.",
+    "selected_series": [
+      "T278",
+      "T332",
+      "T387",
+      "T442",
+      "T497",
+      "T552",
+      "T607",
+      "T662",
+      "T717",
+      "T772",
+      "T833",
+      "T888",
+      "T943",
+      "T997",
+      "T1053",
+      "T1112",
+      "T1168",
+      "T1224",
+      "T1302",
+      "T1382"
+    ]
+  },
+  "source": {
+    "archive": "m3_monthly_dataset.zip",
+    "archive_sha256": "80b0c1c92b6273f12d346256d3ee29489a7b081823430ad8b3a1cc01e06ccafd",
+    "doi": "10.5281/zenodo.4656298",
+    "license": "CC BY 4.0",
+    "title": "M3 Monthly Dataset",
+    "url": "https://zenodo.org/records/4656298"
+  }
+}

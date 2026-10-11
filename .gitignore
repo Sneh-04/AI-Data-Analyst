@@ -10,6 +10,9 @@ frontend/dist/
 frontend/.vite/
 
 # Python
+**/__pycache__/
+.venv/
+.pytest_cache/
 ml-service/**/__pycache__/
 ml-service/**/*.pyc
 ml-service/.pytest_cache/

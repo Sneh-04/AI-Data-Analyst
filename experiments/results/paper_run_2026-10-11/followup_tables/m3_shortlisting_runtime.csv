@@ -1,0 +1,2 @@
+series_count,auto_mean_seconds_per_window,no_shortlist_mean_seconds_per_window,mean_per_series_runtime_reduction_percent,paired_wilcoxon_p
+20,0.21555068,0.3679728765,43.6488454875,2.6702881e-05
