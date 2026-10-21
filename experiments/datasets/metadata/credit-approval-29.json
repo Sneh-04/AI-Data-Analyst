@@ -1,0 +1,21 @@
+{
+  "data_id": 29,
+  "feature_types": {
+    "A1": "nominal",
+    "A10": "nominal",
+    "A11": "numeric",
+    "A12": "nominal",
+    "A13": "nominal",
+    "A14": "numeric",
+    "A15": "numeric",
+    "A2": "numeric",
+    "A3": "numeric",
+    "A4": "nominal",
+    "A5": "nominal",
+    "A6": "nominal",
+    "A7": "nominal",
+    "A8": "numeric",
+    "A9": "nominal"
+  },
+  "version": 1
+}

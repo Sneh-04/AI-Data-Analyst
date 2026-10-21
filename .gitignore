@@ -13,6 +13,9 @@ frontend/.vite/
 **/__pycache__/
 .venv/
 .pytest_cache/
+experiments/datasets/cache/
+!experiments/datasets/metadata/
+!experiments/datasets/metadata/**
 ml-service/**/__pycache__/
 ml-service/**/*.pyc
 ml-service/.pytest_cache/

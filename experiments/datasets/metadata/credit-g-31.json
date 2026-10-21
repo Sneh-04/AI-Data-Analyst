@@ -1,0 +1,26 @@
+{
+  "data_id": 31,
+  "feature_types": {
+    "age": "numeric",
+    "checking_status": "nominal",
+    "credit_amount": "numeric",
+    "credit_history": "nominal",
+    "duration": "numeric",
+    "employment": "nominal",
+    "existing_credits": "numeric",
+    "foreign_worker": "nominal",
+    "housing": "nominal",
+    "installment_commitment": "numeric",
+    "job": "nominal",
+    "num_dependents": "numeric",
+    "other_parties": "nominal",
+    "other_payment_plans": "nominal",
+    "own_telephone": "nominal",
+    "personal_status": "nominal",
+    "property_magnitude": "nominal",
+    "purpose": "nominal",
+    "residence_since": "numeric",
+    "savings_status": "nominal"
+  },
+  "version": 1
+}

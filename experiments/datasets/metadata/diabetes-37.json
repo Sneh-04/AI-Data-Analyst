@@ -1,0 +1,14 @@
+{
+  "data_id": 37,
+  "feature_types": {
+    "age": "numeric",
+    "insu": "numeric",
+    "mass": "numeric",
+    "pedi": "numeric",
+    "plas": "numeric",
+    "preg": "numeric",
+    "pres": "numeric",
+    "skin": "numeric"
+  },
+  "version": 1
+}

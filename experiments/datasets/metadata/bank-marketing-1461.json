@@ -1,0 +1,22 @@
+{
+  "data_id": 1461,
+  "feature_types": {
+    "V1": "numeric",
+    "V10": "numeric",
+    "V11": "nominal",
+    "V12": "numeric",
+    "V13": "numeric",
+    "V14": "numeric",
+    "V15": "numeric",
+    "V16": "nominal",
+    "V2": "nominal",
+    "V3": "nominal",
+    "V4": "nominal",
+    "V5": "nominal",
+    "V6": "numeric",
+    "V7": "nominal",
+    "V8": "nominal",
+    "V9": "nominal"
+  },
+  "version": 1
+}

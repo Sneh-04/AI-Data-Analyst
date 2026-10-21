@@ -1,0 +1,28 @@
+{
+  "data_id": 24,
+  "feature_types": {
+    "bruises%3F": "nominal",
+    "cap-color": "nominal",
+    "cap-shape": "nominal",
+    "cap-surface": "nominal",
+    "gill-attachment": "nominal",
+    "gill-color": "nominal",
+    "gill-size": "nominal",
+    "gill-spacing": "nominal",
+    "habitat": "nominal",
+    "odor": "nominal",
+    "population": "nominal",
+    "ring-number": "nominal",
+    "ring-type": "nominal",
+    "spore-print-color": "nominal",
+    "stalk-color-above-ring": "nominal",
+    "stalk-color-below-ring": "nominal",
+    "stalk-root": "nominal",
+    "stalk-shape": "nominal",
+    "stalk-surface-above-ring": "nominal",
+    "stalk-surface-below-ring": "nominal",
+    "veil-color": "nominal",
+    "veil-type": "nominal"
+  },
+  "version": 1
+}

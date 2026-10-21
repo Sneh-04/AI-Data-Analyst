@@ -1,0 +1,27 @@
+{
+  "data_id": 1068,
+  "feature_types": {
+    "B": "numeric",
+    "D": "numeric",
+    "E": "numeric",
+    "I": "numeric",
+    "L": "numeric",
+    "N": "numeric",
+    "T": "numeric",
+    "V": "numeric",
+    "branchCount": "numeric",
+    "ev(g)": "numeric",
+    "iv(G)": "numeric",
+    "lOBlank": "numeric",
+    "lOCode": "numeric",
+    "lOComment": "numeric",
+    "loc": "numeric",
+    "locCodeAndComment": "numeric",
+    "total_Op": "numeric",
+    "total_Opnd": "numeric",
+    "uniq_Op": "numeric",
+    "uniq_Opnd": "numeric",
+    "v(g)": "numeric"
+  },
+  "version": 1
+}

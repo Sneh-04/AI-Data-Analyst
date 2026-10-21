@@ -1,0 +1,20 @@
+{
+  "data_id": 1590,
+  "feature_types": {
+    "age": "numeric",
+    "capital-gain": "numeric",
+    "capital-loss": "numeric",
+    "education": "nominal",
+    "education-num": "numeric",
+    "fnlwgt": "numeric",
+    "hours-per-week": "numeric",
+    "marital-status": "nominal",
+    "native-country": "nominal",
+    "occupation": "nominal",
+    "race": "nominal",
+    "relationship": "nominal",
+    "sex": "nominal",
+    "workclass": "nominal"
+  },
+  "version": 2
+}

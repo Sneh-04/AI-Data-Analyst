@@ -1,0 +1,25 @@
+{
+  "data_id": 55,
+  "feature_types": {
+    "AGE": "numeric",
+    "ALBUMIN": "numeric",
+    "ALK_PHOSPHATE": "numeric",
+    "ANOREXIA": "nominal",
+    "ANTIVIRALS": "nominal",
+    "ASCITES": "nominal",
+    "BILIRUBIN": "numeric",
+    "FATIGUE": "nominal",
+    "HISTOLOGY": "nominal",
+    "LIVER_BIG": "nominal",
+    "LIVER_FIRM": "nominal",
+    "MALAISE": "nominal",
+    "PROTIME": "numeric",
+    "SEX": "nominal",
+    "SGOT": "numeric",
+    "SPIDERS": "nominal",
+    "SPLEEN_PALPABLE": "nominal",
+    "STEROID": "nominal",
+    "VARICES": "nominal"
+  },
+  "version": 1
+}

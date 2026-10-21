@@ -1,0 +1,25 @@
+{
+  "data_id": 42178,
+  "feature_types": {
+    "Contract": "string",
+    "Dependents": "string",
+    "DeviceProtection": "string",
+    "InternetService": "string",
+    "MonthlyCharges": "numeric",
+    "MultipleLines": "string",
+    "OnlineBackup": "string",
+    "OnlineSecurity": "string",
+    "PaperlessBilling": "string",
+    "Partner": "string",
+    "PaymentMethod": "string",
+    "PhoneService": "string",
+    "SeniorCitizen": "numeric",
+    "StreamingMovies": "string",
+    "StreamingTV": "string",
+    "TechSupport": "string",
+    "TotalCharges": "string",
+    "gender": "string",
+    "tenure": "numeric"
+  },
+  "version": 1
+}

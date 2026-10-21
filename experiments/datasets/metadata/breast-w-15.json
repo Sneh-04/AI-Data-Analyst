@@ -1,0 +1,15 @@
+{
+  "data_id": 15,
+  "feature_types": {
+    "Bare_Nuclei": "numeric",
+    "Bland_Chromatin": "numeric",
+    "Cell_Shape_Uniformity": "numeric",
+    "Cell_Size_Uniformity": "numeric",
+    "Clump_Thickness": "numeric",
+    "Marginal_Adhesion": "numeric",
+    "Mitoses": "numeric",
+    "Normal_Nucleoli": "numeric",
+    "Single_Epi_Cell_Size": "numeric"
+  },
+  "version": 1
+}

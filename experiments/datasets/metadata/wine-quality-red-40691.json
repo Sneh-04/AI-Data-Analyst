@@ -1,0 +1,17 @@
+{
+  "data_id": 40691,
+  "feature_types": {
+    "alcohol": "numeric",
+    "chlorides": "numeric",
+    "citric_acid": "numeric",
+    "density": "numeric",
+    "fixed_acidity": "numeric",
+    "free_sulfur_dioxide": "numeric",
+    "pH": "numeric",
+    "residual_sugar": "numeric",
+    "sulphates": "numeric",
+    "total_sulfur_dioxide": "numeric",
+    "volatile_acidity": "numeric"
+  },
+  "version": 1
+}

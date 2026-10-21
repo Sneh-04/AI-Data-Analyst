@@ -6,6 +6,154 @@ supplementary research scripts default to a new temporary output directory.
 The datasets are bundled with scikit-learn and statsmodels, so the runs do not
 download data.
 
+## Real-dataset imputation extension
+
+`datasets/registry.py` contains 15 OpenML datasets whose names, IDs, versions,
+targets, task types, dimensions, and missingness have been verified with
+`fetch_openml`. Downloads and canonical CSV cache files are stored in
+`datasets/cache/`, which is ignored by Git. The verified tabular CSV is the
+first-choice source on later runs; per-dataset OpenML feature-type metadata
+sidecars live in the tracked `datasets/metadata/` directory and are hash-checked
+against the manifest. Metadata fetched for a custom/test cache is written to
+that cache's `feature_metadata/` subdirectory.
+Only a cache miss can call the OpenML feature-metadata endpoint or
+`fetch_openml` (which may use scikit-learn's own `data_home` cache before
+downloading from OpenML). Network fetches retry transient URL, connection,
+timeout, and retryable HTTP errors up to three times with exponential
+backoff; invalid payloads and other non-network errors fail immediately.
+`datasets/manifest.json` records
+the resolved OpenML ID/version, table shape and dtypes, OpenML feature types,
+raw/final dtypes and cardinalities, per-column missing rates, numeric-string
+coercions, CSV SHA-256, fetch date, and library versions. Numeric-vs-categorical
+encoding follows OpenML feature metadata rather than parser-inferred pandas
+dtypes. The Telco `TotalCharges` string column is explicitly parsed as numeric;
+11 invalid values become missing and are recorded in the manifest. The raw
+data should not be committed or redistributed without checking upstream terms.
+
+Run the extension from the repository root:
+
+```sh
+PYTHONPATH=ml-service .venv/bin/python experiments/run_real_datasets.py --quick
+PYTHONPATH=ml-service .venv/bin/python experiments/run_real_datasets.py \
+  --protocol both --repeats 12 --seed 42
+```
+
+`--datasets` accepts registry names, `--protocol` selects `A`, `B`, or `both`,
+`--out` selects a new output directory, and `--max-rows` defaults to 5000.
+Datasets larger than the cap are subsampled with fixed-seed (`--seed`) target
+stratification; datasets at or below the cap are unchanged. The uncapped
+download is retained in the dataset cache, while the run config records the
+cap and summary records the evaluated row count. The default output path is a unique
+`experiments/results/real_datasets_<date>/`; a non-empty output directory and
+the frozen `paper_run_2026-10-11/` tree are never overwritten. `--quick` uses
+up to three smaller datasets and one repeat for a smoke run.
+
+The two protocols and their estimates must not be pooled:
+
+- **Protocol A (ground-truth masking):** drop naturally incomplete predictor
+  columns, retain rows with an observed target, then mask complete features at
+  10%, 20%, and 30% using MCAR, MAR, and MNAR. Datasets with fewer than 100
+  rows are logged as skipped. Numeric RMSE uses each feature's standard
+  deviation computed once from the full pre-mask data, identically across
+  methods and mechanisms; numeric and categorical outcomes are never pooled.
+  Numeric features with full-data standard deviation below `1e-8` are excluded
+  from numeric scoring and logged. Trial CSVs include numeric RMSE in these
+  standardized units, categorical accuracy/error rate, and numeric-only MICE
+  uncertainty coverage/Spearman metrics. Paired Wilcoxon tests compare MICE
+  with each baseline, followed by Holm correction.
+- **Protocol B (natural missingness):** preserve naturally missing feature
+  values and report fixed Random Forest 5-fold predictive metrics, plus
+  recovery on a 10% holdout of observed test-fold cells. Each fold fits its
+  encoder/scaler, imputer, and predictive model using training-fold data only;
+  the fitted imputer only transforms the held-out fold. Outputs explicitly
+  identify these rows as `natural missingness`. Paired fold tests are Holm
+  corrected.
+
+Categorical columns are ordinal-encoded within the experiment and decoded by
+rounding the imputed ordinal code to the nearest observed category. The
+production feature-aware MICE and KNN implementations model numeric columns;
+categorical columns in the service use a separate mode fallback, rather than
+being modeled jointly. Thus the real-dataset benchmark's ordinal handling is a
+harness-only adapter and does not imply production categorical MICE support.
+Ordinal codes impose an artificial order on categories and can affect
+distance/regression imputers. When a masked column has only one observed value,
+the benchmark's MICE adapter minimally widens that feature's bounds so
+scikit-learn's iterative imputer can fit; the production service implementation
+remains unchanged. Pima Diabetes zero values in `plas`, `pres`,
+`skin`, `insu`, and `mass` are treated as sentinel missing values before either
+protocol; this is documented in the registry and manifest.
+
+`run_stage.py` runs one dataset at a time into `<out>/<dataset>/`, checks
+`run_config.json`, the dataset summary, and exact protocol row counts before
+skipping a completed result, and retries failed/incomplete attempts at most
+three times. Attempt results are written to temporary sibling directories and
+only promoted after completion checks pass. It appends status and elapsed time
+to `stage_status.jsonl`.
+
+Tables can be regenerated only from saved CSVs. Multiple run directories
+(including separate stages and per-dataset reruns) are merged in memory; the
+table builder rejects duplicate dataset/mechanism/rate/trial-or-fold/method
+keys and leaves input CSVs untouched:
+
+```sh
+PYTHONPATH=ml-service .venv/bin/python experiments/make_real_dataset_tables.py \
+  --input-dir experiments/results/real_datasets_<stage1> \
+    experiments/results/real_datasets_<stage2> \
+  --out experiments/results/real_datasets_<date>/tables
+```
+
+The table-time inclusion rules are declared before looking at method
+comparisons and are written to `tables/rules.json`:
+
+- Protocol A headline tables require at least 5 retained complete columns and
+  at least 2 retained numeric columns. Other datasets appear in supplementary
+  tables with an `exclusion_reason`.
+- Protocol B downstream-performance headline tables exclude datasets whose
+  mean-imputer accuracy is at least 0.999; these remain in supplementary
+  tables with the reason. Held-out-observed recovery tables include every
+  Protocol B dataset.
+
+  Headline inclusion is applied consistently to Protocol A win/tie/loss,
+  non-winning-cell, uncertainty, dataset-level significance, and effect-size
+  tables, and to Protocol B downstream accuracy/AUC significance and effect-size
+  tables. Held-out recovery results retain all Protocol B datasets. Corresponding
+  all-dataset outputs use the `_all_datasets_supplementary` suffix.
+
+  For Protocol A win/tie/loss counts, each dataset × mechanism × mask-rate cell
+  first selects the best conventional baseline by the lowest mean-imputer-relative
+  numeric RMSE among mean, median, KNN5, and single IterativeImputer. Each method
+  is then compared against that selected baseline: a win is more than 1% lower
+  RMSE, a tie is within 1%, and a loss is more than 1% higher. Categorical
+  metrics are evaluated with the harness ordinal-encoding adapter; this is not
+  production behavior (production uses a mode fallback) and is not for headline
+  claims. All Protocol A uncertainty coverage rows label their nominal 0.90
+  interval target. `tables/HEADLINE_SUMMARY.md` provides the compact saved-CSV-only
+  headline output.
+
+The original Protocol A/B significance CSVs pair method scores across
+masking trials/rates (A) or repeated folds (B) within each dataset, so their
+paired observations are not independent datasets. The table builder preserves
+those tests and additionally writes dataset-level Wilcoxon signed-rank tests:
+Protocol A averages repeats/rates within dataset and mechanism; Protocol B
+averages folds/repeats within dataset. Holm correction is applied, and
+`low_power_n_lt_10` flags comparisons with fewer than ten datasets.
+Dataset-level tables additionally report the minimum attainable exact
+two-sided p-value, Holm family size, whether alpha=.05 is attainable at that
+sample size, and a plain-text power note. These transparency columns do not
+alter existing p-values.
+
+Table labels identify Pima Diabetes as sentinel-coded missingness (zeros treated
+as missing), distinguish datasets with less than 1% natural missingness in
+Protocol B, and mark Cylinder Bands as marginal when its saved Protocol A
+coverage is seven retained columns, two numeric columns. Effect-size tables
+compare project MICE to each baseline using dataset-level medians and
+10,000-resample percentile bootstrap 95% intervals (seed 42). A complete
+Markdown results pack is written to `tables/RESULTS_PACK.md` from saved CSVs.
+
+Loader, metadata-cache, retry, merge, and fixture tests run offline. The
+network loader test is marked `network` and skipped unless
+`RUN_OPENML_TESTS=1`.
+
 ## Reproduce
 
 Use Python 3.13.9 and the pinned dependencies in `requirements.txt`:
@@ -120,8 +268,7 @@ Raw origins and aggregate summary are
 
 The imputation design and its limitations are mapped to verified papers in
 [`research-matrix.md`](../research/research-matrix.md). Next steps include
-adding MCAR comparisons, categorical/mixed-type evaluation, real incomplete
-datasets where ground truth is available, and interval coverage/width checks
+expanding natural-missingness coverage and interval calibration/width checks
 before describing uncertainty as calibrated.
 See the
 [`implementation roadmap`](../research/implementation-roadmap.md)
@@ -202,3 +349,27 @@ generalization beyond this dataset. Canonical environment pins are listed
 
 See [`research-upgrade-status.md`](../research/research-upgrade-status.md) for
 implemented-versus-measured distinctions, limits, and open research questions.
+
+## Post-hoc MICE point-estimate ablation
+
+`run_mice_ablation.py` is a separate exploratory analysis; it does not alter the
+standard benchmark CLI or metrics. It compares the saved five-draw MICE variant
+with 20/50-draw averages, a deterministic iterative estimate, and single-draw
+IterativeImputer variants. The reproduction gate should be run against saved
+Protocol A trial rows before a full run. Each dataset is written separately and
+can be skipped when its config and complete output already exist:
+
+```sh
+PYTHONPATH=ml-service .venv/bin/python experiments/run_mice_ablation.py \
+  --datasets adult bank-marketing breast-w credit-approval credit-g \
+    cylinder-bands heart-statlog pc1 telco-customer-churn wine-quality-red \
+  --repeats 2 --seed 42 --max-rows 5000 --out experiments/results/mice_ablation_DATE
+PYTHONPATH=ml-service .venv/bin/python experiments/make_mice_ablation_tables.py \
+  --input-dir experiments/results/mice_ablation_DATE
+```
+
+Replace `DATE` with the selected run date before invoking the commands.
+The ablation is post-hoc exploratory and descriptive only: it does not report
+p-values or support new significance claims. Its output contains per-dataset
+median RMSE ratios, aggregate medians, counts below the `project_m5` ratio, and
+draw-count uncertainty summaries, all computed from the saved ablation CSVs.
