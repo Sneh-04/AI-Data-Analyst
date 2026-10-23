@@ -312,6 +312,7 @@ def _uncertainty_metrics(
     truth: np.ndarray, estimate: np.ndarray, sd: np.ndarray, mask: np.ndarray,
     encoder: EncodedFrame, scaler: ObservedScaler,
     numeric_metric_columns: np.ndarray | None = None,
+    n_imputations: int = N_IMPUTATIONS,
 ) -> tuple[float, float]:
     numeric_columns = (
         encoder.numeric_columns
@@ -324,7 +325,7 @@ def _uncertainty_metrics(
     actual = truth[numeric_mask]
     predicted = scaler.inverse(estimate)[numeric_mask]
     standard_deviation = sd[numeric_mask] * np.tile(scaler.scale, (len(sd), 1))[numeric_mask]
-    half_width = stats.t.ppf(0.95, N_IMPUTATIONS - 1) * standard_deviation * np.sqrt(1 + 1 / N_IMPUTATIONS)
+    half_width = stats.t.ppf(0.95, n_imputations - 1) * standard_deviation * np.sqrt(1 + 1 / n_imputations)
     coverage = float(np.mean(np.abs(actual - predicted) <= half_width))
     rho = (
         float(stats.spearmanr(standard_deviation, np.abs(actual - predicted)).correlation)

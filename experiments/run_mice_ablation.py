@@ -36,11 +36,22 @@ VARIANTS = (
     "project_m20",
     "project_m50",
     "project_deterministic",
+    "project_deterministic_no_bounds",
+    "project_m50_no_bounds",
+    "project_hybrid_m20",
     "iterative_single_as_is",
     "iterative_single_posterior_true",
     "iterative_single_posterior_false",
 )
-DRAW_VARIANTS = {"project_m5", "project_m20", "project_m50"}
+DRAW_COUNTS = {
+    "project_m5": 5,
+    "project_m20": 20,
+    "project_m50": 50,
+    "project_m50_no_bounds": 50,
+    "project_hybrid_m20": 20,
+}
+DRAW_VARIANTS = set(DRAW_COUNTS)
+REPRO_VARIANTS = ("project_m5", "project_m20", "project_m50")
 OUTPUT_COLUMNS = (
     "dataset",
     "mechanism",
@@ -115,8 +126,22 @@ def _variant_estimate(
         estimate[observed] = masked[observed]
         uncertainty[observed] = np.nan
         return estimate, uncertainty
+    if variant == "project_m50_no_bounds":
+        estimate, uncertainty = _project_multiple_no_bounds(masked, seed, 50)
+        return estimate, uncertainty
+    if variant == "project_hybrid_m20":
+        _, _, uncertainty = _project_mice_train_test(
+            masked, masked, seed, n_imputations=20
+        )
+        estimate = _project_deterministic(masked, seed)
+        observed = np.isfinite(masked)
+        estimate[observed] = masked[observed]
+        uncertainty[observed] = np.nan
+        return estimate, uncertainty
     if variant == "project_deterministic":
         return _project_deterministic(masked, seed), None
+    if variant == "project_deterministic_no_bounds":
+        return _project_deterministic_no_bounds(masked, seed), None
     if variant == "iterative_single_as_is":
         # Keep this path identical to the existing harness dispatch.
         estimate, _, _ = _fit_transform_method(
@@ -133,29 +158,64 @@ def _variant_estimate(
 
 
 def _project_deterministic(masked: np.ndarray, seed: int) -> np.ndarray:
+    return _iterative_estimate(masked, seed, sample_posterior=False, bounded=True)
+
+
+def _project_deterministic_no_bounds(masked: np.ndarray, seed: int) -> np.ndarray:
+    return _iterative_estimate(masked, seed, sample_posterior=False, bounded=False)
+
+
+def _project_multiple_no_bounds(
+    masked: np.ndarray, seed: int, n_imputations: int
+) -> tuple[np.ndarray, np.ndarray]:
+    draws = []
+    for draw in range(n_imputations):
+        imputer = IterativeImputer(
+            estimator=BayesianRidge(),
+            sample_posterior=True,
+            max_iter=10,
+            random_state=seed + draw,
+            skip_complete=True,
+            keep_empty_features=True,
+        )
+        draws.append(imputer.fit_transform(masked))
+    stack = np.stack(draws)
+    estimate = stack.mean(axis=0)
+    uncertainty = stack.std(axis=0, ddof=1)
+    observed = np.isfinite(masked)
+    estimate[observed] = masked[observed]
+    uncertainty[observed] = np.nan
+    return estimate, uncertainty
+
+
+def _iterative_estimate(
+    masked: np.ndarray, seed: int, sample_posterior: bool, bounded: bool
+) -> np.ndarray:
     finite = np.isfinite(masked)
-    mins = np.array([
-        np.min(masked[finite[:, column], column])
-        if finite[:, column].any() else -np.inf
-        for column in range(masked.shape[1])
-    ])
-    maxs = np.array([
-        np.max(masked[finite[:, column], column])
-        if finite[:, column].any() else np.inf
-        for column in range(masked.shape[1])
-    ])
-    constant = np.isfinite(mins) & np.isfinite(maxs) & (mins >= maxs)
-    mins[constant] -= 1e-8
-    maxs[constant] += 1e-8
+    options: dict[str, Any] = {}
+    if bounded:
+        mins = np.array([
+            np.min(masked[finite[:, column], column])
+            if finite[:, column].any() else -np.inf
+            for column in range(masked.shape[1])
+        ])
+        maxs = np.array([
+            np.max(masked[finite[:, column], column])
+            if finite[:, column].any() else np.inf
+            for column in range(masked.shape[1])
+        ])
+        constant = np.isfinite(mins) & np.isfinite(maxs) & (mins >= maxs)
+        mins[constant] -= 1e-8
+        maxs[constant] += 1e-8
+        options = {"min_value": mins, "max_value": maxs}
     imputer = IterativeImputer(
         estimator=BayesianRidge(),
-        sample_posterior=False,
+        sample_posterior=sample_posterior,
         max_iter=10,
         random_state=seed,
-        min_value=mins,
-        max_value=maxs,
         skip_complete=True,
         keep_empty_features=True,
+        **options,
     )
     return imputer.fit_transform(masked)
 
@@ -195,7 +255,8 @@ def _run_cell(
         )
         if uncertainty is not None and variant in DRAW_VARIANTS:
             coverage, spearman = _uncertainty_metrics(
-                raw, estimate, uncertainty, mask, encoded, scaler, numeric_scoring
+                raw, estimate, uncertainty, mask, encoded, scaler,
+                numeric_scoring, n_imputations=DRAW_COUNTS[variant],
             )
         else:
             coverage, spearman = np.nan, np.nan
@@ -240,6 +301,57 @@ def run_dataset(
                 )
             )
     return pd.DataFrame(rows, columns=OUTPUT_COLUMNS)
+
+
+def run_pc1_diagnostic(repeats: int, seed: int, max_rows: int) -> pd.DataFrame:
+    _, encoded, raw, scaler, numeric_scoring = _dataset_protocol_frame(
+        "pc1", max_rows, seed
+    )
+    variants = (
+        "project_deterministic",
+        "project_deterministic_no_bounds",
+        "iterative_single_as_is",
+    )
+    scaled_truth = scaler.transform(raw)
+    records = []
+    for mechanism in MECHANISMS:
+        for trial in range(repeats):
+            trial_seed = _seed_for("pc1", trial, seed)
+            mask = make_mask(
+                scaled_truth,
+                mechanism,
+                RATE,
+                np.random.RandomState(trial_seed + MECHANISMS.index(mechanism)),
+            )
+            masked = np.where(mask, np.nan, scaled_truth)
+            for variant in variants:
+                estimate, _ = _variant_estimate(variant, masked, trial_seed)
+                for column_index, column in enumerate(encoded.columns):
+                    if not numeric_scoring[column_index]:
+                        continue
+                    selected = mask[:, column_index]
+                    n_masked = int(selected.sum())
+                    if n_masked == 0:
+                        continue
+                    observed = ~mask[:, column_index]
+                    observed_values = scaled_truth[observed, column_index]
+                    true_values = scaled_truth[selected, column_index]
+                    low, high = float(observed_values.min()), float(observed_values.max())
+                    outside = (true_values < low) | (true_values > high)
+                    records.append({
+                        "dataset": "pc1",
+                        "mechanism": mechanism,
+                        "trial": trial,
+                        "variant": variant,
+                        "column": column,
+                        "per_column_rmse": float(np.sqrt(np.mean(
+                            (estimate[selected, column_index] - true_values) ** 2
+                        ))),
+                        "masked_values_outside_observed_range_fraction": float(outside.mean()),
+                        "n_masked": n_masked,
+                        "n_outside": int(outside.sum()),
+                    })
+    return pd.DataFrame(records)
 
 
 def compare_reproduction(
@@ -304,10 +416,11 @@ def _is_complete_dataset(
     ):
         return False
     frame = pd.read_csv(csv_path)
-    return (
+    complete = (
         len(frame) == _expected_rows(repeats, mechanisms)
         and set(frame["variant"]) == set(VARIANTS)
     )
+    return complete and (dataset != "pc1" or (directory / "pc1_diagnostic.csv").is_file())
 
 
 def _default_output() -> Path:
@@ -376,6 +489,9 @@ def run(args: argparse.Namespace) -> Path:
             name, args.repeats, args.seed, args.max_rows, mechanisms
         )
         frame.to_csv(destination / "ablation.csv", index=False)
+        if name == "pc1":
+            diagnostic = run_pc1_diagnostic(args.repeats, args.seed, args.max_rows)
+            diagnostic.to_csv(destination / "pc1_diagnostic.csv", index=False)
         print(
             f"COMPLETE {name}: rows={len(frame)} "
             f"elapsed_seconds={time.perf_counter() - started:.3f}",

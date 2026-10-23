@@ -55,6 +55,7 @@ from run_real_datasets import (
     make_mask,
 )
 import run_mice_ablation as mice_ablation
+import run_real_datasets as real_benchmark
 from make_real_dataset_tables import _with_coverage_label
 
 
@@ -498,6 +499,76 @@ class MiceAblationTests(unittest.TestCase):
                 [call.kwargs["sample_posterior"] for call in iterative.call_args_list],
                 [True, False],
             )
+
+    def test_new_variants_route_to_bounded_or_unbounded_estimators(self):
+        masked = np.array([[np.nan, 2.0], [3.0, 4.0]])
+        estimate = np.ones((2, 2))
+        uncertainty = np.full((2, 2), 0.5)
+        with (
+            patch(
+                "run_mice_ablation._project_deterministic_no_bounds",
+                return_value=estimate,
+            ) as no_bounds,
+            patch(
+                "run_mice_ablation._project_multiple_no_bounds",
+                return_value=(estimate, uncertainty),
+            ) as multiple_no_bounds,
+            patch(
+                "run_mice_ablation._project_deterministic",
+                return_value=estimate,
+            ) as deterministic,
+            patch(
+                "run_mice_ablation._project_mice_train_test",
+                return_value=(estimate, estimate.copy(), uncertainty.copy()),
+            ) as posterior_draws,
+        ):
+            mice_ablation._variant_estimate(
+                "project_deterministic_no_bounds", masked, 9
+            )
+            no_bounds.assert_called_once_with(masked, 9)
+            mice_ablation._variant_estimate("project_m50_no_bounds", masked, 9)
+            multiple_no_bounds.assert_called_once_with(masked, 9, 50)
+            hybrid, hybrid_sd = mice_ablation._variant_estimate(
+                "project_hybrid_m20", masked, 9
+            )
+            posterior_draws.assert_called_once_with(
+                masked, masked, 9, n_imputations=20
+            )
+            deterministic.assert_called_once_with(masked, 9)
+            self.assertEqual(hybrid[0, 1], masked[0, 1])
+            self.assertTrue(np.isnan(hybrid_sd[0, 1]))
+
+    def test_m5_interval_preserves_legacy_quantile_and_df_adapts(self):
+        raw = np.array([[0.0], [1.0], [2.0], [3.0], [4.0]])
+        encoder = EncodedFrame.fit_transformer(pd.DataFrame({"x": raw[:, 0]}))
+        scaler = ObservedScaler.fit(raw)
+        estimate = scaler.transform(raw)
+        estimate[1, 0] += 0.15
+        sd = np.full(raw.shape, 0.2)
+        mask = np.array([[False], [True], [True], [False], [True]])
+        original_ppf = real_benchmark.stats.t.ppf
+        seen_dfs = []
+
+        def ppf(probability, degrees):
+            seen_dfs.append(degrees)
+            return original_ppf(probability, degrees)
+
+        with patch.object(real_benchmark.stats.t, "ppf", side_effect=ppf):
+            actual_m5 = real_benchmark._uncertainty_metrics(
+                raw, estimate, sd, mask, encoder, scaler, n_imputations=5
+            )[0]
+            actual_m20 = real_benchmark._uncertainty_metrics(
+                raw, estimate, sd, mask, encoder, scaler, n_imputations=20
+            )[0]
+
+        std_raw = sd[mask] * scaler.scale[0]
+        half_width = original_ppf(0.95, 4) * std_raw * np.sqrt(1 + 1 / 5)
+        expected_m5 = float(np.mean(
+            np.abs(raw[mask] - scaler.inverse(estimate)[mask]) <= half_width
+        ))
+        self.assertEqual(actual_m5, expected_m5)
+        self.assertEqual(seen_dfs, [4, 19])
+        self.assertIsInstance(actual_m20, float)
 
     def test_reproduction_gate_requires_exact_keys_and_rmse(self):
         ablation = pd.DataFrame({
