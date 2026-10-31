@@ -85,6 +85,67 @@ class MultipleImputationTests(unittest.TestCase):
         pd.testing.assert_frame_equal(first, second)
         self.assertEqual(first_repairs, second_repairs)
 
+    def test_mnar_delta_adjusts_missing_values_without_changing_observed_values(self):
+        frame = pd.DataFrame({"target": [1.0, np.nan, 3.0, np.nan, 5.0]})
+
+        baseline, _ = fill_missing_values(frame, strategy="multiple", random_state=23)
+        adjusted, repairs = fill_missing_values(
+            frame,
+            strategy="multiple",
+            random_state=23,
+            mnar_deltas={"target": 2.5},
+        )
+
+        np.testing.assert_array_equal(adjusted.loc[frame["target"].notna(), "target"], frame.loc[
+            frame["target"].notna(), "target"
+        ])
+        np.testing.assert_allclose(
+            adjusted.loc[frame["target"].isna(), "target"],
+            baseline.loc[frame["target"].isna(), "target"] + 2.5,
+        )
+        self.assertTrue(all(repair["mnar_delta"] == 2.5 for repair in repairs))
+        self.assertTrue(
+            all(
+                repair["imputation_uncertainty_type"] == "predictive_draw_spread"
+                for repair in repairs
+            )
+        )
+
+    def test_mnar_delta_applies_to_feature_aware_imputations(self):
+        frame = pd.DataFrame({
+            "feature": np.linspace(-2, 2, 40),
+            "target": np.linspace(-4, 4, 40),
+        })
+        frame.loc[[3, 10, 21], "target"] = np.nan
+
+        baseline, _ = fill_missing_values(frame, strategy="multiple", random_state=11)
+        adjusted, _ = fill_missing_values(
+            frame,
+            strategy="multiple",
+            random_state=11,
+            mnar_deltas={"target": -1.25},
+        )
+
+        missing = frame["target"].isna()
+        np.testing.assert_allclose(
+            adjusted.loc[missing, "target"],
+            baseline.loc[missing, "target"] - 1.25,
+        )
+
+    def test_mnar_delta_rejects_unknown_non_numeric_and_non_multiple_inputs(self):
+        frame = pd.DataFrame({"target": [1.0, np.nan], "category": ["a", None]})
+        invalid_cases = [
+            ({"unknown": 1.0}, "unknown column"),
+            ({"category": 1.0}, "numeric column"),
+            ({"target": float("nan")}, "finite number"),
+        ]
+        for deltas, expected_message in invalid_cases:
+            with self.subTest(deltas=deltas):
+                with self.assertRaisesRegex(ValueError, expected_message):
+                    fill_missing_values(frame, strategy="multiple", mnar_deltas=deltas)
+        with self.assertRaisesRegex(ValueError, "only be used"):
+            fill_missing_values(frame, strategy="median", mnar_deltas={"target": 1.0})
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,111 @@
+{
+  "dataset_manifest_sha256": "6c6051b9b3d213c1567ec93b63483d1264185694cbfa3e30dc480517e7911c05",
+  "datasets": [
+    {
+      "columns": [
+        "age",
+        "sex",
+        "chest",
+        "resting_blood_pressure",
+        "serum_cholestoral",
+        "fasting_blood_sugar",
+        "resting_electrocardiographic_results",
+        "maximum_heart_rate_achieved",
+        "exercise_induced_angina",
+        "oldpeak",
+        "slope",
+        "number_of_major_vessels",
+        "thal"
+      ],
+      "data_id": 53,
+      "dataset_sha256": "d7863405480643aaeafe6cd979c670a8f8d773848bb7dcfeb91ccc4b7a3b400d",
+      "n_columns": 13,
+      "n_rows": 270,
+      "name": "heart-statlog",
+      "source": "verified_local_cache",
+      "truths": {
+        "mean": 0.6777777777777778,
+        "ols_slope": -0.004852085321433869
+      },
+      "version": 1,
+      "x1": "age",
+      "x2": "sex"
+    },
+    {
+      "columns": [
+        "job_number",
+        "unit_number"
+      ],
+      "data_id": 6332,
+      "dataset_sha256": "2fa43c72dd19fc784cb7f66955e65614b141bc7cb526fd95acb5056b1a7e9e8a",
+      "n_columns": 2,
+      "n_rows": 540,
+      "name": "cylinder-bands",
+      "source": "verified_local_cache",
+      "truths": {
+        "mean": 4.877777777777778,
+        "ols_slope": -1.6166564549085927e-05
+      },
+      "version": 2,
+      "x1": "job_number",
+      "x2": "unit_number"
+    }
+  ],
+  "deltas_sd": [
+    -1.0,
+    -0.5,
+    0.0,
+    0.5,
+    1.0
+  ],
+  "git_commit": "3f9f1801da964e1dd8faf5ea6fc4f0fecd899972",
+  "m_values": [
+    5
+  ],
+  "mask_rates": [
+    0.1,
+    0.3,
+    0.5
+  ],
+  "master_seed": 42,
+  "mechanisms": [
+    "MCAR",
+    "MAR",
+    "MNAR"
+  ],
+  "methods": [
+    "median",
+    "knn",
+    "mice_improper",
+    "mice_proper"
+  ],
+  "n_jobs": 2,
+  "pilot": true,
+  "protocol": "RUBIN_COVERAGE_PROTOCOL.md",
+  "protocol_sha256": "18b73e96783104c277a38653325f10fedfeaaef89fb983fbd51bfa167b3d61bd",
+  "quick": false,
+  "row_cap": 5000,
+  "row_cap_rule": "If rows exceed cap, use existing target-stratified train_test_split with master_seed=42.",
+  "trials": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ]
+}
