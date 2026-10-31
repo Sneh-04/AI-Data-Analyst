@@ -1,0 +1,1 @@
+estimand,mechanism,method,mask_rate,m,delta_sd,coverage,coverage_mc_se,dataset_cluster_bootstrap_mc_se,contributing_datasets,successful_runs,failed_runs,attempted_runs,noncovering_runs,finite_interval_runs,cluster_bootstrap_replicates,cluster_bootstrap_seed,sanity_failed_datasets_excluded
