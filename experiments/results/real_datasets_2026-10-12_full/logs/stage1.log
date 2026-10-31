@@ -1,0 +1,176 @@
+DTYPE hepatitis.AGE: metadata=numeric raw=int64 final=int64 nunique=49
+DTYPE hepatitis.SEX: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.STEROID: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.ANTIVIRALS: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.FATIGUE: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.MALAISE: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.ANOREXIA: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.LIVER_BIG: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.LIVER_FIRM: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.SPLEEN_PALPABLE: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.SPIDERS: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.ASCITES: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.VARICES: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.BILIRUBIN: metadata=numeric raw=float64 final=float64 nunique=34
+DTYPE hepatitis.ALK_PHOSPHATE: metadata=numeric raw=float64 final=float64 nunique=83
+DTYPE hepatitis.SGOT: metadata=numeric raw=float64 final=float64 nunique=84
+DTYPE hepatitis.ALBUMIN: metadata=numeric raw=float64 final=float64 nunique=29
+DTYPE hepatitis.PROTIME: metadata=numeric raw=float64 final=float64 nunique=44
+DTYPE hepatitis.HISTOLOGY: metadata=nominal raw=category final=category nunique=2
+LOADED hepatitis: rows=155 features=19 natural_missing=0.0567 OpenML=55v1
+LOAD FAILED cylinder-bands: URLError: <urlopen error [Errno 54] Connection reset by peer>
+DTYPE soybean.date: metadata=nominal raw=category final=category nunique=7
+DTYPE soybean.plant-stand: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.precip: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.temp: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.hail: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.crop-hist: metadata=nominal raw=category final=category nunique=4
+DTYPE soybean.area-damaged: metadata=nominal raw=category final=category nunique=4
+DTYPE soybean.severity: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.seed-tmt: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.germination: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.plant-growth: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.leaves: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.leafspots-halo: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.leafspots-marg: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.leafspot-size: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.leaf-shread: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.leaf-malf: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.leaf-mild: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.stem: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.lodging: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.stem-cankers: metadata=nominal raw=category final=category nunique=4
+DTYPE soybean.canker-lesion: metadata=nominal raw=category final=category nunique=4
+DTYPE soybean.fruiting-bodies: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.external-decay: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.mycelium: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.int-discolor: metadata=nominal raw=category final=category nunique=3
+DTYPE soybean.sclerotia: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.fruit-pods: metadata=nominal raw=category final=category nunique=4
+DTYPE soybean.fruit-spots: metadata=nominal raw=category final=category nunique=4
+DTYPE soybean.seed: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.mold-growth: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.seed-discolor: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.seed-size: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.shriveling: metadata=nominal raw=category final=category nunique=2
+DTYPE soybean.roots: metadata=nominal raw=category final=category nunique=3
+LOADED soybean: rows=683 features=35 natural_missing=0.0978 OpenML=42v1
+DTYPE diabetes.preg: metadata=numeric raw=int64 final=int64 nunique=17
+DTYPE diabetes.plas: metadata=numeric raw=int64 final=float64 nunique=136
+DTYPE diabetes.pres: metadata=numeric raw=int64 final=float64 nunique=47
+DTYPE diabetes.skin: metadata=numeric raw=int64 final=float64 nunique=51
+DTYPE diabetes.insu: metadata=numeric raw=int64 final=float64 nunique=186
+DTYPE diabetes.mass: metadata=numeric raw=float64 final=float64 nunique=248
+DTYPE diabetes.pedi: metadata=numeric raw=float64 final=float64 nunique=517
+DTYPE diabetes.age: metadata=numeric raw=int64 final=int64 nunique=52
+LOADED diabetes: rows=768 features=8 natural_missing=0.1061 OpenML=37v1
+ROW CAP adult: stratified 48842 -> 5000 (max_rows=5000, seed=42)
+DTYPE adult.age: metadata=numeric raw=int64 final=int64 nunique=74
+DTYPE adult.workclass: metadata=nominal raw=category final=category nunique=8
+DTYPE adult.fnlwgt: metadata=numeric raw=int64 final=int64 nunique=28523
+DTYPE adult.education: metadata=nominal raw=category final=category nunique=16
+DTYPE adult.education-num: metadata=numeric raw=int64 final=int64 nunique=16
+DTYPE adult.marital-status: metadata=nominal raw=category final=category nunique=7
+DTYPE adult.occupation: metadata=nominal raw=category final=category nunique=14
+DTYPE adult.relationship: metadata=nominal raw=category final=category nunique=6
+DTYPE adult.race: metadata=nominal raw=category final=category nunique=5
+DTYPE adult.sex: metadata=nominal raw=category final=category nunique=2
+DTYPE adult.capital-gain: metadata=numeric raw=int64 final=int64 nunique=123
+DTYPE adult.capital-loss: metadata=numeric raw=int64 final=int64 nunique=99
+DTYPE adult.hours-per-week: metadata=numeric raw=int64 final=int64 nunique=96
+DTYPE adult.native-country: metadata=nominal raw=category final=category nunique=41
+LOADED adult: rows=5000 features=14 natural_missing=0.0084 OpenML=1590v2
+ROW CAP mushroom: stratified 8124 -> 5000 (max_rows=5000, seed=42)
+DTYPE mushroom.cap-shape: metadata=nominal raw=category final=category nunique=6
+DTYPE mushroom.cap-surface: metadata=nominal raw=category final=category nunique=4
+DTYPE mushroom.cap-color: metadata=nominal raw=category final=category nunique=10
+DTYPE mushroom.bruises%3F: metadata=nominal raw=category final=category nunique=2
+DTYPE mushroom.odor: metadata=nominal raw=category final=category nunique=9
+DTYPE mushroom.gill-attachment: metadata=nominal raw=category final=category nunique=2
+DTYPE mushroom.gill-spacing: metadata=nominal raw=category final=category nunique=2
+DTYPE mushroom.gill-size: metadata=nominal raw=category final=category nunique=2
+DTYPE mushroom.gill-color: metadata=nominal raw=category final=category nunique=12
+DTYPE mushroom.stalk-shape: metadata=nominal raw=category final=category nunique=2
+DTYPE mushroom.stalk-root: metadata=nominal raw=category final=category nunique=4
+DTYPE mushroom.stalk-surface-above-ring: metadata=nominal raw=category final=category nunique=4
+DTYPE mushroom.stalk-surface-below-ring: metadata=nominal raw=category final=category nunique=4
+DTYPE mushroom.stalk-color-above-ring: metadata=nominal raw=category final=category nunique=9
+DTYPE mushroom.stalk-color-below-ring: metadata=nominal raw=category final=category nunique=9
+DTYPE mushroom.veil-type: metadata=nominal raw=category final=category nunique=1
+DTYPE mushroom.veil-color: metadata=nominal raw=category final=category nunique=4
+DTYPE mushroom.ring-number: metadata=nominal raw=category final=category nunique=3
+DTYPE mushroom.ring-type: metadata=nominal raw=category final=category nunique=5
+DTYPE mushroom.spore-print-color: metadata=nominal raw=category final=category nunique=9
+DTYPE mushroom.population: metadata=nominal raw=category final=category nunique=6
+DTYPE mushroom.habitat: metadata=nominal raw=category final=category nunique=7
+LOADED mushroom: rows=5000 features=22 natural_missing=0.0138 OpenML=24v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage1
+Successfully loaded 5 of 6 requested datasets.
+          name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+     hepatitis     155          6             13                  0.056706      loaded
+cylinder-bands     540         18             19                  0.050000      failed
+       soybean     683          0             35                  0.097762      loaded
+      diabetes     768          8              0                  0.106120      loaded
+         adult   48842          6              8                  0.008429      loaded
+      mushroom    8124          0             22                  0.013809      loaded
+
+Protocol B (natural missingness) rows: 1500
+                             accuracy       auc  heldout_numeric_rmse  heldout_categorical_accuracy
+dataset   method                                                                                   
+adult     iterative_single   0.832767  0.903043              1.018173                      0.330733
+          knn5               0.833433  0.903269              0.964436                      0.506724
+          mean               0.832683  0.902813              1.021596                      0.326151
+          median             0.832117  0.902874              1.009354                      0.532444
+          mice_multiple_NEW  0.833667  0.902517              0.982236                      0.300903
+diabetes  iterative_single   0.752718  0.826330              0.926323                           NaN
+          knn5               0.751188  0.824651              0.948917                           NaN
+          mean               0.754671  0.827938              0.999158                           NaN
+          median             0.757374  0.829386              1.025211                           NaN
+          mice_multiple_NEW  0.755975  0.827444              0.981732                           NaN
+hepatitis iterative_single   0.856452  0.881647              0.866708                      0.755715
+          knn5               0.862366  0.891165              0.934253                      0.757384
+          mean               0.842473  0.875706              1.002564                      0.718156
+          median             0.839785  0.871177              1.075569                      0.724097
+          mice_multiple_NEW  0.846774  0.883970              1.022456                      0.715782
+mushroom  iterative_single   1.000000  1.000000                   NaN                      0.473426
+          knn5               1.000000  1.000000                   NaN                      0.706491
+          mean               1.000000  1.000000                   NaN                      0.455008
+          median             1.000000  1.000000                   NaN                      0.543580
+          mice_multiple_NEW  1.000000  1.000000                   NaN                      0.471603
+soybean   iterative_single   0.933752       NaN                   NaN                      0.790361
+          knn5               0.930217       NaN                   NaN                      0.830455
+          mean               0.932411       NaN                   NaN                      0.610995
+          median             0.928750       NaN                   NaN                      0.685584
+          mice_multiple_NEW  0.930461       NaN                   NaN                      0.749611
+
+Protocol B MICE did not win on 28 paired dataset/metric comparisons.
+  dataset                         metric               vs  mean_loss_diff       p_holm
+ diabetes                       accuracy           median        0.001399 1.000000e+00
+hepatitis                       accuracy             knn5        0.015591 6.448392e-01
+hepatitis                       accuracy iterative_single        0.009677 4.872601e-01
+ mushroom                       accuracy             mean        0.000000 1.000000e+00
+ mushroom                       accuracy           median        0.000000 1.000000e+00
+ mushroom                       accuracy             knn5        0.000000 1.000000e+00
+ mushroom                       accuracy iterative_single        0.000000 1.000000e+00
+  soybean                       accuracy             mean        0.001950 1.000000e+00
+  soybean                       accuracy iterative_single        0.003291 7.833118e-01
+    adult           heldout_numeric_rmse             knn5        0.017800 1.000000e+00
+ diabetes           heldout_numeric_rmse             knn5        0.032815 1.000000e+00
+ diabetes           heldout_numeric_rmse iterative_single        0.055409 1.841167e-02
+hepatitis           heldout_numeric_rmse             mean        0.019892 1.000000e+00
+hepatitis           heldout_numeric_rmse             knn5        0.088203 1.000000e+00
+hepatitis           heldout_numeric_rmse iterative_single        0.155749 5.573605e-02
+    adult heldout_categorical_error_rate             mean        0.025248 5.338568e-09
+    adult heldout_categorical_error_rate           median        0.231541 7.821868e-10
+    adult heldout_categorical_error_rate             knn5        0.205821 7.821868e-10
+    adult heldout_categorical_error_rate iterative_single        0.029830 1.491955e-09
+hepatitis heldout_categorical_error_rate             mean        0.002373 1.000000e+00
+hepatitis heldout_categorical_error_rate           median        0.008315 1.000000e+00
+hepatitis heldout_categorical_error_rate             knn5        0.041602 6.961421e-02
+hepatitis heldout_categorical_error_rate iterative_single        0.039932 1.066987e-01
+ mushroom heldout_categorical_error_rate           median        0.071977 7.821868e-10
+ mushroom heldout_categorical_error_rate             knn5        0.234888 7.821868e-10
+ mushroom heldout_categorical_error_rate iterative_single        0.001823 1.000000e+00
+  soybean heldout_categorical_error_rate             knn5        0.080844 7.821868e-10
+  soybean heldout_categorical_error_rate iterative_single        0.040750 3.206497e-09

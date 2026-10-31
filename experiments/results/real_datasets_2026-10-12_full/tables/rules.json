@@ -1,0 +1,354 @@
+{
+  "dataset_labels": {
+    "adult": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "bank-marketing": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "breast-w": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "credit-approval": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "credit-g": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "cylinder-bands": {
+      "protocol_a": [
+        "marginal: 7 retained columns, 2 numeric"
+      ],
+      "protocol_b": []
+    },
+    "dermatology": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "diabetes": {
+      "protocol_a": [
+        "sentinel-coded missingness (zeros treated as missing), not native NaN"
+      ],
+      "protocol_b": [
+        "sentinel-coded missingness (zeros treated as missing), not native NaN"
+      ]
+    },
+    "heart-statlog": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "hepatitis": {
+      "protocol_a": [],
+      "protocol_b": []
+    },
+    "mushroom": {
+      "protocol_a": [],
+      "protocol_b": []
+    },
+    "pc1": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "soybean": {
+      "protocol_a": [],
+      "protocol_b": []
+    },
+    "telco-customer-churn": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    },
+    "wine-quality-red": {
+      "protocol_a": [],
+      "protocol_b": [
+        "negligible natural missingness"
+      ]
+    }
+  },
+  "protocol_a_headline": {
+    "datasets": {
+      "adult": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 5,
+        "retained_complete_columns": 11,
+        "retained_numeric_columns": 6,
+        "study_labels": []
+      },
+      "bank-marketing": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 9,
+        "retained_complete_columns": 16,
+        "retained_numeric_columns": 7,
+        "study_labels": []
+      },
+      "breast-w": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 0,
+        "retained_complete_columns": 8,
+        "retained_numeric_columns": 8,
+        "study_labels": []
+      },
+      "credit-approval": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 4,
+        "retained_complete_columns": 8,
+        "retained_numeric_columns": 4,
+        "study_labels": []
+      },
+      "credit-g": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 13,
+        "retained_complete_columns": 20,
+        "retained_numeric_columns": 7,
+        "study_labels": []
+      },
+      "cylinder-bands": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 5,
+        "retained_complete_columns": 7,
+        "retained_numeric_columns": 2,
+        "study_labels": [
+          "marginal: 7 retained columns, 2 numeric"
+        ]
+      },
+      "dermatology": {
+        "protocol_a_exclusion_reason": "no saved Protocol A result available",
+        "protocol_a_headline": false,
+        "retained_categorical_columns": null,
+        "retained_complete_columns": null,
+        "retained_numeric_columns": null,
+        "study_labels": []
+      },
+      "diabetes": {
+        "protocol_a_exclusion_reason": "only 3 complete retained columns (<5)",
+        "protocol_a_headline": false,
+        "retained_categorical_columns": 0,
+        "retained_complete_columns": 3,
+        "retained_numeric_columns": 3,
+        "study_labels": [
+          "sentinel-coded missingness (zeros treated as missing), not native NaN"
+        ]
+      },
+      "heart-statlog": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 0,
+        "retained_complete_columns": 13,
+        "retained_numeric_columns": 13,
+        "study_labels": []
+      },
+      "hepatitis": {
+        "protocol_a_exclusion_reason": "only 4 complete retained columns (<5)",
+        "protocol_a_headline": false,
+        "retained_categorical_columns": 3,
+        "retained_complete_columns": 4,
+        "retained_numeric_columns": 1,
+        "study_labels": []
+      },
+      "mushroom": {
+        "protocol_a_exclusion_reason": "no saved Protocol A result available",
+        "protocol_a_headline": false,
+        "retained_categorical_columns": null,
+        "retained_complete_columns": null,
+        "retained_numeric_columns": null,
+        "study_labels": []
+      },
+      "pc1": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 0,
+        "retained_complete_columns": 21,
+        "retained_numeric_columns": 21,
+        "study_labels": []
+      },
+      "soybean": {
+        "protocol_a_exclusion_reason": "no saved Protocol A result available",
+        "protocol_a_headline": false,
+        "retained_categorical_columns": null,
+        "retained_complete_columns": null,
+        "retained_numeric_columns": null,
+        "study_labels": []
+      },
+      "telco-customer-churn": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 15,
+        "retained_complete_columns": 18,
+        "retained_numeric_columns": 3,
+        "study_labels": []
+      },
+      "wine-quality-red": {
+        "protocol_a_exclusion_reason": "",
+        "protocol_a_headline": true,
+        "retained_categorical_columns": 0,
+        "retained_complete_columns": 11,
+        "retained_numeric_columns": 11,
+        "study_labels": []
+      }
+    },
+    "include_when": "retained_complete_columns >= 5 and retained_numeric_columns >= 2"
+  },
+  "protocol_b_downstream_headline": {
+    "datasets": {
+      "adult": {
+        "mean_imputer_accuracy": 0.8326833333333333,
+        "protocol_b_downstream_exclusion_reason": "",
+        "protocol_b_downstream_headline": true,
+        "protocol_b_heldout_recovery_included": true,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "bank-marketing": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "breast-w": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "credit-approval": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "credit-g": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "cylinder-bands": {
+        "mean_imputer_accuracy": 0.8172839506172841,
+        "protocol_b_downstream_exclusion_reason": "",
+        "protocol_b_downstream_headline": true,
+        "protocol_b_heldout_recovery_included": true,
+        "study_labels": []
+      },
+      "dermatology": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "diabetes": {
+        "mean_imputer_accuracy": 0.7546706561412443,
+        "protocol_b_downstream_exclusion_reason": "",
+        "protocol_b_downstream_headline": true,
+        "protocol_b_heldout_recovery_included": true,
+        "study_labels": [
+          "sentinel-coded missingness (zeros treated as missing), not native NaN"
+        ]
+      },
+      "heart-statlog": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "hepatitis": {
+        "mean_imputer_accuracy": 0.8424731182795698,
+        "protocol_b_downstream_exclusion_reason": "",
+        "protocol_b_downstream_headline": true,
+        "protocol_b_heldout_recovery_included": true,
+        "study_labels": []
+      },
+      "mushroom": {
+        "mean_imputer_accuracy": 1.0,
+        "protocol_b_downstream_exclusion_reason": "mean-imputer accuracy 1 >= 0.999 ceiling",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": true,
+        "study_labels": []
+      },
+      "pc1": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "soybean": {
+        "mean_imputer_accuracy": 0.9324110848719048,
+        "protocol_b_downstream_exclusion_reason": "",
+        "protocol_b_downstream_headline": true,
+        "protocol_b_heldout_recovery_included": true,
+        "study_labels": []
+      },
+      "telco-customer-churn": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      },
+      "wine-quality-red": {
+        "mean_imputer_accuracy": null,
+        "protocol_b_downstream_exclusion_reason": "no saved Protocol B result available",
+        "protocol_b_downstream_headline": false,
+        "protocol_b_heldout_recovery_included": false,
+        "study_labels": [
+          "negligible natural missingness"
+        ]
+      }
+    },
+    "exclude_when": "mean-imputer accuracy >= 0.999"
+  },
+  "protocol_b_heldout_recovery": {
+    "include_all_protocol_b_datasets": true
+  }
+}

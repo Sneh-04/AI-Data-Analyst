@@ -1,0 +1,23 @@
+{
+  "datasets_requested": [
+    "breast-w",
+    "hepatitis",
+    "credit-approval"
+  ],
+  "manifest": "/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/datasets/manifest.json",
+  "mask_rates_protocol_a": [
+    0.1,
+    0.2,
+    0.3
+  ],
+  "mechanisms_protocol_a": [
+    "MCAR",
+    "MAR",
+    "MNAR"
+  ],
+  "n_imputations": 5,
+  "natural_missingness_label_protocol_b": "natural missingness",
+  "protocol": "both",
+  "repeats": 1,
+  "seed": 42
+}

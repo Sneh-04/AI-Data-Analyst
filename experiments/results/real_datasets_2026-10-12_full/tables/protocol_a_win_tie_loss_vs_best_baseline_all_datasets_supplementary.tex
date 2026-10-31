@@ -1,0 +1,16 @@
+\begin{table}[ht]
+\centering
+\caption{Supplementary all-dataset outcomes. For each dataset × mechanism × mask-rate cell, the best conventional baseline is the lowest mean-imputer-relative numeric RMSE among mean, median, KNN5, and single IterativeImputer. Each listed method is compared with that best baseline: win means >1% lower RMSE, tie means within 1%, and loss means >1% higher RMSE.}
+\label{tab:protocol_a_win_tie_loss_vs_best_baseline_all_datasets_supplementary}
+\begin{tabular}{lrrr}
+\hline
+ method            &   win &   tie &   loss \\
+\hline
+ iterative\_single  &     0 &    85 &     20 \\
+ knn5              &     0 &    21 &     84 \\
+ mean              &     0 &    19 &     86 \\
+ median            &     0 &     3 &    102 \\
+ mice\_multiple\_NEW &    21 &    12 &     72 \\
+\hline
+\end{tabular}
+\end{table}

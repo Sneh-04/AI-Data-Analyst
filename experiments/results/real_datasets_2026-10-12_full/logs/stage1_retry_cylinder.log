@@ -1,0 +1,60 @@
+DTYPE cylinder-bands.customer: metadata=nominal raw=category final=category nunique=71
+DTYPE cylinder-bands.job_number: metadata=numeric raw=int64 final=int64 nunique=262
+DTYPE cylinder-bands.grain_screened: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.ink_color: metadata=nominal raw=category final=category nunique=1
+DTYPE cylinder-bands.proof_on_ctd_ink: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.blade_mfg: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.cylinder_division: metadata=nominal raw=category final=category nunique=1
+DTYPE cylinder-bands.paper_type: metadata=nominal raw=category final=category nunique=3
+DTYPE cylinder-bands.ink_type: metadata=nominal raw=category final=category nunique=3
+DTYPE cylinder-bands.direct_steam: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.solvent_type: metadata=nominal raw=category final=category nunique=3
+DTYPE cylinder-bands.type_on_cylinder: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.press_type: metadata=nominal raw=category final=category nunique=4
+DTYPE cylinder-bands.press: metadata=nominal raw=category final=category nunique=8
+DTYPE cylinder-bands.unit_number: metadata=numeric raw=int64 final=int64 nunique=7
+DTYPE cylinder-bands.cylinder_size: metadata=nominal raw=category final=category nunique=3
+DTYPE cylinder-bands.paper_mill_location: metadata=nominal raw=category final=category nunique=5
+DTYPE cylinder-bands.plating_tank: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.proof_cut: metadata=numeric raw=float64 final=float64 nunique=27
+DTYPE cylinder-bands.viscosity: metadata=numeric raw=float64 final=float64 nunique=37
+DTYPE cylinder-bands.caliper: metadata=nominal raw=category final=category nunique=20
+DTYPE cylinder-bands.ink_temperature: metadata=numeric raw=float64 final=float64 nunique=65
+DTYPE cylinder-bands.humifity: metadata=numeric raw=float64 final=float64 nunique=42
+DTYPE cylinder-bands.roughness: metadata=numeric raw=float64 final=float64 nunique=18
+DTYPE cylinder-bands.blade_pressure: metadata=numeric raw=float64 final=float64 nunique=36
+DTYPE cylinder-bands.varnish_pct: metadata=numeric raw=float64 final=float64 nunique=122
+DTYPE cylinder-bands.press_speed: metadata=numeric raw=float64 final=float64 nunique=83
+DTYPE cylinder-bands.ink_pct: metadata=numeric raw=float64 final=float64 nunique=81
+DTYPE cylinder-bands.solvent_pct: metadata=numeric raw=float64 final=float64 nunique=115
+DTYPE cylinder-bands.ESA_Voltage: metadata=numeric raw=float64 final=float64 nunique=17
+DTYPE cylinder-bands.ESA_Amperage: metadata=numeric raw=float64 final=float64 nunique=4
+DTYPE cylinder-bands.wax: metadata=numeric raw=float64 final=float64 nunique=30
+DTYPE cylinder-bands.hardener: metadata=numeric raw=float64 final=float64 nunique=29
+DTYPE cylinder-bands.roller_durometer: metadata=numeric raw=float64 final=float64 nunique=12
+DTYPE cylinder-bands.current_density: metadata=nominal raw=category final=category nunique=7
+DTYPE cylinder-bands.anode_space_ratio: metadata=numeric raw=float64 final=float64 nunique=80
+DTYPE cylinder-bands.chrome_content: metadata=nominal raw=category final=category nunique=3
+LOADED cylinder-bands: rows=540 features=37 natural_missing=0.0500 OpenML=6332v2
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage1_retry/cylinder-bands
+Successfully loaded 1 of 1 requested datasets.
+          name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+cylinder-bands     540         18             19                      0.05      loaded
+
+Protocol B (natural missingness) rows: 300
+                                  accuracy       auc  heldout_numeric_rmse  heldout_categorical_accuracy
+dataset        method                                                                                   
+cylinder-bands iterative_single   0.818056  0.897375              0.912191                      0.612719
+               knn5               0.812500  0.885204              0.906089                      0.721591
+               mean               0.817284  0.896476              0.997840                      0.569688
+               median             0.811111  0.888999              1.025335                      0.671494
+               mice_multiple_NEW  0.820679  0.897772              0.978866                      0.573682
+
+Protocol B MICE did not win on 5 paired dataset/metric comparisons.
+       dataset                         metric               vs  mean_loss_diff       p_holm
+cylinder-bands           heldout_numeric_rmse             knn5        0.072777 1.536851e-02
+cylinder-bands           heldout_numeric_rmse iterative_single        0.066675 1.094940e-03
+cylinder-bands heldout_categorical_error_rate           median        0.097812 1.955467e-10
+cylinder-bands heldout_categorical_error_rate             knn5        0.147909 1.955467e-10
+cylinder-bands heldout_categorical_error_rate iterative_single        0.039037 3.933576e-06

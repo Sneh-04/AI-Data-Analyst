@@ -1,0 +1,444 @@
+DTYPE breast-w.Clump_Thickness: metadata=numeric raw=int64 final=int64 nunique=10
+DTYPE breast-w.Cell_Size_Uniformity: metadata=numeric raw=int64 final=int64 nunique=10
+DTYPE breast-w.Cell_Shape_Uniformity: metadata=numeric raw=int64 final=int64 nunique=10
+DTYPE breast-w.Marginal_Adhesion: metadata=numeric raw=int64 final=int64 nunique=10
+DTYPE breast-w.Single_Epi_Cell_Size: metadata=numeric raw=int64 final=int64 nunique=10
+DTYPE breast-w.Bare_Nuclei: metadata=numeric raw=float64 final=float64 nunique=10
+DTYPE breast-w.Bland_Chromatin: metadata=numeric raw=int64 final=int64 nunique=10
+DTYPE breast-w.Normal_Nucleoli: metadata=numeric raw=int64 final=int64 nunique=10
+DTYPE breast-w.Mitoses: metadata=numeric raw=int64 final=int64 nunique=9
+LOADED breast-w: rows=699 features=9 natural_missing=0.0025 OpenML=15v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.breast-w.attempt-1-ue7nkgz6
+Successfully loaded 1 of 1 requested datasets.
+    name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+breast-w     699          9              0                  0.002543      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.076756
+knn5                 1.149655
+mean                 1.515416
+median               1.719352
+mice_multiple_NEW    1.090559
+Protocol A MICE did not win on 3 paired dataset/mechanism/metric comparisons.
+ dataset mechanism       metric               vs  mean_loss_diff       p_holm
+breast-w       MAR numeric_rmse iterative_single        0.016795 8.677889e-07
+breast-w      MCAR numeric_rmse             knn5        0.017161 7.009379e-03
+breast-w      MCAR numeric_rmse iterative_single        0.062401 2.409797e-08
+COMPLETE breast-w: attempt=1 time_seconds=89.960 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/breast-w
+DTYPE hepatitis.AGE: metadata=numeric raw=int64 final=int64 nunique=49
+DTYPE hepatitis.SEX: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.STEROID: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.ANTIVIRALS: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.FATIGUE: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.MALAISE: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.ANOREXIA: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.LIVER_BIG: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.LIVER_FIRM: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.SPLEEN_PALPABLE: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.SPIDERS: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.ASCITES: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.VARICES: metadata=nominal raw=category final=category nunique=2
+DTYPE hepatitis.BILIRUBIN: metadata=numeric raw=float64 final=float64 nunique=34
+DTYPE hepatitis.ALK_PHOSPHATE: metadata=numeric raw=float64 final=float64 nunique=83
+DTYPE hepatitis.SGOT: metadata=numeric raw=float64 final=float64 nunique=84
+DTYPE hepatitis.ALBUMIN: metadata=numeric raw=float64 final=float64 nunique=29
+DTYPE hepatitis.PROTIME: metadata=numeric raw=float64 final=float64 nunique=44
+DTYPE hepatitis.HISTOLOGY: metadata=nominal raw=category final=category nunique=2
+LOADED hepatitis: rows=155 features=19 natural_missing=0.0567 OpenML=55v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.hepatitis.attempt-1-dn2tkkey
+Successfully loaded 1 of 1 requested datasets.
+     name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+hepatitis     155          6             13                  0.056706      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.330580
+knn5                 1.408308
+mean                 1.328018
+median               1.358892
+mice_multiple_NEW    1.382795
+Protocol A MICE did not win on 12 paired dataset/mechanism/metric comparisons.
+  dataset mechanism                 metric               vs  mean_loss_diff   p_holm
+hepatitis      MCAR           numeric_rmse             mean        0.070636 0.000533
+hepatitis      MCAR           numeric_rmse           median        0.054046 0.010693
+hepatitis      MCAR           numeric_rmse iterative_single        0.054081 0.010693
+hepatitis      MNAR           numeric_rmse             mean        0.038917 0.091704
+hepatitis      MNAR           numeric_rmse iterative_single        0.050349 0.013512
+hepatitis       MAR categorical_error_rate             mean        0.013005 0.017873
+hepatitis       MAR categorical_error_rate           median        0.013005 0.017873
+hepatitis       MAR categorical_error_rate             knn5        0.022956 0.013552
+hepatitis       MAR categorical_error_rate iterative_single        0.038965 0.000020
+hepatitis      MCAR categorical_error_rate             mean        0.029106 0.015268
+hepatitis      MCAR categorical_error_rate           median        0.029106 0.015268
+hepatitis      MCAR categorical_error_rate iterative_single        0.033678 0.002368
+COMPLETE hepatitis: attempt=1 time_seconds=41.551 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/hepatitis
+DTYPE cylinder-bands.customer: metadata=nominal raw=category final=category nunique=71
+DTYPE cylinder-bands.job_number: metadata=numeric raw=int64 final=int64 nunique=262
+DTYPE cylinder-bands.grain_screened: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.ink_color: metadata=nominal raw=category final=category nunique=1
+DTYPE cylinder-bands.proof_on_ctd_ink: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.blade_mfg: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.cylinder_division: metadata=nominal raw=category final=category nunique=1
+DTYPE cylinder-bands.paper_type: metadata=nominal raw=category final=category nunique=3
+DTYPE cylinder-bands.ink_type: metadata=nominal raw=category final=category nunique=3
+DTYPE cylinder-bands.direct_steam: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.solvent_type: metadata=nominal raw=category final=category nunique=3
+DTYPE cylinder-bands.type_on_cylinder: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.press_type: metadata=nominal raw=category final=category nunique=4
+DTYPE cylinder-bands.press: metadata=nominal raw=category final=category nunique=8
+DTYPE cylinder-bands.unit_number: metadata=numeric raw=int64 final=int64 nunique=7
+DTYPE cylinder-bands.cylinder_size: metadata=nominal raw=category final=category nunique=3
+DTYPE cylinder-bands.paper_mill_location: metadata=nominal raw=category final=category nunique=5
+DTYPE cylinder-bands.plating_tank: metadata=nominal raw=category final=category nunique=2
+DTYPE cylinder-bands.proof_cut: metadata=numeric raw=float64 final=float64 nunique=27
+DTYPE cylinder-bands.viscosity: metadata=numeric raw=float64 final=float64 nunique=37
+DTYPE cylinder-bands.caliper: metadata=nominal raw=category final=category nunique=20
+DTYPE cylinder-bands.ink_temperature: metadata=numeric raw=float64 final=float64 nunique=65
+DTYPE cylinder-bands.humifity: metadata=numeric raw=float64 final=float64 nunique=42
+DTYPE cylinder-bands.roughness: metadata=numeric raw=float64 final=float64 nunique=18
+DTYPE cylinder-bands.blade_pressure: metadata=numeric raw=float64 final=float64 nunique=36
+DTYPE cylinder-bands.varnish_pct: metadata=numeric raw=float64 final=float64 nunique=122
+DTYPE cylinder-bands.press_speed: metadata=numeric raw=float64 final=float64 nunique=83
+DTYPE cylinder-bands.ink_pct: metadata=numeric raw=float64 final=float64 nunique=81
+DTYPE cylinder-bands.solvent_pct: metadata=numeric raw=float64 final=float64 nunique=115
+DTYPE cylinder-bands.ESA_Voltage: metadata=numeric raw=float64 final=float64 nunique=17
+DTYPE cylinder-bands.ESA_Amperage: metadata=numeric raw=float64 final=float64 nunique=4
+DTYPE cylinder-bands.wax: metadata=numeric raw=float64 final=float64 nunique=30
+DTYPE cylinder-bands.hardener: metadata=numeric raw=float64 final=float64 nunique=29
+DTYPE cylinder-bands.roller_durometer: metadata=numeric raw=float64 final=float64 nunique=12
+DTYPE cylinder-bands.current_density: metadata=nominal raw=category final=category nunique=7
+DTYPE cylinder-bands.anode_space_ratio: metadata=numeric raw=float64 final=float64 nunique=80
+DTYPE cylinder-bands.chrome_content: metadata=nominal raw=category final=category nunique=3
+LOADED cylinder-bands: rows=540 features=37 natural_missing=0.0500 OpenML=6332v2
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.cylinder-bands.attempt-1-zw923763
+Successfully loaded 1 of 1 requested datasets.
+          name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+cylinder-bands     540         18             19                      0.05      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.292915
+knn5                 1.276864
+mean                 1.281561
+median               1.474183
+mice_multiple_NEW    1.315723
+Protocol A MICE did not win on 14 paired dataset/mechanism/metric comparisons.
+       dataset mechanism                 metric               vs  mean_loss_diff       p_holm
+cylinder-bands       MAR           numeric_rmse             mean        0.084432 6.984919e-10
+cylinder-bands       MAR           numeric_rmse             knn5        0.112446 6.984919e-10
+cylinder-bands       MAR           numeric_rmse iterative_single        0.074752 6.984919e-10
+cylinder-bands      MCAR           numeric_rmse             mean        0.070164 6.984919e-10
+cylinder-bands      MCAR           numeric_rmse             knn5        0.054355 1.001812e-06
+cylinder-bands      MCAR           numeric_rmse iterative_single        0.054775 1.001812e-06
+cylinder-bands       MAR categorical_error_rate           median        0.219665 6.984919e-10
+cylinder-bands       MAR categorical_error_rate             knn5        0.458107 6.984919e-10
+cylinder-bands       MAR categorical_error_rate iterative_single        0.116661 6.984919e-10
+cylinder-bands      MCAR categorical_error_rate           median        0.167898 6.984919e-10
+cylinder-bands      MCAR categorical_error_rate             knn5        0.261722 6.984919e-10
+cylinder-bands      MCAR categorical_error_rate iterative_single        0.105610 6.984919e-10
+cylinder-bands      MNAR categorical_error_rate             knn5        0.202613 6.984919e-10
+cylinder-bands      MNAR categorical_error_rate iterative_single        0.077257 6.984919e-10
+COMPLETE cylinder-bands: attempt=1 time_seconds=80.065 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/cylinder-bands
+DTYPE credit-approval.A1: metadata=nominal raw=category final=category nunique=2
+DTYPE credit-approval.A2: metadata=numeric raw=float64 final=float64 nunique=349
+DTYPE credit-approval.A3: metadata=numeric raw=float64 final=float64 nunique=215
+DTYPE credit-approval.A4: metadata=nominal raw=category final=category nunique=3
+DTYPE credit-approval.A5: metadata=nominal raw=category final=category nunique=3
+DTYPE credit-approval.A6: metadata=nominal raw=category final=category nunique=14
+DTYPE credit-approval.A7: metadata=nominal raw=category final=category nunique=9
+DTYPE credit-approval.A8: metadata=numeric raw=float64 final=float64 nunique=132
+DTYPE credit-approval.A9: metadata=nominal raw=category final=category nunique=2
+DTYPE credit-approval.A10: metadata=nominal raw=category final=category nunique=2
+DTYPE credit-approval.A11: metadata=numeric raw=int64 final=int64 nunique=23
+DTYPE credit-approval.A12: metadata=nominal raw=category final=category nunique=2
+DTYPE credit-approval.A13: metadata=nominal raw=category final=category nunique=3
+DTYPE credit-approval.A14: metadata=numeric raw=float64 final=float64 nunique=170
+DTYPE credit-approval.A15: metadata=numeric raw=int64 final=int64 nunique=240
+LOADED credit-approval: rows=690 features=15 natural_missing=0.0065 OpenML=29v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.credit-approval.attempt-1-2jt1rt5y
+Successfully loaded 1 of 1 requested datasets.
+           name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+credit-approval     690          6              9                  0.006473      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.542297
+knn5                 1.577008
+mean                 1.607398
+median               1.703609
+mice_multiple_NEW    1.563443
+Protocol A MICE did not win on 12 paired dataset/mechanism/metric comparisons.
+        dataset mechanism                 metric               vs  mean_loss_diff       p_holm
+credit-approval       MAR           numeric_rmse iterative_single        0.043443 6.984919e-10
+credit-approval      MCAR           numeric_rmse             mean        0.083355 1.891749e-09
+credit-approval      MCAR           numeric_rmse           median        0.014089 1.151517e-01
+credit-approval      MCAR           numeric_rmse             knn5        0.062245 1.232384e-05
+credit-approval      MCAR           numeric_rmse iterative_single        0.086196 8.011041e-04
+credit-approval       MAR categorical_error_rate             knn5        0.073251 4.467962e-06
+credit-approval       MAR categorical_error_rate iterative_single        0.122358 6.984919e-10
+credit-approval      MCAR categorical_error_rate             mean        0.056541 2.894942e-06
+credit-approval      MCAR categorical_error_rate           median        0.056541 2.894942e-06
+credit-approval      MCAR categorical_error_rate             knn5        0.117240 6.984919e-10
+credit-approval      MCAR categorical_error_rate iterative_single        0.156317 6.984919e-10
+credit-approval      MNAR categorical_error_rate             knn5        0.065494 6.597320e-05
+COMPLETE credit-approval: attempt=1 time_seconds=93.021 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/credit-approval
+DTYPE credit-g.checking_status: metadata=nominal raw=category final=category nunique=4
+DTYPE credit-g.duration: metadata=numeric raw=int64 final=int64 nunique=33
+DTYPE credit-g.credit_history: metadata=nominal raw=category final=category nunique=5
+DTYPE credit-g.purpose: metadata=nominal raw=category final=category nunique=10
+DTYPE credit-g.credit_amount: metadata=numeric raw=int64 final=int64 nunique=921
+DTYPE credit-g.savings_status: metadata=nominal raw=category final=category nunique=5
+DTYPE credit-g.employment: metadata=nominal raw=category final=category nunique=5
+DTYPE credit-g.installment_commitment: metadata=numeric raw=int64 final=int64 nunique=4
+DTYPE credit-g.personal_status: metadata=nominal raw=category final=category nunique=4
+DTYPE credit-g.other_parties: metadata=nominal raw=category final=category nunique=3
+DTYPE credit-g.residence_since: metadata=numeric raw=int64 final=int64 nunique=4
+DTYPE credit-g.property_magnitude: metadata=nominal raw=category final=category nunique=4
+DTYPE credit-g.age: metadata=numeric raw=int64 final=int64 nunique=53
+DTYPE credit-g.other_payment_plans: metadata=nominal raw=category final=category nunique=3
+DTYPE credit-g.housing: metadata=nominal raw=category final=category nunique=3
+DTYPE credit-g.existing_credits: metadata=numeric raw=int64 final=int64 nunique=4
+DTYPE credit-g.job: metadata=nominal raw=category final=category nunique=4
+DTYPE credit-g.num_dependents: metadata=numeric raw=int64 final=int64 nunique=2
+DTYPE credit-g.own_telephone: metadata=nominal raw=category final=category nunique=2
+DTYPE credit-g.foreign_worker: metadata=nominal raw=category final=category nunique=2
+LOADED credit-g: rows=1000 features=20 natural_missing=0.0000 OpenML=31v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.credit-g.attempt-1-tmkfxvru
+Successfully loaded 1 of 1 requested datasets.
+    name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+credit-g    1000          7             13                       0.0      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.178750
+knn5                 1.248398
+mean                 1.270493
+median               1.368112
+mice_multiple_NEW    1.209805
+Protocol A MICE did not win on 15 paired dataset/mechanism/metric comparisons.
+ dataset mechanism                 metric               vs  mean_loss_diff       p_holm
+credit-g       MAR           numeric_rmse             mean        0.017152 4.226384e-03
+credit-g       MAR           numeric_rmse iterative_single        0.095168 6.984919e-10
+credit-g      MCAR           numeric_rmse             knn5        0.010061 1.869151e-03
+credit-g      MCAR           numeric_rmse iterative_single        0.036836 1.896321e-02
+credit-g       MAR categorical_error_rate             mean        0.041803 6.984919e-10
+credit-g       MAR categorical_error_rate           median        0.120545 6.984919e-10
+credit-g       MAR categorical_error_rate             knn5        0.032384 6.984919e-10
+credit-g       MAR categorical_error_rate iterative_single        0.040791 6.984919e-10
+credit-g      MCAR categorical_error_rate             mean        0.024285 3.259629e-09
+credit-g      MCAR categorical_error_rate           median        0.117547 6.984919e-10
+credit-g      MCAR categorical_error_rate             knn5        0.039138 6.984919e-10
+credit-g      MCAR categorical_error_rate iterative_single        0.043329 6.984919e-10
+credit-g      MNAR categorical_error_rate           median        0.028179 8.842504e-04
+credit-g      MNAR categorical_error_rate             knn5        0.027198 6.984919e-10
+credit-g      MNAR categorical_error_rate iterative_single        0.030038 6.984919e-10
+COMPLETE credit-g: attempt=1 time_seconds=271.501 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/credit-g
+ROW CAP bank-marketing: stratified 45211 -> 5000 (max_rows=5000, seed=42)
+DTYPE bank-marketing.V1: metadata=numeric raw=int64 final=int64 nunique=77
+DTYPE bank-marketing.V2: metadata=nominal raw=category final=category nunique=12
+DTYPE bank-marketing.V3: metadata=nominal raw=category final=category nunique=3
+DTYPE bank-marketing.V4: metadata=nominal raw=category final=category nunique=4
+DTYPE bank-marketing.V5: metadata=nominal raw=category final=category nunique=2
+DTYPE bank-marketing.V6: metadata=numeric raw=int64 final=int64 nunique=7168
+DTYPE bank-marketing.V7: metadata=nominal raw=category final=category nunique=2
+DTYPE bank-marketing.V8: metadata=nominal raw=category final=category nunique=2
+DTYPE bank-marketing.V9: metadata=nominal raw=category final=category nunique=3
+DTYPE bank-marketing.V10: metadata=numeric raw=int64 final=int64 nunique=31
+DTYPE bank-marketing.V11: metadata=nominal raw=category final=category nunique=12
+DTYPE bank-marketing.V12: metadata=numeric raw=int64 final=int64 nunique=1573
+DTYPE bank-marketing.V13: metadata=numeric raw=int64 final=int64 nunique=48
+DTYPE bank-marketing.V14: metadata=numeric raw=int64 final=int64 nunique=559
+DTYPE bank-marketing.V15: metadata=numeric raw=int64 final=int64 nunique=41
+DTYPE bank-marketing.V16: metadata=nominal raw=category final=category nunique=4
+LOADED bank-marketing: rows=5000 features=16 natural_missing=0.0000 OpenML=1461v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.bank-marketing.attempt-1-qz25dbtv
+Successfully loaded 1 of 1 requested datasets.
+          name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+bank-marketing   45211          7              9                       0.0      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.325516
+knn5                 1.393739
+mean                 1.391262
+median               1.433554
+mice_multiple_NEW    1.378280
+Protocol A MICE did not win on 18 paired dataset/mechanism/metric comparisons.
+       dataset mechanism                 metric               vs  mean_loss_diff       p_holm
+bank-marketing       MAR           numeric_rmse             mean        0.080355 6.984919e-10
+bank-marketing       MAR           numeric_rmse           median        0.040792 2.619345e-09
+bank-marketing       MAR           numeric_rmse             knn5        0.032858 1.629815e-08
+bank-marketing       MAR           numeric_rmse iterative_single        0.109523 6.984919e-10
+bank-marketing      MCAR           numeric_rmse             mean        0.038393 6.984919e-10
+bank-marketing      MCAR           numeric_rmse           median        0.006811 1.003195e-01
+bank-marketing      MCAR           numeric_rmse             knn5        0.034687 6.254413e-08
+bank-marketing      MCAR           numeric_rmse iterative_single        0.052723 3.716768e-03
+bank-marketing       MAR categorical_error_rate             mean        0.046429 6.984919e-10
+bank-marketing       MAR categorical_error_rate           median        0.098303 6.984919e-10
+bank-marketing       MAR categorical_error_rate             knn5        0.065084 6.984919e-10
+bank-marketing       MAR categorical_error_rate iterative_single        0.078065 6.984919e-10
+bank-marketing      MCAR categorical_error_rate             mean        0.030530 6.984919e-10
+bank-marketing      MCAR categorical_error_rate           median        0.090920 6.984919e-10
+bank-marketing      MCAR categorical_error_rate             knn5        0.066393 6.984919e-10
+bank-marketing      MCAR categorical_error_rate iterative_single        0.067405 6.984919e-10
+bank-marketing      MNAR categorical_error_rate             knn5        0.027882 1.540018e-05
+bank-marketing      MNAR categorical_error_rate iterative_single        0.029125 6.984919e-10
+COMPLETE bank-marketing: attempt=1 time_seconds=588.079 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/bank-marketing
+DTYPE wine-quality-red.fixed_acidity: metadata=numeric raw=float64 final=float64 nunique=96
+DTYPE wine-quality-red.volatile_acidity: metadata=numeric raw=float64 final=float64 nunique=143
+DTYPE wine-quality-red.citric_acid: metadata=numeric raw=float64 final=float64 nunique=80
+DTYPE wine-quality-red.residual_sugar: metadata=numeric raw=float64 final=float64 nunique=91
+DTYPE wine-quality-red.chlorides: metadata=numeric raw=float64 final=float64 nunique=153
+DTYPE wine-quality-red.free_sulfur_dioxide: metadata=numeric raw=float64 final=float64 nunique=60
+DTYPE wine-quality-red.total_sulfur_dioxide: metadata=numeric raw=float64 final=float64 nunique=144
+DTYPE wine-quality-red.density: metadata=numeric raw=float64 final=float64 nunique=436
+DTYPE wine-quality-red.pH: metadata=numeric raw=float64 final=float64 nunique=89
+DTYPE wine-quality-red.sulphates: metadata=numeric raw=float64 final=float64 nunique=96
+DTYPE wine-quality-red.alcohol: metadata=numeric raw=float64 final=float64 nunique=65
+LOADED wine-quality-red: rows=1599 features=11 natural_missing=0.0000 OpenML=40691v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.wine-quality-red.attempt-1-gtli105k
+Successfully loaded 1 of 1 requested datasets.
+            name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+wine-quality-red    1599         11              0                       0.0      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.044821
+knn5                 1.117713
+mean                 1.346389
+median               1.376752
+mice_multiple_NEW    1.083654
+Protocol A MICE did not win on 5 paired dataset/mechanism/metric comparisons.
+         dataset mechanism       metric               vs  mean_loss_diff       p_holm
+wine-quality-red       MAR numeric_rmse             knn5        0.031709 5.761685e-07
+wine-quality-red       MAR numeric_rmse iterative_single        0.059393 3.492460e-10
+wine-quality-red      MCAR numeric_rmse             knn5        0.020975 5.770624e-02
+wine-quality-red      MCAR numeric_rmse iterative_single        0.017894 1.401876e-02
+wine-quality-red      MNAR numeric_rmse iterative_single        0.039212 3.492460e-10
+COMPLETE wine-quality-red: attempt=1 time_seconds=141.955 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/wine-quality-red
+DTYPE diabetes.preg: metadata=numeric raw=int64 final=int64 nunique=17
+DTYPE diabetes.plas: metadata=numeric raw=int64 final=float64 nunique=136
+DTYPE diabetes.pres: metadata=numeric raw=int64 final=float64 nunique=47
+DTYPE diabetes.skin: metadata=numeric raw=int64 final=float64 nunique=51
+DTYPE diabetes.insu: metadata=numeric raw=int64 final=float64 nunique=186
+DTYPE diabetes.mass: metadata=numeric raw=float64 final=float64 nunique=248
+DTYPE diabetes.pedi: metadata=numeric raw=float64 final=float64 nunique=517
+DTYPE diabetes.age: metadata=numeric raw=int64 final=int64 nunique=52
+LOADED diabetes: rows=768 features=8 natural_missing=0.1061 OpenML=37v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.diabetes.attempt-1-s0a4sr2a
+Successfully loaded 1 of 1 requested datasets.
+    name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+diabetes     768          8              0                   0.10612      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.210634
+knn5                 1.280930
+mean                 1.352411
+median               1.480973
+mice_multiple_NEW    1.240325
+Protocol A MICE did not win on 5 paired dataset/mechanism/metric comparisons.
+ dataset mechanism       metric               vs  mean_loss_diff       p_holm
+diabetes       MAR numeric_rmse             knn5        0.013531 1.379158e-01
+diabetes       MAR numeric_rmse iterative_single        0.071738 3.492460e-10
+diabetes      MCAR numeric_rmse             mean        0.003172 4.901628e-01
+diabetes      MCAR numeric_rmse             knn5        0.001567 8.099021e-01
+diabetes      MCAR numeric_rmse iterative_single        0.083696 3.492460e-10
+COMPLETE diabetes: attempt=1 time_seconds=29.669 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/diabetes
+ROW CAP telco-customer-churn: stratified 7043 -> 5000 (max_rows=5000, seed=42)
+DTYPE telco-customer-churn.gender: metadata=string raw=str final=category nunique=2
+DTYPE telco-customer-churn.SeniorCitizen: metadata=numeric raw=int64 final=int64 nunique=2
+DTYPE telco-customer-churn.Partner: metadata=string raw=str final=category nunique=2
+DTYPE telco-customer-churn.Dependents: metadata=string raw=str final=category nunique=2
+DTYPE telco-customer-churn.tenure: metadata=numeric raw=int64 final=int64 nunique=73
+DTYPE telco-customer-churn.PhoneService: metadata=string raw=str final=category nunique=2
+DTYPE telco-customer-churn.MultipleLines: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.InternetService: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.OnlineSecurity: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.OnlineBackup: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.DeviceProtection: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.TechSupport: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.StreamingTV: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.StreamingMovies: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.Contract: metadata=string raw=str final=category nunique=3
+DTYPE telco-customer-churn.PaperlessBilling: metadata=string raw=str final=category nunique=2
+DTYPE telco-customer-churn.PaymentMethod: metadata=string raw=str final=category nunique=4
+DTYPE telco-customer-churn.MonthlyCharges: metadata=numeric raw=float64 final=float64 nunique=1585
+DTYPE telco-customer-churn.TotalCharges: metadata=string raw=str final=float64 nunique=6531
+NUMERIC COERCION telco-customer-churn.TotalCharges: new_missing=11
+LOADED telco-customer-churn: rows=5000 features=19 natural_missing=0.0001 OpenML=42178v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.telco-customer-churn.attempt-1-fnybc4e4
+Successfully loaded 1 of 1 requested datasets.
+                name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+telco-customer-churn    7043          4             15                  0.000074      loaded
+
+Protocol A rows: 540
+method
+iterative_single     0.964167
+knn5                 1.020880
+mean                 1.244990
+median               1.299714
+mice_multiple_NEW    0.981624
+Protocol A MICE did not win on 8 paired dataset/mechanism/metric comparisons.
+             dataset mechanism                 metric               vs  mean_loss_diff       p_holm
+telco-customer-churn       MAR           numeric_rmse iterative_single        0.086012 6.984919e-10
+telco-customer-churn      MCAR           numeric_rmse             knn5        0.026730 1.578592e-07
+telco-customer-churn      MCAR           numeric_rmse iterative_single        0.051069 4.097237e-06
+telco-customer-churn       MAR categorical_error_rate iterative_single        0.067825 6.984919e-10
+telco-customer-churn      MCAR categorical_error_rate             knn5        0.018908 1.446315e-06
+telco-customer-churn      MCAR categorical_error_rate iterative_single        0.046313 6.984919e-10
+telco-customer-churn      MNAR categorical_error_rate             knn5        0.022286 2.787576e-03
+telco-customer-churn      MNAR categorical_error_rate iterative_single        0.042493 6.984919e-10
+COMPLETE telco-customer-churn: attempt=1 time_seconds=663.838 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/telco-customer-churn
+DTYPE pc1.loc: metadata=numeric raw=float64 final=float64 nunique=111
+DTYPE pc1.v(g): metadata=numeric raw=float64 final=float64 nunique=48
+DTYPE pc1.ev(g): metadata=numeric raw=float64 final=float64 nunique=27
+DTYPE pc1.iv(G): metadata=numeric raw=float64 final=float64 nunique=31
+DTYPE pc1.N: metadata=numeric raw=float64 final=float64 nunique=312
+DTYPE pc1.V: metadata=numeric raw=float64 final=float64 nunique=756
+DTYPE pc1.L: metadata=numeric raw=float64 final=float64 nunique=45
+DTYPE pc1.D: metadata=numeric raw=float64 final=float64 nunique=613
+DTYPE pc1.I: metadata=numeric raw=float64 final=float64 nunique=823
+DTYPE pc1.E: metadata=numeric raw=float64 final=float64 nunique=890
+DTYPE pc1.B: metadata=numeric raw=float64 final=float64 nunique=126
+DTYPE pc1.T: metadata=numeric raw=float64 final=float64 nunique=886
+DTYPE pc1.lOCode: metadata=numeric raw=int64 final=int64 nunique=113
+DTYPE pc1.lOComment: metadata=numeric raw=int64 final=int64 nunique=53
+DTYPE pc1.locCodeAndComment: metadata=numeric raw=int64 final=int64 nunique=24
+DTYPE pc1.lOBlank: metadata=numeric raw=int64 final=int64 nunique=52
+DTYPE pc1.uniq_Op: metadata=numeric raw=float64 final=float64 nunique=46
+DTYPE pc1.uniq_Opnd: metadata=numeric raw=float64 final=float64 nunique=106
+DTYPE pc1.total_Op: metadata=numeric raw=float64 final=float64 nunique=232
+DTYPE pc1.total_Opnd: metadata=numeric raw=float64 final=float64 nunique=203
+DTYPE pc1.branchCount: metadata=numeric raw=float64 final=float64 nunique=62
+LOADED pc1: rows=1109 features=21 natural_missing=0.0000 OpenML=1068v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.pc1.attempt-1-hhyb64oh
+Successfully loaded 1 of 1 requested datasets.
+name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+ pc1    1109         21              0                       0.0      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.301381
+knn5                 1.424699
+mean                 1.803919
+median               1.860397
+mice_multiple_NEW    1.402645
+Protocol A MICE did not win on 3 paired dataset/mechanism/metric comparisons.
+dataset mechanism       metric               vs  mean_loss_diff       p_holm
+    pc1       MAR numeric_rmse             knn5        0.038765 6.237830e-03
+    pc1       MAR numeric_rmse iterative_single        0.325105 3.492460e-10
+    pc1      MCAR numeric_rmse iterative_single        0.002914 1.000000e+00
+COMPLETE pc1: attempt=1 time_seconds=279.483 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/pc1
+/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun

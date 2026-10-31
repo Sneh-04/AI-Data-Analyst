@@ -1,0 +1,74 @@
+ROW CAP adult: stratified 48842 -> 5000 (max_rows=5000, seed=42)
+DTYPE adult.age: metadata=numeric raw=int64 final=int64 nunique=74
+DTYPE adult.workclass: metadata=nominal raw=category final=category nunique=8
+DTYPE adult.fnlwgt: metadata=numeric raw=int64 final=int64 nunique=28523
+DTYPE adult.education: metadata=nominal raw=category final=category nunique=16
+DTYPE adult.education-num: metadata=numeric raw=int64 final=int64 nunique=16
+DTYPE adult.marital-status: metadata=nominal raw=category final=category nunique=7
+DTYPE adult.occupation: metadata=nominal raw=category final=category nunique=14
+DTYPE adult.relationship: metadata=nominal raw=category final=category nunique=6
+DTYPE adult.race: metadata=nominal raw=category final=category nunique=5
+DTYPE adult.sex: metadata=nominal raw=category final=category nunique=2
+DTYPE adult.capital-gain: metadata=numeric raw=int64 final=int64 nunique=123
+DTYPE adult.capital-loss: metadata=numeric raw=int64 final=int64 nunique=99
+DTYPE adult.hours-per-week: metadata=numeric raw=int64 final=int64 nunique=96
+DTYPE adult.native-country: metadata=nominal raw=category final=category nunique=41
+LOADED adult: rows=5000 features=14 natural_missing=0.0084 OpenML=1590v2
+LOAD FAILED heart-statlog: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED breast-w: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED hepatitis: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED cylinder-bands: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED credit-approval: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED credit-g: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED bank-marketing: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED wine-quality-red: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED diabetes: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED telco-customer-churn: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+LOAD FAILED pc1: URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2
+Successfully loaded 1 of 12 requested datasets.
+                name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+               adult   48842          6              8                  0.008429      loaded
+       heart-statlog     270         13              0                  0.000000      failed
+            breast-w     699          9              0                  0.002500      failed
+           hepatitis     155          6             13                  0.056700      failed
+      cylinder-bands     540         18             19                  0.050000      failed
+     credit-approval     690          6              9                  0.006500      failed
+            credit-g    1000          7             13                  0.000000      failed
+      bank-marketing   45211          7              9                  0.000000      failed
+    wine-quality-red    1599         11              0                  0.000000      failed
+            diabetes     768          8              0                  0.106100      failed
+telco-customer-churn    7043          4             15                  0.000800      failed
+                 pc1    1109         21              0                  0.000000      failed
+
+Protocol A rows: 540
+method
+iterative_single     1.353110
+knn5                 1.394659
+mean                 1.366746
+median               1.373264
+mice_multiple_NEW    1.429124
+Protocol A MICE did not win on 21 paired dataset/mechanism/metric comparisons.
+dataset mechanism                 metric               vs  mean_loss_diff       p_holm
+  adult       MAR           numeric_rmse             mean        0.129439 6.984919e-10
+  adult       MAR           numeric_rmse           median        0.122489 6.984919e-10
+  adult       MAR           numeric_rmse             knn5        0.056482 6.984919e-10
+  adult       MAR           numeric_rmse iterative_single        0.105315 6.984919e-10
+  adult      MCAR           numeric_rmse             mean        0.096804 6.984919e-10
+  adult      MCAR           numeric_rmse           median        0.089373 6.984919e-10
+  adult      MCAR           numeric_rmse             knn5        0.058967 1.518347e-07
+  adult      MCAR           numeric_rmse iterative_single        0.121850 6.984919e-10
+  adult      MNAR           numeric_rmse iterative_single        0.000876 5.088666e-01
+  adult       MAR categorical_error_rate             mean        0.053949 6.984919e-10
+  adult       MAR categorical_error_rate           median        0.272539 6.984919e-10
+  adult       MAR categorical_error_rate             knn5        0.205241 6.984919e-10
+  adult       MAR categorical_error_rate iterative_single        0.186797 6.984919e-10
+  adult      MCAR categorical_error_rate             mean        0.091070 6.984919e-10
+  adult      MCAR categorical_error_rate           median        0.240808 6.984919e-10
+  adult      MCAR categorical_error_rate             knn5        0.200061 6.984919e-10
+  adult      MCAR categorical_error_rate iterative_single        0.165598 6.984919e-10
+  adult      MNAR categorical_error_rate             mean        0.218432 6.984919e-10
+  adult      MNAR categorical_error_rate           median        0.236048 6.984919e-10
+  adult      MNAR categorical_error_rate             knn5        0.162513 6.984919e-10
+  adult      MNAR categorical_error_rate iterative_single        0.154088 6.984919e-10

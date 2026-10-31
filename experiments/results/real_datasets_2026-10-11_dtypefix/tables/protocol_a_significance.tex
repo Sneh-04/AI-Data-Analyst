@@ -1,0 +1,67 @@
+\begin{table}[ht]
+\centering
+\caption{Paired Wilcoxon tests versus project MICE, with Holm-adjusted p-values, read from the saved CSV.}
+\label{tab:protocol_a_significance}
+\begin{tabular}{llllrrrrrl}
+\hline
+ metric                 & dataset         & mechanism   & vs               &   mean\_loss\_diff &   project\_mice\_wins &   pairs &   p\_value &   p\_holm & project\_mice\_won   \\
+\hline
+ numeric\_rmse           & breast-w        & MAR         & mean             &     -0.44432     &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & breast-w        & MAR         & median           &     -0.711461    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & breast-w        & MAR         & knn5             &     -0.0878351   &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & breast-w        & MAR         & iterative\_single &      0.0209006   &                   0 &       3 &      0.25 &        1 & False              \\
+ numeric\_rmse           & breast-w        & MCAR        & mean             &     -0.263355    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & breast-w        & MCAR        & median           &     -0.387723    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & breast-w        & MCAR        & knn5             &      0.0110813   &                   1 &       3 &      0.5  &        1 & False              \\
+ numeric\_rmse           & breast-w        & MCAR        & iterative\_single &      0.0595022   &                   1 &       3 &      0.5  &        1 & False              \\
+ numeric\_rmse           & breast-w        & MNAR        & mean             &     -0.578799    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & breast-w        & MNAR        & median           &     -0.800597    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & breast-w        & MNAR        & knn5             &     -0.110308    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & breast-w        & MNAR        & iterative\_single &     -0.0327676   &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & credit-approval & MAR         & mean             &     -0.0519372   &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & credit-approval & MAR         & median           &     -0.154719    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & credit-approval & MAR         & knn5             &     -0.0335819   &                   2 &       3 &      0.5  &        1 & True               \\
+ numeric\_rmse           & credit-approval & MAR         & iterative\_single &      0.0549698   &                   0 &       3 &      0.25 &        1 & False              \\
+ numeric\_rmse           & credit-approval & MCAR        & mean             &      0.0693723   &                   0 &       3 &      0.25 &        1 & False              \\
+ numeric\_rmse           & credit-approval & MCAR        & median           &     -0.000828344 &                   1 &       3 &      1    &        1 & True               \\
+ numeric\_rmse           & credit-approval & MCAR        & knn5             &      0.0606762   &                   0 &       3 &      0.25 &        1 & False              \\
+ numeric\_rmse           & credit-approval & MCAR        & iterative\_single &      0.0597904   &                   1 &       3 &      0.5  &        1 & False              \\
+ numeric\_rmse           & credit-approval & MNAR        & mean             &     -0.173133    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & credit-approval & MNAR        & median           &     -0.299186    &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & credit-approval & MNAR        & knn5             &     -0.0464721   &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & credit-approval & MNAR        & iterative\_single &     -0.0555588   &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & hepatitis       & MCAR        & mean             &      0.181821    &                   0 &       3 &      0.25 &        1 & False              \\
+ numeric\_rmse           & hepatitis       & MCAR        & median           &      0.16642     &                   1 &       3 &      0.5  &        1 & False              \\
+ numeric\_rmse           & hepatitis       & MCAR        & knn5             &     -0.0852674   &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & hepatitis       & MCAR        & iterative\_single &      0.182084    &                   0 &       3 &      0.25 &        1 & False              \\
+ numeric\_rmse           & hepatitis       & MNAR        & mean             &      0.0185264   &                   1 &       3 &      0.5  &        1 & False              \\
+ numeric\_rmse           & hepatitis       & MNAR        & median           &     -0.0328395   &                   3 &       3 &      0.25 &        1 & True               \\
+ numeric\_rmse           & hepatitis       & MNAR        & knn5             &      0.10022     &                   1 &       3 &      0.5  &        1 & False              \\
+ numeric\_rmse           & hepatitis       & MNAR        & iterative\_single &      0.0293518   &                   1 &       3 &      0.75 &        1 & False              \\
+ categorical\_error\_rate & credit-approval & MAR         & mean             &     -0.0355802   &                   2 &       3 &      0.75 &        1 & True               \\
+ categorical\_error\_rate & credit-approval & MAR         & median           &     -0.0355802   &                   2 &       3 &      0.75 &        1 & True               \\
+ categorical\_error\_rate & credit-approval & MAR         & knn5             &      0.0122535   &                   1 &       3 &      0.75 &        1 & False              \\
+ categorical\_error\_rate & credit-approval & MAR         & iterative\_single &      0.115512    &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & credit-approval & MCAR        & mean             &      0.0622785   &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & credit-approval & MCAR        & median           &      0.0622785   &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & credit-approval & MCAR        & knn5             &      0.141522    &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & credit-approval & MCAR        & iterative\_single &      0.180795    &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & credit-approval & MNAR        & mean             &     -0.375024    &                   3 &       3 &      0.25 &        1 & True               \\
+ categorical\_error\_rate & credit-approval & MNAR        & median           &     -0.375024    &                   3 &       3 &      0.25 &        1 & True               \\
+ categorical\_error\_rate & credit-approval & MNAR        & knn5             &      0.0315446   &                   1 &       3 &      0.5  &        1 & False              \\
+ categorical\_error\_rate & credit-approval & MNAR        & iterative\_single &     -0.0893684   &                   3 &       3 &      0.25 &        1 & True               \\
+ categorical\_error\_rate & hepatitis       & MAR         & mean             &      0.0470039   &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & hepatitis       & MAR         & median           &      0.0470039   &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & hepatitis       & MAR         & knn5             &      0.0673229   &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & hepatitis       & MAR         & iterative\_single &      0.0471719   &                   0 &       3 &      0.25 &        1 & False              \\
+ categorical\_error\_rate & hepatitis       & MCAR        & mean             &     -0.0369346   &                   2 &       3 &      0.5  &        1 & True               \\
+ categorical\_error\_rate & hepatitis       & MCAR        & median           &     -0.0369346   &                   2 &       3 &      0.5  &        1 & True               \\
+ categorical\_error\_rate & hepatitis       & MCAR        & knn5             &      0.00325544  &                   1 &       3 &      1    &        1 & False              \\
+ categorical\_error\_rate & hepatitis       & MCAR        & iterative\_single &      0.0242238   &                   1 &       3 &      0.5  &        1 & False              \\
+ categorical\_error\_rate & hepatitis       & MNAR        & mean             &     -0.0988515   &                   3 &       3 &      0.25 &        1 & True               \\
+ categorical\_error\_rate & hepatitis       & MNAR        & median           &     -0.0988515   &                   3 &       3 &      0.25 &        1 & True               \\
+ categorical\_error\_rate & hepatitis       & MNAR        & knn5             &      0.0213969   &                   2 &       3 &      1    &        1 & False              \\
+ categorical\_error\_rate & hepatitis       & MNAR        & iterative\_single &     -0.0555445   &                   2 &       3 &      0.5  &        1 & True               \\
+\hline
+\end{tabular}
+\end{table}

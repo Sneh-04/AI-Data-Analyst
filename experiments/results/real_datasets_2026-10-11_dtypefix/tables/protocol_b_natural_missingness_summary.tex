@@ -1,0 +1,26 @@
+\begin{table}[ht]
+\centering
+\caption{Protocol B only: natural-missingness downstream and held-out-observed scores aggregated from the saved fold CSV.}
+\label{tab:protocol_b_natural_missingness_summary}
+\begin{tabular}{lllrrrrrrr}
+\hline
+ dataset         & task\_type      & method            &   accuracy &      auc &   heldout\_numeric\_rmse &   heldout\_categorical\_accuracy &   heldout\_categorical\_error\_rate &   heldout\_observed\_rate &   natural\_missing\_rate\_test\_features \\
+\hline
+ breast-w        & classification & iterative\_single  &   0.972826 & 0.99098  &               0.939185 &                     nan        &                       nan        &               0.0997559 &                           0.00254653 \\
+ breast-w        & classification & knn5              &   0.972826 & 0.991412 &               0.675572 &                     nan        &                       nan        &               0.101185  &                           0.00254653 \\
+ breast-w        & classification & mean              &   0.971387 & 0.991983 &               0.991782 &                     nan        &                       nan        &               0.103734  &                           0.00254653 \\
+ breast-w        & classification & median            &   0.96853  & 0.99182  &               1.16845  &                     nan        &                       nan        &               0.101344  &                           0.00254653 \\
+ breast-w        & classification & mice\_multiple\_NEW &   0.971398 & 0.990322 &               0.96124  &                     nan        &                       nan        &               0.0972234 &                           0.00254653 \\
+ credit-approval & classification & iterative\_single  &   0.871014 & 0.931427 &               1.13307  &                       0.569999 &                         0.430001 &               0.103865  &                           0.00647343 \\
+ credit-approval & classification & knn5              &   0.872464 & 0.930871 &               1.2764   &                       0.629549 &                         0.370451 &               0.0993862 &                           0.00647343 \\
+ credit-approval & classification & mean              &   0.868116 & 0.932635 &               1.37021  &                       0.561507 &                         0.438493 &               0.100456  &                           0.00647343 \\
+ credit-approval & classification & median            &   0.869565 & 0.935234 &               1.05822  &                       0.638808 &                         0.361192 &               0.101516  &                           0.00647343 \\
+ credit-approval & classification & mice\_multiple\_NEW &   0.872464 & 0.931448 &               0.875491 &                       0.530678 &                         0.469322 &               0.1022    &                           0.00647343 \\
+ hepatitis       & classification & iterative\_single  &   0.83871  & 0.837262 &               0.739349 &                       0.73966  &                         0.26034  &               0.103407  &                           0.0567063  \\
+ hepatitis       & classification & knn5              &   0.858065 & 0.884905 &               0.843724 &                       0.798207 &                         0.201793 &               0.112015  &                           0.0567063  \\
+ hepatitis       & classification & mean              &   0.825806 & 0.846714 &               1.2121   &                       0.728501 &                         0.271499 &               0.0958375 &                           0.0567063  \\
+ hepatitis       & classification & median            &   0.83871  & 0.855881 &               0.994687 &                       0.662511 &                         0.337489 &               0.111112  &                           0.0567063  \\
+ hepatitis       & classification & mice\_multiple\_NEW &   0.825806 & 0.866667 &               1.07953  &                       0.730819 &                         0.269181 &               0.106957  &                           0.0567063  \\
+\hline
+\end{tabular}
+\end{table}

@@ -1,0 +1,11 @@
+COMPLETE adult: rows=42 elapsed_seconds=150.166
+COMPLETE bank-marketing: rows=42 elapsed_seconds=268.415
+COMPLETE breast-w: rows=42 elapsed_seconds=62.293
+COMPLETE credit-approval: rows=42 elapsed_seconds=62.149
+COMPLETE credit-g: rows=42 elapsed_seconds=198.375
+COMPLETE cylinder-bands: rows=42 elapsed_seconds=55.110
+COMPLETE heart-statlog: rows=42 elapsed_seconds=95.567
+COMPLETE pc1: rows=42 elapsed_seconds=205.588
+COMPLETE telco-customer-churn: rows=42 elapsed_seconds=313.374
+COMPLETE wine-quality-red: rows=42 elapsed_seconds=96.953
+results/mice_ablation_2026-10-21

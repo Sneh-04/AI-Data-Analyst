@@ -1,0 +1,34 @@
+DTYPE heart-statlog.age: metadata=numeric raw=int64 final=int64 nunique=41
+DTYPE heart-statlog.sex: metadata=numeric raw=int64 final=int64 nunique=2
+DTYPE heart-statlog.chest: metadata=numeric raw=int64 final=int64 nunique=4
+DTYPE heart-statlog.resting_blood_pressure: metadata=numeric raw=int64 final=int64 nunique=47
+DTYPE heart-statlog.serum_cholestoral: metadata=numeric raw=int64 final=int64 nunique=144
+DTYPE heart-statlog.fasting_blood_sugar: metadata=numeric raw=int64 final=int64 nunique=2
+DTYPE heart-statlog.resting_electrocardiographic_results: metadata=numeric raw=int64 final=int64 nunique=3
+DTYPE heart-statlog.maximum_heart_rate_achieved: metadata=numeric raw=int64 final=int64 nunique=90
+DTYPE heart-statlog.exercise_induced_angina: metadata=numeric raw=int64 final=int64 nunique=2
+DTYPE heart-statlog.oldpeak: metadata=numeric raw=float64 final=float64 nunique=39
+DTYPE heart-statlog.slope: metadata=numeric raw=int64 final=int64 nunique=3
+DTYPE heart-statlog.number_of_major_vessels: metadata=numeric raw=int64 final=int64 nunique=4
+DTYPE heart-statlog.thal: metadata=numeric raw=int64 final=int64 nunique=3
+LOADED heart-statlog: rows=270 features=13 natural_missing=0.0000 OpenML=53v1
+
+Output directory: /Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/.heart-statlog.attempt-1-cspzs83b
+Successfully loaded 1 of 1 requested datasets.
+         name  n_rows  n_numeric  n_categorical  natural_missing_fraction load_status
+heart-statlog     270         13              0                       0.0      loaded
+
+Protocol A rows: 540
+method
+iterative_single     1.160843
+knn5                 1.219823
+mean                 1.234020
+median               1.418007
+mice_multiple_NEW    1.176718
+Protocol A MICE did not win on 3 paired dataset/mechanism/metric comparisons.
+      dataset mechanism       metric               vs  mean_loss_diff       p_holm
+heart-statlog       MAR numeric_rmse iterative_single        0.062093 3.492460e-10
+heart-statlog      MCAR numeric_rmse             knn5        0.003058 8.567890e-01
+heart-statlog      MCAR numeric_rmse iterative_single        0.036545 1.086398e-01
+COMPLETE heart-statlog: attempt=1 time_seconds=127.641 dir=/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun/heart-statlog
+/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/results/real_datasets_2026-10-12_full/stage2_rerun

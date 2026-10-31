@@ -42,6 +42,11 @@ from make_real_dataset_tables import (
     _uncertainty_distribution_table,
 )
 from make_mice_ablation_tables import summarize
+from make_mice_ablation_followup_tables import (
+    compare_coverage_medians,
+    pc1_diagnostic_table,
+    reproduction_check,
+)
 import run_stage
 from run_stage import is_complete_run
 from run_real_datasets import (
@@ -932,6 +937,61 @@ class ResumableStageAndTableMergeTests(unittest.TestCase):
                 "chosen after seeing results"
             ).all()
         )
+
+    def test_followup_reproduction_and_corrected_coverage_comparison(self):
+        rows = []
+        for mechanism in ("MCAR", "MAR", "MNAR"):
+            for variant in (
+                "project_m5",
+                "project_m20",
+                "project_m50",
+                "project_deterministic",
+            ):
+                rows.append({
+                    "dataset": "fixture",
+                    "mechanism": mechanism,
+                    "mask_rate": 0.2,
+                    "trial": 0,
+                    "variant": variant,
+                    "numeric_rmse": 1.0,
+                    "uncertainty_coverage90_numeric": 0.8,
+                })
+        current = pd.DataFrame(rows)
+        saved = current.copy()
+        saved.loc[saved["variant"].eq("project_m20"),
+                  "uncertainty_coverage90_numeric"] = 0.5
+        saved.loc[saved["variant"].eq("project_m50"),
+                  "uncertainty_coverage90_numeric"] = 0.4
+        detail, summary = reproduction_check(current, saved)
+        self.assertEqual(len(detail), 12)
+        self.assertTrue(summary["max_abs_difference"].eq(0).all())
+        coverage = compare_coverage_medians(current, saved)
+        m20 = coverage.loc[coverage["variant"].eq("project_m20")].iloc[0]
+        self.assertEqual(m20["corrected_median"], 0.8)
+        self.assertEqual(m20["saved_old_median"], 0.5)
+
+    def test_pc1_diagnostic_pools_outside_range_counts(self):
+        raw = pd.DataFrame({
+            "mechanism": ["MAR", "MAR"],
+            "column": ["x", "x"],
+            "variant": ["project_deterministic", "project_deterministic"],
+            "per_column_rmse": [1.0, 3.0],
+            "n_masked": [1, 3],
+            "n_outside": [1, 0],
+        })
+        table, mar_gaps = pc1_diagnostic_table(pd.concat([
+            raw,
+            raw.assign(variant="project_deterministic_no_bounds"),
+            raw.assign(variant="iterative_single_as_is"),
+        ], ignore_index=True))
+        deterministic = table.loc[
+            table["variant"].eq("project_deterministic")
+        ].iloc[0]
+        self.assertEqual(deterministic["per_column_rmse"], 2.0)
+        self.assertEqual(
+            deterministic["masked_values_outside_observed_range_fraction"], 0.25
+        )
+        self.assertEqual(mar_gaps.iloc[0]["column"], "x")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,17 @@
+\begin{table}[ht]
+\centering
+\caption{Per-mechanism min/median/max across Protocol A headline datasets. Coverage assesses the nominal 0.90 interval target.}
+\label{tab:protocol_a_project_mice_uncertainty_summary}
+\begin{tabular}{llrrrrl}
+\hline
+ mechanism   & metric                         &   n\_headline\_datasets &   minimum &   median &   maximum & coverage\_target   \\
+\hline
+ MAR         & uncertainty\_spearman\_numeric   &                    10 &  0.309068 & 0.797994 &  0.945903 &                   \\
+ MAR         & uncertainty\_coverage90\_numeric &                    10 &  0.743799 & 0.832531 &  0.899923 & nominal 0.90      \\
+ MCAR        & uncertainty\_spearman\_numeric   &                    10 &  0.467402 & 0.821234 &  0.922666 &                   \\
+ MCAR        & uncertainty\_coverage90\_numeric &                    10 &  0.818163 & 0.877492 &  0.907406 & nominal 0.90      \\
+ MNAR        & uncertainty\_spearman\_numeric   &                    10 &  0.237128 & 0.806935 &  0.898539 &                   \\
+ MNAR        & uncertainty\_coverage90\_numeric &                    10 &  0.459746 & 0.596877 &  0.641079 & nominal 0.90      \\
+\hline
+\end{tabular}
+\end{table}

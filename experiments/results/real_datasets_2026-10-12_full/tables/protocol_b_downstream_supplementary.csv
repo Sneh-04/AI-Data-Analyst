@@ -1,0 +1,6 @@
+dataset,task_type,method,accuracy,auc,heldout_numeric_rmse,heldout_categorical_accuracy,heldout_categorical_error_rate,study_labels,exclusion_reason,categorical_metric_caveat
+mushroom,classification,iterative_single,1.0,1.0,,0.4734255254059114,0.5265744745940887,,mean-imputer accuracy 1 >= 0.999 ceiling,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,classification,knn5,1.0,1.0,,0.7064910127624932,0.29350898723750685,,mean-imputer accuracy 1 >= 0.999 ceiling,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,classification,mean,1.0,1.0,,0.4550081024809204,0.5449918975190796,,mean-imputer accuracy 1 >= 0.999 ceiling,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,classification,median,1.0,1.0,,0.5435798500569199,0.4564201499430801,,mean-imputer accuracy 1 >= 0.999 ceiling,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,classification,mice_multiple_NEW,1.0,1.0,,0.47160300194259386,0.5283969980574061,,mean-imputer accuracy 1 >= 0.999 ceiling,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims

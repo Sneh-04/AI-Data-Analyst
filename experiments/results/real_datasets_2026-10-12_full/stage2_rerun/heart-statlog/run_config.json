@@ -1,0 +1,22 @@
+{
+  "datasets_requested": [
+    "heart-statlog"
+  ],
+  "manifest": "/Users/pawankumar/Downloads/ai-data-analyst-platform/experiments/datasets/manifest.json",
+  "mask_rates_protocol_a": [
+    0.1,
+    0.2,
+    0.3
+  ],
+  "max_rows": 5000,
+  "mechanisms_protocol_a": [
+    "MCAR",
+    "MAR",
+    "MNAR"
+  ],
+  "n_imputations": 5,
+  "natural_missingness_label_protocol_b": "natural missingness",
+  "protocol": "A",
+  "repeats": 12,
+  "seed": 42
+}

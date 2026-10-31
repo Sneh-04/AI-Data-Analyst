@@ -1,0 +1,22 @@
+{
+  "dataset": "pc1",
+  "repeats": 2,
+  "seed": 42,
+  "max_rows": 5000,
+  "rate": 0.2,
+  "mechanisms": [
+    "MCAR",
+    "MAR",
+    "MNAR"
+  ],
+  "variants": [
+    "project_m5",
+    "project_m20",
+    "project_m50",
+    "project_deterministic",
+    "iterative_single_as_is",
+    "iterative_single_posterior_true",
+    "iterative_single_posterior_false"
+  ],
+  "label": "post-hoc exploratory"
+}

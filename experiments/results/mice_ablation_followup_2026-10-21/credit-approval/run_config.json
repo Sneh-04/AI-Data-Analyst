@@ -1,0 +1,25 @@
+{
+  "dataset": "credit-approval",
+  "repeats": 2,
+  "seed": 42,
+  "max_rows": 5000,
+  "rate": 0.2,
+  "mechanisms": [
+    "MCAR",
+    "MAR",
+    "MNAR"
+  ],
+  "variants": [
+    "project_m5",
+    "project_m20",
+    "project_m50",
+    "project_deterministic",
+    "project_deterministic_no_bounds",
+    "project_m50_no_bounds",
+    "project_hybrid_m20",
+    "iterative_single_as_is",
+    "iterative_single_posterior_true",
+    "iterative_single_posterior_false"
+  ],
+  "label": "post-hoc exploratory"
+}

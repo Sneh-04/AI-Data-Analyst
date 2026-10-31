@@ -1,0 +1,32 @@
+protocol,dataset,placement,criterion,exclusion_reason,study_labels
+A,adult,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+A,bank-marketing,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+A,breast-w,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+A,credit-approval,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+A,credit-g,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+A,cylinder-bands,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,"marginal: 7 retained columns, 2 numeric"
+A,dermatology,supplementary,retained_complete_columns >= 5 and retained_numeric_columns >= 2,no saved Protocol A result available,
+A,diabetes,supplementary,retained_complete_columns >= 5 and retained_numeric_columns >= 2,only 3 complete retained columns (<5),"sentinel-coded missingness (zeros treated as missing), not native NaN"
+A,heart-statlog,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+A,hepatitis,supplementary,retained_complete_columns >= 5 and retained_numeric_columns >= 2,only 4 complete retained columns (<5),
+A,mushroom,supplementary,retained_complete_columns >= 5 and retained_numeric_columns >= 2,no saved Protocol A result available,
+A,pc1,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+A,soybean,supplementary,retained_complete_columns >= 5 and retained_numeric_columns >= 2,no saved Protocol A result available,
+A,telco-customer-churn,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+A,wine-quality-red,headline,retained_complete_columns >= 5 and retained_numeric_columns >= 2,,
+B downstream,adult,headline,mean-imputer accuracy >= 0.999,,negligible natural missingness
+B downstream,heart-statlog,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B downstream,breast-w,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B downstream,hepatitis,headline,mean-imputer accuracy >= 0.999,,
+B downstream,cylinder-bands,headline,mean-imputer accuracy >= 0.999,,
+B downstream,soybean,headline,mean-imputer accuracy >= 0.999,,
+B downstream,credit-approval,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B downstream,dermatology,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B downstream,mushroom,supplementary,mean-imputer accuracy >= 0.999,mean-imputer accuracy 1 >= 0.999 ceiling,
+B downstream,credit-g,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B downstream,bank-marketing,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B downstream,wine-quality-red,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B downstream,diabetes,headline,mean-imputer accuracy >= 0.999,,"sentinel-coded missingness (zeros treated as missing), not native NaN"
+B downstream,telco-customer-churn,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B downstream,pc1,supplementary,mean-imputer accuracy >= 0.999,no saved Protocol B result available,negligible natural missingness
+B held-out recovery,,include all saved Protocol B datasets,include_all_protocol_b_datasets=true,,

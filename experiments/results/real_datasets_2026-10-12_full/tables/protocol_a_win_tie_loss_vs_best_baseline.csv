@@ -1,0 +1,6 @@
+method,win,tie,loss
+iterative_single,0,72,18
+knn5,0,20,70
+mean,0,14,76
+median,0,3,87
+mice_multiple_NEW,18,12,60

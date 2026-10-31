@@ -1,0 +1,62 @@
+# Protocol A Significance
+
+Paired Wilcoxon tests versus project MICE, with Holm-adjusted p-values, read from the saved CSV.
+
+| metric                 | dataset         | mechanism   | vs               |   mean_loss_diff |   project_mice_wins |   pairs |   p_value |   p_holm | project_mice_won   |
+|------------------------|-----------------|-------------|------------------|------------------|---------------------|---------|-----------|----------|--------------------|
+| numeric_rmse           | breast-w        | MAR         | mean             |     -0.44432     |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | breast-w        | MAR         | median           |     -0.711461    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | breast-w        | MAR         | knn5             |     -0.0878351   |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | breast-w        | MAR         | iterative_single |      0.0209006   |                   0 |       3 |      0.25 |        1 | False              |
+| numeric_rmse           | breast-w        | MCAR        | mean             |     -0.263355    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | breast-w        | MCAR        | median           |     -0.387723    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | breast-w        | MCAR        | knn5             |      0.0110813   |                   1 |       3 |      0.5  |        1 | False              |
+| numeric_rmse           | breast-w        | MCAR        | iterative_single |      0.0595022   |                   1 |       3 |      0.5  |        1 | False              |
+| numeric_rmse           | breast-w        | MNAR        | mean             |     -0.578799    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | breast-w        | MNAR        | median           |     -0.800597    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | breast-w        | MNAR        | knn5             |     -0.110308    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | breast-w        | MNAR        | iterative_single |     -0.0327676   |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | credit-approval | MAR         | mean             |     -0.0519372   |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | credit-approval | MAR         | median           |     -0.154719    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | credit-approval | MAR         | knn5             |     -0.0335819   |                   2 |       3 |      0.5  |        1 | True               |
+| numeric_rmse           | credit-approval | MAR         | iterative_single |      0.0549698   |                   0 |       3 |      0.25 |        1 | False              |
+| numeric_rmse           | credit-approval | MCAR        | mean             |      0.0693723   |                   0 |       3 |      0.25 |        1 | False              |
+| numeric_rmse           | credit-approval | MCAR        | median           |     -0.000828344 |                   1 |       3 |      1    |        1 | True               |
+| numeric_rmse           | credit-approval | MCAR        | knn5             |      0.0606762   |                   0 |       3 |      0.25 |        1 | False              |
+| numeric_rmse           | credit-approval | MCAR        | iterative_single |      0.0597904   |                   1 |       3 |      0.5  |        1 | False              |
+| numeric_rmse           | credit-approval | MNAR        | mean             |     -0.173133    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | credit-approval | MNAR        | median           |     -0.299186    |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | credit-approval | MNAR        | knn5             |     -0.0464721   |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | credit-approval | MNAR        | iterative_single |     -0.0555588   |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | hepatitis       | MCAR        | mean             |      0.181821    |                   0 |       3 |      0.25 |        1 | False              |
+| numeric_rmse           | hepatitis       | MCAR        | median           |      0.16642     |                   1 |       3 |      0.5  |        1 | False              |
+| numeric_rmse           | hepatitis       | MCAR        | knn5             |     -0.0852674   |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | hepatitis       | MCAR        | iterative_single |      0.182084    |                   0 |       3 |      0.25 |        1 | False              |
+| numeric_rmse           | hepatitis       | MNAR        | mean             |      0.0185264   |                   1 |       3 |      0.5  |        1 | False              |
+| numeric_rmse           | hepatitis       | MNAR        | median           |     -0.0328395   |                   3 |       3 |      0.25 |        1 | True               |
+| numeric_rmse           | hepatitis       | MNAR        | knn5             |      0.10022     |                   1 |       3 |      0.5  |        1 | False              |
+| numeric_rmse           | hepatitis       | MNAR        | iterative_single |      0.0293518   |                   1 |       3 |      0.75 |        1 | False              |
+| categorical_error_rate | credit-approval | MAR         | mean             |     -0.0355802   |                   2 |       3 |      0.75 |        1 | True               |
+| categorical_error_rate | credit-approval | MAR         | median           |     -0.0355802   |                   2 |       3 |      0.75 |        1 | True               |
+| categorical_error_rate | credit-approval | MAR         | knn5             |      0.0122535   |                   1 |       3 |      0.75 |        1 | False              |
+| categorical_error_rate | credit-approval | MAR         | iterative_single |      0.115512    |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | credit-approval | MCAR        | mean             |      0.0622785   |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | credit-approval | MCAR        | median           |      0.0622785   |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | credit-approval | MCAR        | knn5             |      0.141522    |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | credit-approval | MCAR        | iterative_single |      0.180795    |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | credit-approval | MNAR        | mean             |     -0.375024    |                   3 |       3 |      0.25 |        1 | True               |
+| categorical_error_rate | credit-approval | MNAR        | median           |     -0.375024    |                   3 |       3 |      0.25 |        1 | True               |
+| categorical_error_rate | credit-approval | MNAR        | knn5             |      0.0315446   |                   1 |       3 |      0.5  |        1 | False              |
+| categorical_error_rate | credit-approval | MNAR        | iterative_single |     -0.0893684   |                   3 |       3 |      0.25 |        1 | True               |
+| categorical_error_rate | hepatitis       | MAR         | mean             |      0.0470039   |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | hepatitis       | MAR         | median           |      0.0470039   |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | hepatitis       | MAR         | knn5             |      0.0673229   |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | hepatitis       | MAR         | iterative_single |      0.0471719   |                   0 |       3 |      0.25 |        1 | False              |
+| categorical_error_rate | hepatitis       | MCAR        | mean             |     -0.0369346   |                   2 |       3 |      0.5  |        1 | True               |
+| categorical_error_rate | hepatitis       | MCAR        | median           |     -0.0369346   |                   2 |       3 |      0.5  |        1 | True               |
+| categorical_error_rate | hepatitis       | MCAR        | knn5             |      0.00325544  |                   1 |       3 |      1    |        1 | False              |
+| categorical_error_rate | hepatitis       | MCAR        | iterative_single |      0.0242238   |                   1 |       3 |      0.5  |        1 | False              |
+| categorical_error_rate | hepatitis       | MNAR        | mean             |     -0.0988515   |                   3 |       3 |      0.25 |        1 | True               |
+| categorical_error_rate | hepatitis       | MNAR        | median           |     -0.0988515   |                   3 |       3 |      0.25 |        1 | True               |
+| categorical_error_rate | hepatitis       | MNAR        | knn5             |      0.0213969   |                   2 |       3 |      1    |        1 | False              |
+| categorical_error_rate | hepatitis       | MNAR        | iterative_single |     -0.0555445   |                   2 |       3 |      0.5  |        1 | True               |

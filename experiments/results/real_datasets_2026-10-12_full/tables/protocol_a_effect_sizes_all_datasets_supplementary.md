@@ -1,0 +1,18 @@
+# Protocol A Effect Sizes All Datasets Supplementary
+
+Supplementary all-dataset effect sizes from saved CSVs. Percentile bootstrap intervals use 10,000 dataset-level resamples with seed 42. Categorical metrics use the harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims.
+
+| mechanism   | vs               |   n_datasets |   median_project_minus_baseline_ratio |   bootstrap_95_ci_low |   bootstrap_95_ci_high |   datasets_project_better |   datasets_project_worse |   datasets_tied_within_1_percent |
+|-------------|------------------|--------------|---------------------------------------|-----------------------|------------------------|---------------------------|--------------------------|----------------------------------|
+| MAR         | mean             |           11 |                           -0.0332187  |           -0.218334   |            0.0787513   |                         6 |                        4 |                                1 |
+| MAR         | median           |           11 |                           -0.186267   |           -0.248851   |           -0.0531341   |                         9 |                        2 |                                0 |
+| MAR         | knn5             |           11 |                            0.00939308 |           -0.0237961  |            0.0444916   |                         5 |                        6 |                                0 |
+| MAR         | iterative_single |           11 |                            0.0674107  |            0.0553782  |            0.0962258   |                         0 |                       11 |                                0 |
+| MCAR        | mean             |           12 |                            0.00281099 |           -0.208662   |            0.0670063   |                         4 |                        5 |                                3 |
+| MCAR        | median           |           12 |                           -0.0907317  |           -0.237424   |            0.0175097   |                         8 |                        4 |                                0 |
+| MCAR        | knn5             |           12 |                            0.0269162  |            0.00358571 |            0.0434486   |                         2 |                        8 |                                2 |
+| MCAR        | iterative_single |           12 |                            0.0786223  |            0.0633267  |            0.0902464   |                         0 |                       12 |                                0 |
+| MNAR        | mean             |           12 |                           -0.0958293  |           -0.153264   |           -0.0511226   |                        11 |                        1 |                                0 |
+| MNAR        | median           |           12 |                           -0.171868   |           -0.217924   |           -0.114445    |                        12 |                        0 |                                0 |
+| MNAR        | knn5             |           12 |                           -0.0498826  |           -0.0602056  |           -0.0231054   |                        10 |                        0 |                                2 |
+| MNAR        | iterative_single |           12 |                           -0.0136356  |           -0.025576   |            0.000539667 |                         8 |                        2 |                                2 |

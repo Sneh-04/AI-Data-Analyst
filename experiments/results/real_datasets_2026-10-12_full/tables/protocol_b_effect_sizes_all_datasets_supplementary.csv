@@ -1,0 +1,21 @@
+metric,metric_direction,vs,n_datasets,median_project_minus_baseline_metric,bootstrap_95_ci_low,bootstrap_95_ci_high,datasets_project_better,datasets_project_worse,datasets_tied_within_1_percent,categorical_metric_caveat
+accuracy,higher,mean,6,0.0011438467306114641,-0.0009750250465149768,0.0038480684986061386,0,0,6,
+accuracy,higher,median,6,0.0016306068412766384,-0.0006995727583962719,0.008278574273197947,1,0,5,
+accuracy,higher,knn5,6,0.00023876842707876156,-0.007795698924731198,0.006482837242641204,1,1,4,
+accuracy,higher,iterative_single,6,0.00044999999999995044,-0.0064841762582122375,0.002940410170802321,0,1,5,
+auc,higher,mean,5,0.0,-0.0004942348008385444,0.00826388888888896,0,0,5,
+auc,higher,median,5,0.0,-0.0019424935942231603,0.012793650793650801,1,0,4,
+auc,higher,knn5,5,0.0,-0.007194444444444503,0.012568178276453179,1,0,4,
+auc,higher,iterative_single,5,0.00039721086432942254,-0.0005255527651685243,0.0023234126984127412,0,0,5,
+heldout_numeric_rmse,lower,mean,4,-0.018200144718735545,-0.03935999423926961,0.019892480529724033,3,1,0,
+heldout_numeric_rmse,lower,median,4,-0.04497418360872163,-0.05311313110514182,-0.02711781344959252,4,0,0,
+heldout_numeric_rmse,lower,knn5,4,0.052795623437301764,0.01780014718641232,0.08820256678412264,0,4,0,
+heldout_numeric_rmse,lower,iterative_single,4,0.061042286730284556,-0.03593743519981929,0.15574851650777144,1,3,0,
+heldout_categorical_accuracy,higher,mean,5,0.003994330246265054,-0.02524846359820687,0.1386165082260319,2,1,2,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+heldout_categorical_accuracy,higher,median,5,-0.07197684811432603,-0.23154129730533807,0.06402765798820109,1,4,0,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+heldout_categorical_accuracy,higher,knn5,5,-0.14790911767137538,-0.2348880108198993,-0.04160209674790738,0,5,0,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+heldout_categorical_accuracy,higher,iterative_single,5,-0.03903677621644519,-0.040749752067000045,-0.0018225234633175158,0,4,1,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+heldout_categorical_error_rate,lower,mean,5,-0.003994330246264999,-0.13861650822603194,0.02524846359820676,2,1,2,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+heldout_categorical_error_rate,lower,median,5,0.07197684811432603,-0.06402765798820115,0.231541297305338,1,4,0,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+heldout_categorical_error_rate,lower,knn5,5,0.14790911767137538,0.04160209674790741,0.2348880108198993,0,5,0,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+heldout_categorical_error_rate,lower,iterative_single,5,0.039036776216445246,0.0018225234633174603,0.040749752066999934,0,4,1,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims

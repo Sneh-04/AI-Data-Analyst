@@ -1,0 +1,101 @@
+dataset,study_labels,metric,metric_direction,vs,project_mice_mean_metric,baseline_mean_metric,project_minus_baseline_metric,outcome,categorical_metric_caveat
+adult,negligible natural missingness,accuracy,higher,mean,0.8336666666666666,0.8326833333333333,0.000983333333333225,tie_within_1_percent,
+cylinder-bands,,accuracy,higher,mean,0.820679012345679,0.817283950617284,0.003395061728394988,tie_within_1_percent,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",accuracy,higher,mean,0.755975016269134,0.7546706561412443,0.0013043601278897032,tie_within_1_percent,
+hepatitis,,accuracy,higher,mean,0.8467741935483871,0.8424731182795698,0.004301075268817289,tie_within_1_percent,
+mushroom,,accuracy,higher,mean,1.0,1.0,0.0,tie_within_1_percent,
+soybean,,accuracy,higher,mean,0.930461034778875,0.9324110848719049,-0.0019500500930299536,tie_within_1_percent,
+adult,negligible natural missingness,accuracy,higher,median,0.8336666666666666,0.8321166666666666,0.0015499999999999403,tie_within_1_percent,
+cylinder-bands,,accuracy,higher,median,0.820679012345679,0.8111111111111111,0.009567901234567855,better,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",accuracy,higher,median,0.755975016269134,0.7573741617859265,-0.0013991455167925437,tie_within_1_percent,
+hepatitis,,accuracy,higher,median,0.8467741935483871,0.8397849462365591,0.00698924731182804,tie_within_1_percent,
+mushroom,,accuracy,higher,median,1.0,1.0,0.0,tie_within_1_percent,
+soybean,,accuracy,higher,median,0.930461034778875,0.9287498210963216,0.0017112136825533364,tie_within_1_percent,
+adult,negligible natural missingness,accuracy,higher,knn5,0.8336666666666666,0.8334333333333334,0.0002333333333331966,tie_within_1_percent,
+cylinder-bands,,accuracy,higher,knn5,0.820679012345679,0.8125,0.008179012345678971,better,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",accuracy,higher,knn5,0.755975016269134,0.7511883541295306,0.004786662139603437,tie_within_1_percent,
+hepatitis,,accuracy,higher,knn5,0.8467741935483871,0.8623655913978495,-0.015591397849462396,worse,
+mushroom,,accuracy,higher,knn5,1.0,1.0,0.0,tie_within_1_percent,
+soybean,,accuracy,higher,knn5,0.930461034778875,0.9302168312580507,0.0002442035208243265,tie_within_1_percent,
+adult,negligible natural missingness,accuracy,higher,iterative_single,0.8336666666666666,0.8327666666666667,0.0008999999999999009,tie_within_1_percent,
+cylinder-bands,,accuracy,higher,iterative_single,0.820679012345679,0.8180555555555556,0.002623456790123324,tie_within_1_percent,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",accuracy,higher,iterative_single,0.755975016269134,0.7527176527176527,0.003257363551481318,tie_within_1_percent,
+hepatitis,,accuracy,higher,iterative_single,0.8467741935483871,0.8564516129032257,-0.009677419354838568,worse,
+mushroom,,accuracy,higher,iterative_single,1.0,1.0,0.0,tie_within_1_percent,
+soybean,,accuracy,higher,iterative_single,0.930461034778875,0.9337519679404609,-0.003290933161585907,tie_within_1_percent,
+adult,negligible natural missingness,auc,higher,mean,0.9025169510158318,0.9028127211447313,-0.0002957701288994752,tie_within_1_percent,
+cylinder-bands,,auc,higher,mean,0.8977719988572022,0.8964759695023058,0.0012960293548963664,tie_within_1_percent,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",auc,higher,mean,0.827443512695085,0.8279377474959235,-0.0004942348008385444,tie_within_1_percent,
+hepatitis,,auc,higher,mean,0.8839702380952381,0.8757063492063492,0.00826388888888896,tie_within_1_percent,
+mushroom,,auc,higher,mean,1.0,1.0,0.0,tie_within_1_percent,
+adult,negligible natural missingness,auc,higher,median,0.9025169510158318,0.9028735684068193,-0.00035661739098746814,tie_within_1_percent,
+cylinder-bands,,auc,higher,median,0.8977719988572022,0.888999016130269,0.008772982726933165,tie_within_1_percent,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",auc,higher,median,0.827443512695085,0.8293860062893081,-0.0019424935942231603,tie_within_1_percent,
+hepatitis,,auc,higher,median,0.8839702380952381,0.8711765873015873,0.012793650793650801,better,
+mushroom,,auc,higher,median,1.0,1.0,0.0,tie_within_1_percent,
+adult,negligible natural missingness,auc,higher,knn5,0.9025169510158318,0.9032690466051304,-0.0007520955892985626,tie_within_1_percent,
+cylinder-bands,,auc,higher,knn5,0.8977719988572022,0.885203820580749,0.012568178276453179,better,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",auc,higher,knn5,0.827443512695085,0.8246510889820639,0.0027924237130211305,tie_within_1_percent,
+hepatitis,,auc,higher,knn5,0.8839702380952381,0.8911646825396826,-0.007194444444444503,tie_within_1_percent,
+mushroom,,auc,higher,knn5,1.0,1.0,0.0,tie_within_1_percent,
+adult,negligible natural missingness,auc,higher,iterative_single,0.9025169510158318,0.9030425037810004,-0.0005255527651685243,tie_within_1_percent,
+cylinder-bands,,auc,higher,iterative_single,0.8977719988572022,0.8973747879928727,0.00039721086432942254,tie_within_1_percent,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",auc,higher,iterative_single,0.827443512695085,0.8263301304449103,0.0011133822501746549,tie_within_1_percent,
+hepatitis,,auc,higher,iterative_single,0.8839702380952381,0.8816468253968254,0.0023234126984127412,tie_within_1_percent,
+mushroom,,auc,higher,iterative_single,1.0,1.0,0.0,tie_within_1_percent,
+adult,negligible natural missingness,heldout_numeric_rmse,lower,mean,0.9822360276108227,1.0215960218500924,-0.03935999423926961,better,
+cylinder-bands,,heldout_numeric_rmse,lower,mean,0.9788659960390508,0.9978403552017955,-0.018974359162744703,better,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",heldout_numeric_rmse,lower,mean,0.9817321147478367,0.9991580450225631,-0.017425930274726387,better,
+hepatitis,,heldout_numeric_rmse,lower,mean,1.0224560179728823,1.0025635374431583,0.019892480529724033,worse,
+adult,negligible natural missingness,heldout_numeric_rmse,lower,median,0.9822360276108227,1.0093538410604153,-0.02711781344959252,better,
+cylinder-bands,,heldout_numeric_rmse,lower,median,0.9788659960390508,1.0253350856294894,-0.046469089590438606,better,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",heldout_numeric_rmse,lower,median,0.9817321147478367,1.0252113923748414,-0.04347927762700465,better,
+hepatitis,,heldout_numeric_rmse,lower,median,1.0224560179728823,1.0755691490780241,-0.05311313110514182,better,
+adult,negligible natural missingness,heldout_numeric_rmse,lower,knn5,0.9822360276108227,0.9644358804244104,0.01780014718641232,worse,
+cylinder-bands,,heldout_numeric_rmse,lower,knn5,0.9788659960390508,0.9060894453145513,0.07277655072449951,worse,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",heldout_numeric_rmse,lower,knn5,0.9817321147478367,0.9489174185977327,0.03281469615010402,worse,
+hepatitis,,heldout_numeric_rmse,lower,knn5,1.0224560179728823,0.9342534511887597,0.08820256678412264,worse,
+adult,negligible natural missingness,heldout_numeric_rmse,lower,iterative_single,0.9822360276108227,1.018173462810642,-0.03593743519981929,better,
+cylinder-bands,,heldout_numeric_rmse,lower,iterative_single,0.9788659960390508,0.9121906683874373,0.06667532765161344,worse,
+diabetes,"sentinel-coded missingness (zeros treated as missing), not native NaN",heldout_numeric_rmse,lower,iterative_single,0.9817321147478367,0.926322868938881,0.055409245808955676,worse,
+hepatitis,,heldout_numeric_rmse,lower,iterative_single,1.0224560179728823,0.8667075014651109,0.15574851650777144,worse,
+adult,negligible natural missingness,heldout_categorical_accuracy,higher,mean,0.3009025483195899,0.3261510119177968,-0.02524846359820687,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+cylinder-bands,,heldout_categorical_accuracy,higher,mean,0.5736823573917996,0.5696880271455346,0.003994330246265054,tie_within_1_percent,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+hepatitis,,heldout_categorical_accuracy,higher,mean,0.7157822982712571,0.7181557189109286,-0.0023734206396714974,tie_within_1_percent,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,,heldout_categorical_accuracy,higher,mean,0.47160300194259386,0.4550081024809204,0.016594899461673474,better,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+soybean,,heldout_categorical_accuracy,higher,mean,0.7496113564844388,0.6109948482584069,0.1386165082260319,better,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+adult,negligible natural missingness,heldout_categorical_accuracy,higher,median,0.3009025483195899,0.532443845624928,-0.23154129730533807,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+cylinder-bands,,heldout_categorical_accuracy,higher,median,0.5736823573917996,0.6714940452717008,-0.09781168787990113,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+hepatitis,,heldout_categorical_accuracy,higher,median,0.7157822982712571,0.7240971389280877,-0.008314840656830635,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,,heldout_categorical_accuracy,higher,median,0.47160300194259386,0.5435798500569199,-0.07197684811432603,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+soybean,,heldout_categorical_accuracy,higher,median,0.7496113564844388,0.6855836984962377,0.06402765798820109,better,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+adult,negligible natural missingness,heldout_categorical_accuracy,higher,knn5,0.3009025483195899,0.5067235686642882,-0.20582102034469835,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+cylinder-bands,,heldout_categorical_accuracy,higher,knn5,0.5736823573917996,0.721591475063175,-0.14790911767137538,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+hepatitis,,heldout_categorical_accuracy,higher,knn5,0.7157822982712571,0.7573843950191644,-0.04160209674790738,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,,heldout_categorical_accuracy,higher,knn5,0.47160300194259386,0.7064910127624932,-0.2348880108198993,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+soybean,,heldout_categorical_accuracy,higher,knn5,0.7496113564844388,0.8304553546522759,-0.08084399816783716,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+adult,negligible natural missingness,heldout_categorical_accuracy,higher,iterative_single,0.3009025483195899,0.3307326170975992,-0.02983006877800931,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+cylinder-bands,,heldout_categorical_accuracy,higher,iterative_single,0.5736823573917996,0.6127191336082448,-0.03903677621644519,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+hepatitis,,heldout_categorical_accuracy,higher,iterative_single,0.7157822982712571,0.7557147872252533,-0.03993248895399626,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,,heldout_categorical_accuracy,higher,iterative_single,0.47160300194259386,0.4734255254059114,-0.0018225234633175158,tie_within_1_percent,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+soybean,,heldout_categorical_accuracy,higher,iterative_single,0.7496113564844388,0.7903611085514388,-0.040749752067000045,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+adult,negligible natural missingness,heldout_categorical_error_rate,lower,mean,0.69909745168041,0.6738489880822033,0.02524846359820676,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+cylinder-bands,,heldout_categorical_error_rate,lower,mean,0.4263176426082004,0.4303119728544654,-0.003994330246264999,tie_within_1_percent,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+hepatitis,,heldout_categorical_error_rate,lower,mean,0.2842177017287429,0.2818442810890714,0.0023734206396714974,tie_within_1_percent,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,,heldout_categorical_error_rate,lower,mean,0.5283969980574061,0.5449918975190796,-0.016594899461673474,better,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+soybean,,heldout_categorical_error_rate,lower,mean,0.2503886435155611,0.38900515174159306,-0.13861650822603194,better,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+adult,negligible natural missingness,heldout_categorical_error_rate,lower,median,0.69909745168041,0.46755615437507203,0.231541297305338,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+cylinder-bands,,heldout_categorical_error_rate,lower,median,0.4263176426082004,0.3285059547282992,0.09781168787990119,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+hepatitis,,heldout_categorical_error_rate,lower,median,0.2842177017287429,0.2759028610719122,0.008314840656830691,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,,heldout_categorical_error_rate,lower,median,0.5283969980574061,0.4564201499430801,0.07197684811432603,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+soybean,,heldout_categorical_error_rate,lower,median,0.2503886435155611,0.31441630150376226,-0.06402765798820115,better,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+adult,negligible natural missingness,heldout_categorical_error_rate,lower,knn5,0.69909745168041,0.49327643133571175,0.2058210203446983,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+cylinder-bands,,heldout_categorical_error_rate,lower,knn5,0.4263176426082004,0.278408524936825,0.14790911767137538,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+hepatitis,,heldout_categorical_error_rate,lower,knn5,0.2842177017287429,0.24261560498083548,0.04160209674790741,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,,heldout_categorical_error_rate,lower,knn5,0.5283969980574061,0.29350898723750685,0.2348880108198993,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+soybean,,heldout_categorical_error_rate,lower,knn5,0.2503886435155611,0.16954464534772412,0.080843998167837,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+adult,negligible natural missingness,heldout_categorical_error_rate,lower,iterative_single,0.69909745168041,0.6692673829024007,0.02983006877800931,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+cylinder-bands,,heldout_categorical_error_rate,lower,iterative_single,0.4263176426082004,0.38728086639175513,0.039036776216445246,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+hepatitis,,heldout_categorical_error_rate,lower,iterative_single,0.2842177017287429,0.2442852127747466,0.03993248895399629,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+mushroom,,heldout_categorical_error_rate,lower,iterative_single,0.5283969980574061,0.5265744745940887,0.0018225234633174603,tie_within_1_percent,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
+soybean,,heldout_categorical_error_rate,lower,iterative_single,0.2503886435155611,0.20963889144856118,0.040749752066999934,worse,harness ordinal-encoding adapter; not production behavior (production uses mode fallback); not for headline claims
