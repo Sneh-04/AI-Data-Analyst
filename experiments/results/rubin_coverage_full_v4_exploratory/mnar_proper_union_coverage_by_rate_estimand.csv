@@ -1,0 +1,7 @@
+exploratory_label,mask_rate,estimand,n_envelopes_covering,n_complete_envelopes,coverage,n_incomplete_envelopes,binomial_mc_se
+"EXPLORATORY (post-hoc, not pre-registered)",0.1,mean,534,1000,0.534,0,0.01577479001445027
+"EXPLORATORY (post-hoc, not pre-registered)",0.1,ols_slope,706,1000,0.706,0,0.014407081592050489
+"EXPLORATORY (post-hoc, not pre-registered)",0.3,mean,393,1000,0.393,0,0.015445096309184997
+"EXPLORATORY (post-hoc, not pre-registered)",0.3,ols_slope,599,1000,0.599,0,0.015498354751392161
+"EXPLORATORY (post-hoc, not pre-registered)",0.5,mean,295,1000,0.295,0,0.01442133835675455
+"EXPLORATORY (post-hoc, not pre-registered)",0.5,ols_slope,466,1000,0.466,0,0.01577479001445027
