@@ -4,7 +4,11 @@ Upgraded from the original Streamlit utils/ logic into a stateless,
 production-style FastAPI service. Spring Boot backend calls these
 endpoints; this service never talks to the DB or users directly.
 """
-from fastapi import FastAPI
+import os
+import secrets
+
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import cleaning, stats, forecasting, insights, health, chat
@@ -16,10 +20,20 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# In production restrict this to the Spring Boot gateway's origin only
+@app.middleware("http")
+async def require_internal_api_key(request: Request, call_next):
+    internal_api_key = os.getenv("INTERNAL_API_KEY")
+    if (
+        request.url.path.startswith("/api/ml/")
+        and internal_api_key
+        and not secrets.compare_digest(request.headers.get("X-Internal-Key", ""), internal_api_key)
+    ):
+        return JSONResponse(status_code=401, content={"detail": "Missing or invalid internal API key"})
+    return await call_next(request)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[os.getenv("BACKEND_ORIGIN", "http://localhost:8080")],
     allow_methods=["*"],
     allow_headers=["*"],
 )

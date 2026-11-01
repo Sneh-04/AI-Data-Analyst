@@ -26,6 +26,9 @@ public class MlServiceClient {
 
     @Value("${ml.service.base-url:http://localhost:8000}")
     private String mlServiceBaseUrl;
+    @Value("${INTERNAL_API_KEY:}")
+    private String internalApiKey;
+
 
     public MlServiceClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -34,6 +37,10 @@ public class MlServiceClient {
     public Map<String, Object> post(String path, Map<String, Object> body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        if (internalApiKey != null && !internalApiKey.isBlank()) {
+            headers.set("X-Internal-Key", internalApiKey);
+        }
+
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
         try {
             return restTemplate.postForObject(mlServiceBaseUrl + path, entity, Map.class);
