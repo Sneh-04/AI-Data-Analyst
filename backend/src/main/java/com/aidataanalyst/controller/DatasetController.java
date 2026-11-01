@@ -55,6 +55,17 @@ public class DatasetController {
         this.chatPersistenceService = chatPersistenceService;
     }
 
+    @GetMapping
+    public List<DatasetSummary> listDatasets(Authentication authentication) {
+        return datasetAccessService.listOwnedDatasets(authentication.getName()).stream()
+                .map(dataset -> new DatasetSummary(
+                        dataset.getId(),
+                        dataset.getFileName(),
+                        dataset.getRowCount(),
+                        dataset.getColumnCount()))
+                .toList();
+    }
+
     @PostMapping("/{id}/clean")
     public Map<String, Object> clean(@PathVariable Long id, @RequestBody Map<String, Object> request,
                                      Authentication authentication) {
@@ -148,5 +159,8 @@ public class DatasetController {
                                                             Authentication authentication) {
         datasetAccessService.requireOwnedDataset(id, authentication.getName());
         return reportGenerationService.generate(id, (String) request.get("format"), authentication.getName());
+    }
+
+    public record DatasetSummary(Long datasetId, String fileName, Integer rowCount, Integer columnCount) {
     }
 }

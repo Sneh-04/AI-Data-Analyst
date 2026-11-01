@@ -2,18 +2,21 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDataset } from '../api/DatasetContext.jsx'
 import api from '../api/client.js'
+import MyDatasets from '../components/MyDatasets.jsx'
 
 export default function Upload() {
   const { fileName, headers, records, loadFile, datasetId, setDatasetId, setHeaders, setRecords } = useDataset()
   const [selectedFile, setSelectedFile] = React.useState(null)
   const [uploading, setUploading] = React.useState(false)
   const [uploadError, setUploadError] = React.useState('')
+  const [datasetsRefreshKey, setDatasetsRefreshKey] = React.useState(0)
   const navigate = useNavigate()
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0]
     if (!file) return
     setDatasetId(null)
+    localStorage.removeItem('selectedDatasetId')
     setSelectedFile(file)
     setUploadError('')
     try {
@@ -34,10 +37,12 @@ export default function Upload() {
       const response = await api.post('/datasets/upload', formData)
       const uploadedDatasetId = response.data.datasetId
       setDatasetId(uploadedDatasetId)
+      localStorage.setItem('selectedDatasetId', String(uploadedDatasetId))
       const recordsResponse = await api.get(`/datasets/${uploadedDatasetId}/records`)
       const persistedRecords = recordsResponse.data
       setRecords(persistedRecords)
       setHeaders(persistedRecords.length > 0 ? Object.keys(persistedRecords[0]) : [])
+      setDatasetsRefreshKey(key => key + 1)
     } catch (error) {
       setUploadError(error.response?.data?.message || 'Unable to upload the dataset.')
     } finally {
@@ -48,6 +53,7 @@ export default function Upload() {
   return (
     <div>
       <h2>Upload dataset</h2>
+      <MyDatasets refreshKey={datasetsRefreshKey} />
       <div className="card">
         <input
           type="file"

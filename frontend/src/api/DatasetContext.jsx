@@ -86,7 +86,7 @@ export function DatasetProvider({ children }) {
   })
 
   return (
-    <DatasetContext.Provider value={{ fileName, headers, records, setRecords, setHeaders, loadFile, datasetId, setDatasetId }}>
+    <DatasetContext.Provider value={{ fileName, headers, records, setRecords, setHeaders, loadFile, datasetId, setDatasetId, setFileName }}>
       {children}
     </DatasetContext.Provider>
   )
