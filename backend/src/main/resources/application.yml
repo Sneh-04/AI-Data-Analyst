@@ -2,6 +2,10 @@ server:
   port: 8080
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_SIZE:20MB}
+      max-request-size: ${MAX_UPLOAD_REQUEST_SIZE:25MB}
   datasource:
     url: jdbc:postgresql://localhost:5432/ai_data_analyst
     username: postgres

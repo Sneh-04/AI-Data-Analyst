@@ -82,6 +82,7 @@ public class UploadController {
     private CsvShape inspect(byte[] content) {
         String text = new String(content, java.nio.charset.StandardCharsets.UTF_8);
         List<List<String>> rows = CsvParser.parseRows(text);
+        CsvParser.validateRowWidths(rows);
         if (rows.isEmpty() || rows.get(0).isEmpty() || rows.get(0).get(0).isBlank()) {
             return new CsvShape(0, 0);
         }

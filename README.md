@@ -4,6 +4,12 @@
 React frontend, Spring Boot API gateway, FastAPI ML service, and PostgreSQL
 storage for data cleaning, quality checks, forecasting, and dataset questions.
 
+## Upload limits
+
+The API defaults to a 20 MB file limit. Set `MAX_UPLOAD_SIZE` to change it.
+Multipart overhead is accommodated by `MAX_UPLOAD_REQUEST_SIZE` (25 MB by
+default); increase that value alongside the file limit when needed.
+
 ## Research experiments
 
 Reproducible experiment methodology, limitations, and results are documented in
