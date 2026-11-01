@@ -4,6 +4,7 @@ import com.aidataanalyst.entity.Dataset;
 import com.aidataanalyst.repository.DatasetHealthScoreRepository;
 import com.aidataanalyst.service.ChatPersistenceService;
 import com.aidataanalyst.service.DatasetAccessService;
+import com.aidataanalyst.service.DatasetDeletionService;
 import com.aidataanalyst.service.DatasetHealthScorePersistenceService;
 import com.aidataanalyst.service.DatasetStorageService;
 import com.aidataanalyst.service.ForecastPersistenceService;
@@ -29,6 +30,7 @@ class DatasetListControllerTest {
                 mock(MlServiceClient.class),
                 mock(DatasetHealthScoreRepository.class),
                 datasetAccessService,
+                mock(DatasetDeletionService.class),
                 mock(DatasetHealthScorePersistenceService.class),
                 mock(DatasetStorageService.class),
                 mock(VersioningService.class),
@@ -46,7 +48,7 @@ class DatasetListControllerTest {
 
         List<DatasetController.DatasetSummary> actual = controller.listDatasets(authentication);
 
-        assertEquals(List.of(new DatasetController.DatasetSummary(23L, "sales.csv", 12, 3)), actual);
+        assertEquals(List.of(new DatasetController.DatasetSummary(23L, "sales.csv", 12, 3, null)), actual);
         verify(datasetAccessService).listOwnedDatasets("analyst@example.test");
     }
 }

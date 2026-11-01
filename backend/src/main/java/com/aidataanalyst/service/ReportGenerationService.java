@@ -38,6 +38,9 @@ public class ReportGenerationService {
     @Value("${ml.service.base-url:http://localhost:8000}")
     private String mlServiceBaseUrl;
 
+    @Value("${INTERNAL_API_KEY}")
+    private String internalApiKey;
+
     public ReportGenerationService(DatasetRepository datasetRepository, DatasetStorageService storageService,
                                    ReportRepository reportRepository, UserRepository userRepository,
                                    RestTemplate restTemplate) {
@@ -54,10 +57,10 @@ public class ReportGenerationService {
         if (!format.equals("PDF") && !format.equals("XLSX")) {
             throw new ResponseStatusException(BAD_REQUEST, "Format must be PDF or XLSX");
         }
-        Dataset dataset = datasetRepository.findById(datasetId)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Dataset not found"));
         User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "User is unavailable"));
+        Dataset dataset = datasetRepository.findActiveOwnedByIdForUpdate(datasetId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Dataset not found"));
 
         Map<String, Object> payload = Map.of(
                 "records", storageService.readRecords(dataset),
@@ -65,6 +68,7 @@ public class ReportGenerationService {
                 "dataset_name", dataset.getFileName());
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+        requestHeaders.set("X-Internal-Key", internalApiKey);
         ResponseEntity<byte[]> mlResponse = restTemplate.postForEntity(
                 mlServiceBaseUrl + "/api/ml/reports/generate",
                 new HttpEntity<>(payload, requestHeaders), byte[].class);

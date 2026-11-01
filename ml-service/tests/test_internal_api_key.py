@@ -6,7 +6,8 @@ client = TestClient(app)
 
 
 def test_ml_routes_require_configured_internal_key(monkeypatch):
-    monkeypatch.setenv("INTERNAL_API_KEY", "test-shared-key")
+    key = "test-shared-key-0123456789abcdef"
+    monkeypatch.setenv("INTERNAL_API_KEY", key)
 
     missing_key = client.get("/api/ml/stats/numeric")
     invalid_key = client.get(
@@ -15,7 +16,7 @@ def test_ml_routes_require_configured_internal_key(monkeypatch):
     )
     valid_key = client.get(
         "/api/ml/stats/numeric",
-        headers={"X-Internal-Key": "test-shared-key"},
+        headers={"X-Internal-Key": key},
     )
 
     assert missing_key.status_code == 401
@@ -23,12 +24,20 @@ def test_ml_routes_require_configured_internal_key(monkeypatch):
     assert valid_key.status_code == 405
 
 
-def test_ml_routes_remain_usable_when_internal_key_is_unset(monkeypatch):
+def test_ml_routes_fail_closed_when_internal_key_is_unset(monkeypatch):
     monkeypatch.delenv("INTERNAL_API_KEY", raising=False)
 
     response = client.get("/api/ml/stats/numeric")
 
-    assert response.status_code == 405
+    assert response.status_code == 503
+
+
+def test_ml_routes_fail_closed_when_internal_key_is_too_short(monkeypatch):
+    monkeypatch.setenv("INTERNAL_API_KEY", "short-key")
+
+    response = client.get("/api/ml/stats/numeric")
+
+    assert response.status_code == 503
 
 
 def test_cors_allows_backend_origin_only():

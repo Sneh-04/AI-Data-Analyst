@@ -36,9 +36,10 @@ public class VersioningService {
     @Transactional
     public DatasetVersion saveVersion(Long datasetId, Map<String, Object> request,
                                       Map<String, Object> cleaningResult, String email) {
-        Dataset dataset = getDataset(datasetId);
         User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is unavailable"));
+        Dataset dataset = datasetRepository.findActiveOwnedByIdForUpdate(datasetId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
         Object rawRecords = cleaningResult.get("cleaned_records");
         if (!(rawRecords instanceof List<?>)) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Cleaning response has no records");
@@ -67,14 +68,20 @@ public class VersioningService {
     }
 
     @Transactional(readOnly = true)
-    public List<DatasetVersion> listVersions(Long datasetId) {
-        getDataset(datasetId);
+    public List<DatasetVersion> listVersions(Long datasetId, String email) {
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is unavailable"));
+        datasetRepository.findByIdAndUploadedByAndDeletionStatus(datasetId, user.getId(), "ACTIVE")
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
         return versionRepository.findByDatasetIdOrderByVersionNumberDesc(datasetId);
     }
 
     @Transactional
-    public Map<String, Object> restore(Long datasetId, Integer versionNumber) {
-        Dataset dataset = getDataset(datasetId);
+    public Map<String, Object> restore(Long datasetId, Integer versionNumber, String email) {
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is unavailable"));
+        Dataset dataset = datasetRepository.findActiveOwnedByIdForUpdate(datasetId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
         DatasetVersion version = versionRepository.findByDatasetIdAndVersionNumber(datasetId, versionNumber)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset version not found"));
         List<Map<String, Object>> records = storageService.readRecordsFromPath(version.getStoragePath());
@@ -84,11 +91,6 @@ public class VersioningService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to restore dataset version", exception);
         }
         return Map.of("versionNumber", versionNumber, "records", records);
-    }
-
-    private Dataset getDataset(Long datasetId) {
-        return datasetRepository.findById(datasetId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
     }
 
     private List<Map<String, Object>> toRecords(List<?> rawRecords) {

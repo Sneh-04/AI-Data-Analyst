@@ -22,17 +22,19 @@ class MlServiceClientInternalKeyTest {
         RestTemplate restTemplate = mock(RestTemplate.class);
         MlServiceClient client = new MlServiceClient(restTemplate);
         ReflectionTestUtils.setField(client, "mlServiceBaseUrl", "http://ml.test");
-        ReflectionTestUtils.setField(client, "internalApiKey", "test-shared-key");
+        ReflectionTestUtils.setField(client, "internalApiKey", "test-shared-key-0123456789abcdef");
         when(restTemplate.postForObject(any(String.class), any(HttpEntity.class), eq(Map.class)))
                 .thenReturn(Map.of());
 
-        client.numericStats(Map.of("records", "sample"));
+        client.healthScore(Map.of());
 
         ArgumentCaptor<HttpEntity> request = ArgumentCaptor.forClass(HttpEntity.class);
         verify(restTemplate).postForObject(
-                eq("http://ml.test/api/ml/stats/numeric"),
+                eq("http://ml.test/api/ml/health/score"),
                 request.capture(),
                 eq(Map.class));
-        assertEquals("test-shared-key", request.getValue().getHeaders().getFirst("X-Internal-Key"));
+        assertEquals(
+                "test-shared-key-0123456789abcdef",
+                request.getValue().getHeaders().getFirst("X-Internal-Key"));
     }
 }

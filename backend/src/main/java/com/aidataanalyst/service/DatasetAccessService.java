@@ -23,7 +23,7 @@ public class DatasetAccessService {
 
     public Dataset requireOwnedDataset(Long datasetId, String email) {
         User user = requireUser(email);
-        return datasetRepository.findByIdAndUploadedBy(datasetId, user.getId())
+        return datasetRepository.findByIdAndUploadedByAndDeletionStatus(datasetId, user.getId(), "ACTIVE")
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
     }
 

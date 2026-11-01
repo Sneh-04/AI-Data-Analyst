@@ -11,5 +11,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
+ENV SPRING_PROFILES_ACTIVE=prod
 EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]

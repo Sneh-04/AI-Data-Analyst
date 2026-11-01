@@ -10,6 +10,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -38,7 +41,7 @@ public class Forecast {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "forecast_json", nullable = false, columnDefinition = "jsonb")
-    private Object forecastJson;
+    private List<Map<String, Object>> forecastJson;
 
     @Column(name = "created_by", nullable = false)
     private Long createdBy;
@@ -50,7 +53,7 @@ public class Forecast {
     }
 
     public Forecast(Long datasetId, String dateColumn, String valueColumn, String modelUsed,
-                    Map<String, Object> modelComparison, Object forecastJson, Long createdBy) {
+                    Map<String, Object> modelComparison, List<Map<String, Object>> forecastJson, Long createdBy) {
         this.datasetId = datasetId;
         this.dateColumn = dateColumn;
         this.valueColumn = valueColumn;
@@ -59,6 +62,28 @@ public class Forecast {
         this.forecastJson = forecastJson;
         this.createdBy = createdBy;
         this.createdAt = Instant.now();
+    }
+
+    public Forecast(Long datasetId, String dateColumn, String valueColumn, String modelUsed,
+                    Map<String, Object> modelComparison, Object forecastJson, Long createdBy) {
+        this(datasetId, dateColumn, valueColumn, modelUsed, modelComparison,
+                normalizeForecastRows(forecastJson), createdBy);
+    }
+
+    private static List<Map<String, Object>> normalizeForecastRows(Object value) {
+        if (!(value instanceof List<?> rows)) {
+            throw new IllegalArgumentException("Forecast JSON must be a list of rows");
+        }
+        List<Map<String, Object>> normalized = new ArrayList<>();
+        for (Object row : rows) {
+            if (!(row instanceof Map<?, ?> rawMap)) {
+                throw new IllegalArgumentException("Forecast JSON rows must be objects");
+            }
+            Map<String, Object> normalizedRow = new LinkedHashMap<>();
+            rawMap.forEach((key, item) -> normalizedRow.put(String.valueOf(key), item));
+            normalized.add(normalizedRow);
+        }
+        return normalized;
     }
 
     public Long getId() {

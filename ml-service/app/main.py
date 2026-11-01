@@ -20,15 +20,18 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
 @app.middleware("http")
 async def require_internal_api_key(request: Request, call_next):
     internal_api_key = os.getenv("INTERNAL_API_KEY")
-    if (
-        request.url.path.startswith("/api/ml/")
-        and internal_api_key
-        and not secrets.compare_digest(request.headers.get("X-Internal-Key", ""), internal_api_key)
-    ):
-        return JSONResponse(status_code=401, content={"detail": "Missing or invalid internal API key"})
+    if request.url.path.startswith("/api/ml/") and request.method != "OPTIONS":
+        if not internal_api_key or len(internal_api_key.encode("utf-8")) < 32:
+            return JSONResponse(
+                status_code=503,
+                content={"detail": "Internal service authentication is not configured"},
+            )
+        if not secrets.compare_digest(request.headers.get("X-Internal-Key", ""), internal_api_key):
+            return JSONResponse(status_code=401, content={"detail": "Missing or invalid internal API key"})
     return await call_next(request)
 
 app.add_middleware(
@@ -37,6 +40,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.include_router(health.router, prefix="/api/ml/health", tags=["Health & Quality"])
 app.include_router(cleaning.router, prefix="/api/ml/cleaning", tags=["Cleaning"])

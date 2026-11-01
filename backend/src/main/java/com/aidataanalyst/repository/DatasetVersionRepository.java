@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DatasetVersionRepository extends JpaRepository<DatasetVersion, Long> {
+    List<DatasetVersion> findAllByDatasetId(Long datasetId);
+
     List<DatasetVersion> findByDatasetIdOrderByVersionNumberDesc(Long datasetId);
     Optional<DatasetVersion> findByDatasetIdAndVersionNumber(Long datasetId, Integer versionNumber);
     Optional<DatasetVersion> findTopByDatasetIdOrderByVersionNumberDesc(Long datasetId);

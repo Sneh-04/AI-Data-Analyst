@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,8 +31,26 @@ public class DatasetStorageService {
         if (!target.startsWith(storageRoot)) {
             throw new IOException("Invalid storage path");
         }
+        Files.createDirectories(target.getParent());
         Files.write(target, content);
         return target;
+    }
+
+    public void delete(String storagePath) throws IOException {
+        Path relativePath = Path.of(storagePath);
+        Path target = storageRoot.resolve(relativePath).normalize();
+        if (relativePath.isAbsolute() || !target.startsWith(storageRoot) || target.equals(storageRoot)) {
+            throw new IOException("Invalid storage path");
+        }
+        if (Files.notExists(target, LinkOption.NOFOLLOW_LINKS)) {
+            return;
+        }
+        Path realRoot = storageRoot.toRealPath();
+        Path realParent = target.getParent().toRealPath();
+        if (!realParent.startsWith(realRoot)) {
+            throw new IOException("Invalid storage path");
+        }
+        Files.deleteIfExists(target);
     }
 
     public Path writeRecords(String fileName, List<Map<String, Object>> records) throws IOException {

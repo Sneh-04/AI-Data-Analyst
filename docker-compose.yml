@@ -5,10 +5,10 @@ services:
     image: pgvector/pgvector:pg16
     environment:
       POSTGRES_DB: ai_data_analyst
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
@@ -22,7 +22,7 @@ services:
   ml-service:
     build: ./ml-service
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       LLM_PROVIDER: ${LLM_PROVIDER:-openai}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
@@ -34,9 +34,9 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DB: ${POSTGRES_DB:-ai_data_analyst}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY to a random secret of at least 32 bytes}
       BACKEND_ORIGIN: ${BACKEND_ORIGIN:-http://localhost:8080}
     healthcheck:
       test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/', timeout=3)"]
@@ -48,7 +48,9 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - backend_uploads:/var/lib/ai-data-analyst/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,22 +58,27 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ai_data_analyst
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:?Set POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
       ML_SERVICE_BASE_URL: http://ml-service:8000
-      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-}
-
+      STORAGE_LOCAL_PATH: /var/lib/ai-data-analyst/uploads
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET to a random secret of at least 32 bytes}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY to a random secret of at least 32 bytes}
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/health"]
       interval: 10s
       timeout: 5s
       retries: 12
       start_period: 60s
+
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"
+      - "127.0.0.1:3000:80"
     depends_on:
       backend:
         condition: service_healthy
 
 volumes:
   pgdata:
+  backend_uploads:

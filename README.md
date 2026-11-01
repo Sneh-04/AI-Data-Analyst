@@ -4,11 +4,50 @@
 React frontend, Spring Boot API gateway, FastAPI ML service, and PostgreSQL
 storage for data cleaning, quality checks, forecasting, and dataset questions.
 
+## Quickstart
+
+Create a local `.env` file from `.env.example` and set unique secrets before
+starting the stack. For example, generate values with `openssl rand -hex 32`
+for `JWT_SECRET`, `INTERNAL_API_KEY`, and `POSTGRES_PASSWORD`. Do not commit
+`.env`.
+
+```sh
+cp .env.example .env
+# Edit .env and set the generated secrets.
+docker compose up --build
+```
+
+Open the frontend at [http://localhost:3000](http://localhost:3000). The API
+gateway is at `http://localhost:8080` (`/health` is its readiness endpoint),
+the ML service at `http://localhost:8000`, and PostgreSQL is published on
+`localhost:5432`. Register an account in the UI to begin; the application does
+not include a default user.
+
 ## Upload limits
 
 The API defaults to a 20 MB file limit. Set `MAX_UPLOAD_SIZE` to change it.
 Multipart overhead is accommodated by `MAX_UPLOAD_REQUEST_SIZE` (25 MB by
 default); increase that value alongside the file limit when needed.
+
+## Dataset deletion
+
+Use the Delete action in My datasets to remove a dataset and its generated
+versions and reports. The API marks the dataset unavailable before deleting
+stored files and then removes the dataset row; PostgreSQL cascades the related
+analysis, chat, report, and embedding records. If file cleanup fails, the
+dataset remains inaccessible and the same delete action can be retried. After
+deletion succeeds, another DELETE request for that dataset returns 404.
+
+Deletion jobs retain their status and request/completion timestamps for
+operational troubleshooting. Dataset and requester IDs are retained while a
+deletion is pending or failed so it can be retried, then cleared in the same
+transaction that completes deletion.
+
+This local setup does not define backup retention or guarantee deletion from
+external AI providers or infrastructure backups. Such copies may persist under
+their respective retention policies; do not treat active-storage deletion as
+proof that backup copies have expired. Production backup retention and provider
+data-retention policies have not been verified.
 
 ## Research experiments
 

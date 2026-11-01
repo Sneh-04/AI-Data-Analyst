@@ -5,6 +5,7 @@ import com.aidataanalyst.entity.Dataset;
 import com.aidataanalyst.entity.DatasetHealthScore;
 import com.aidataanalyst.repository.DatasetHealthScoreRepository;
 import com.aidataanalyst.service.DatasetAccessService;
+import com.aidataanalyst.service.DatasetDeletionService;
 import com.aidataanalyst.service.DatasetHealthScorePersistenceService;
 import com.aidataanalyst.service.DatasetStorageService;
 import com.aidataanalyst.service.VersioningService;
@@ -30,6 +31,7 @@ public class DatasetController {
     private final MlServiceClient mlServiceClient;
     private final DatasetHealthScoreRepository healthScoreRepository;
     private final DatasetAccessService datasetAccessService;
+    private final DatasetDeletionService datasetDeletionService;
     private final DatasetHealthScorePersistenceService healthScorePersistenceService;
     private final DatasetStorageService datasetStorageService;
     private final VersioningService versioningService;
@@ -39,6 +41,7 @@ public class DatasetController {
 
     public DatasetController(MlServiceClient mlServiceClient, DatasetHealthScoreRepository healthScoreRepository,
                              DatasetAccessService datasetAccessService,
+                             DatasetDeletionService datasetDeletionService,
                              DatasetHealthScorePersistenceService healthScorePersistenceService,
                              DatasetStorageService datasetStorageService, VersioningService versioningService,
                              ReportGenerationService reportGenerationService,
@@ -47,6 +50,7 @@ public class DatasetController {
         this.mlServiceClient = mlServiceClient;
         this.healthScoreRepository = healthScoreRepository;
         this.datasetAccessService = datasetAccessService;
+        this.datasetDeletionService = datasetDeletionService;
         this.healthScorePersistenceService = healthScorePersistenceService;
         this.datasetStorageService = datasetStorageService;
         this.versioningService = versioningService;
@@ -62,8 +66,15 @@ public class DatasetController {
                         dataset.getId(),
                         dataset.getFileName(),
                         dataset.getRowCount(),
-                        dataset.getColumnCount()))
+                        dataset.getColumnCount(),
+                        dataset.getDeletionStatus()))
                 .toList();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDataset(@PathVariable Long id, Authentication authentication) {
+        datasetDeletionService.delete(id, authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/clean")
@@ -143,14 +154,14 @@ public class DatasetController {
     public List<com.aidataanalyst.entity.DatasetVersion> versions(@PathVariable Long id,
                                                                   Authentication authentication) {
         datasetAccessService.requireOwnedDataset(id, authentication.getName());
-        return versioningService.listVersions(id);
+        return versioningService.listVersions(id, authentication.getName());
     }
 
     @PostMapping("/{id}/versions/{versionNumber}/restore")
     public Map<String, Object> restore(@PathVariable Long id, @PathVariable Integer versionNumber,
                                        Authentication authentication) {
         datasetAccessService.requireOwnedDataset(id, authentication.getName());
-        return versioningService.restore(id, versionNumber);
+        return versioningService.restore(id, versionNumber, authentication.getName());
     }
 
     @PostMapping("/{id}/reports")
@@ -161,6 +172,7 @@ public class DatasetController {
         return reportGenerationService.generate(id, (String) request.get("format"), authentication.getName());
     }
 
-    public record DatasetSummary(Long datasetId, String fileName, Integer rowCount, Integer columnCount) {
+    public record DatasetSummary(
+            Long datasetId, String fileName, Integer rowCount, Integer columnCount, String deletionStatus) {
     }
 }

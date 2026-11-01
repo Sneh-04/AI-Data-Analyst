@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -29,15 +31,28 @@ public class ForecastPersistenceService {
         User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is unavailable"));
         Object rawForecast = mlServiceResponse.get("forecast");
-        if (!(rawForecast instanceof java.util.List<?>)) {
+        if (!(rawForecast instanceof List<?> forecastRows)) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Forecast response has no forecast data");
         }
 
         Map<String, Object> modelComparison = toStringKeyedMap(mlServiceResponse.get("model_comparison"));
         String modelUsed = mlServiceResponse.get("model_used") instanceof String value ? value : null;
         Forecast forecast = new Forecast(datasetId, dateColumn, valueColumn, modelUsed,
-                modelComparison, rawForecast, user.getId());
+                modelComparison, toForecastRows(forecastRows), user.getId());
         return forecastRepository.save(forecast);
+    }
+
+    private List<Map<String, Object>> toForecastRows(List<?> rows) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Object row : rows) {
+            if (!(row instanceof Map<?, ?> rawMap)) {
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Forecast response contains an invalid row");
+            }
+            Map<String, Object> forecastRow = new LinkedHashMap<>();
+            rawMap.forEach((key, value) -> forecastRow.put(String.valueOf(key), value));
+            result.add(forecastRow);
+        }
+        return result;
     }
 
     private Map<String, Object> toStringKeyedMap(Object value) {
