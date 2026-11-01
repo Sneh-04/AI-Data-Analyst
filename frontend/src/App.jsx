@@ -1,6 +1,7 @@
 import React from 'react'
 import { HashRouter, Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom'
 import { DatasetProvider } from './api/DatasetContext.jsx'
+import LogoutControl from './components/LogoutControl.jsx'
 import Upload from './pages/Upload.jsx'
 import Overview from './pages/Overview.jsx'
 import Cleaning from './pages/Cleaning.jsx'
@@ -43,6 +44,7 @@ export default function App() {
                   {l.label}
                 </NavLink>
               ))}
+              <LogoutControl />
             </nav>
           </aside>
           <main className="content">
