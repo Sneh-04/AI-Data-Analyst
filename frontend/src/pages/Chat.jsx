@@ -9,6 +9,16 @@ export default function Chat() {
   const [question, setQuestion] = useState('')
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
+  const chatEnabled = import.meta.env.VITE_CHAT_ENABLED === 'true'
+
+  if (!chatEnabled) {
+    return (
+      <EmptyState
+        title="Chat is disabled"
+        description="The AI chat feature is disabled for this demo because no valid OpenAI or Ollama provider is configured. Enable CHAT_ENABLED and provide a working provider key in .env to re-enable it."
+      />
+    )
+  }
 
   if (records.length === 0) return <EmptyState title="Ask your data a question" description="Upload a dataset to explore it through a natural-language conversation." />
   if (!datasetId) return <EmptyState title="Save your dataset to continue" description="Upload this dataset to the platform before chatting with it." />

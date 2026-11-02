@@ -116,8 +116,8 @@ request_json "clean dataset" POST "/api/datasets/$dataset_id/clean" "$clean_payl
 
 run_inference() {
   local estimand="$1" method="$2" name="inference $1 $2" payload
-  payload="$(jq -cn --argjson records "$records" --arg estimand "$estimand" --arg method "$method" \
-    '{records:$records,target_column:"x2",estimand:$estimand,method:$method,m:5,seed:42,deltas:[-1,0,1]} +
+  payload="$(jq -cn --arg estimand "$estimand" --arg method "$method" \
+    '{target_column:"x2",estimand:$estimand,method:$method,m:5,seed:42,deltas:[-1,0,1]} +
      (if $estimand == "ols_slope" then {predictor_column:"x1"} else {} end)')"
   request_json "$name" POST "/api/datasets/$dataset_id/inference" "$payload" 200 \
     '(.results | type == "array" and length == 3) and
@@ -135,8 +135,8 @@ run_inference ols_slope proper || true
 run_inference ols_slope improper || true
 
 if jq -e 'length > 0 and (.[0] | has("date") and has("x1"))' <<<"$records" >/dev/null 2>&1; then
-  forecast_payload="$(jq -cn --argjson records "$records" \
-    '{records:$records,date_column:"date",value_column:"x1",periods:3,model:"naive"}')"
+  forecast_payload="$(jq -cn \
+    '{date_column:"date",value_column:"x1",periods:3,model:"naive"}')"
   request_json "forecast date and x1" POST "/api/datasets/$dataset_id/forecast" "$forecast_payload" 200 \
     '(.forecast | type == "array" and length == 3)' || true
 else

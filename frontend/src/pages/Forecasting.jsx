@@ -48,7 +48,7 @@ export default function Forecasting() {
     setError(null)
     try {
       const res = await datasetApi.forecast(datasetId, {
-        records, date_column: dateCol, value_column: valueCol, periods, model,
+        date_column: dateCol, value_column: valueCol, periods, model,
       })
       setResult(res)
     } catch (e) {

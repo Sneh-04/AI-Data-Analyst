@@ -12,6 +12,8 @@ import com.aidataanalyst.service.VersioningService;
 import com.aidataanalyst.service.ReportGenerationService;
 import com.aidataanalyst.service.ForecastPersistenceService;
 import com.aidataanalyst.service.ChatPersistenceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,7 @@ public class DatasetController {
     private final ReportGenerationService reportGenerationService;
     private final ForecastPersistenceService forecastPersistenceService;
     private final ChatPersistenceService chatPersistenceService;
+    private final boolean chatEnabled;
 
     public DatasetController(MlServiceClient mlServiceClient, DatasetHealthScoreRepository healthScoreRepository,
                              DatasetAccessService datasetAccessService,
@@ -54,6 +57,21 @@ public class DatasetController {
                              ReportGenerationService reportGenerationService,
                              ForecastPersistenceService forecastPersistenceService,
                              ChatPersistenceService chatPersistenceService) {
+        this(mlServiceClient, healthScoreRepository, datasetAccessService, datasetDeletionService,
+                healthScorePersistenceService, datasetStorageService, versioningService, reportGenerationService,
+                forecastPersistenceService, chatPersistenceService, true);
+    }
+
+    @Autowired
+    public DatasetController(MlServiceClient mlServiceClient, DatasetHealthScoreRepository healthScoreRepository,
+                             DatasetAccessService datasetAccessService,
+                             DatasetDeletionService datasetDeletionService,
+                             DatasetHealthScorePersistenceService healthScorePersistenceService,
+                             DatasetStorageService datasetStorageService, VersioningService versioningService,
+                             ReportGenerationService reportGenerationService,
+                             ForecastPersistenceService forecastPersistenceService,
+                             ChatPersistenceService chatPersistenceService,
+                             @Value("${chat.enabled:false}") boolean chatEnabled) {
         this.mlServiceClient = mlServiceClient;
         this.healthScoreRepository = healthScoreRepository;
         this.datasetAccessService = datasetAccessService;
@@ -64,6 +82,7 @@ public class DatasetController {
         this.reportGenerationService = reportGenerationService;
         this.forecastPersistenceService = forecastPersistenceService;
         this.chatPersistenceService = chatPersistenceService;
+        this.chatEnabled = chatEnabled;
     }
 
     @GetMapping
@@ -125,8 +144,15 @@ public class DatasetController {
     @PostMapping("/{id}/forecast")
     public Map<String, Object> forecast(@PathVariable Long id, @RequestBody Map<String, Object> request,
                                         Authentication authentication) {
-        datasetAccessService.requireOwnedDataset(id, authentication.getName());
-        Map<String, Object> result = mlServiceClient.runForecast(request);
+        Dataset dataset = datasetAccessService.requireOwnedDataset(id, authentication.getName());
+        if (request.containsKey("records")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "records must be loaded from the authorized dataset");
+        }
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("records", datasetStorageService.readRecords(dataset));
+        payload.putAll(request);
+        Map<String, Object> result = mlServiceClient.runForecast(payload);
         forecastPersistenceService.saveForecast(id, (String) request.get("date_column"),
                 (String) request.get("value_column"), result, authentication.getName());
         return result;
@@ -186,6 +212,10 @@ public class DatasetController {
     @PostMapping("/{id}/chat")
     public Map<String, Object> chat(@PathVariable Long id, @RequestBody Map<String, Object> request,
                                     Authentication authentication) {
+        if (!chatEnabled) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Chat is disabled because no valid AI provider is configured.");
+        }
         datasetAccessService.requireOwnedDataset(id, authentication.getName());
         Map<String, Object> chatRequest = new HashMap<>(request);
         chatRequest.put("dataset_id", id);

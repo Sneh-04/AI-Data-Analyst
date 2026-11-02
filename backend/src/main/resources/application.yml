@@ -34,6 +34,9 @@ jwt:
 storage:
   local-path: /tmp/ai-data-analyst/uploads
 
+chat:
+  enabled: ${CHAT_ENABLED:false}
+
 research:
   summary:
     path: ${RESEARCH_SUMMARY_PATH:classpath:research/v4_summary.json}
