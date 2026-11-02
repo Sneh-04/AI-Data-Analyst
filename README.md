@@ -4,6 +4,106 @@
 React frontend, Spring Boot API gateway, FastAPI ML service, and PostgreSQL
 storage for data cleaning, quality checks, forecasting, and dataset questions.
 
+## Quickstart
+
+Create a local `.env` file from `.env.example` and set unique secrets before
+starting the stack. For example, generate values with `openssl rand -hex 32`
+for `JWT_SECRET`, `INTERNAL_API_KEY`, and `POSTGRES_PASSWORD`. Do not commit
+`.env`.
+
+```sh
+cp .env.example .env
+# Edit .env and set the generated secrets.
+docker compose up --build
+```
+
+Open the frontend at [http://localhost:3000](http://localhost:3000). The API
+gateway is at `http://localhost:8080` (`/health` is its readiness endpoint),
+the ML service at `http://localhost:8000`, and PostgreSQL is published on
+`localhost:5432`. Register an account in the UI to begin; the application does
+not include a default user.
+
+## Upload limits
+
+The API defaults to a 20 MB file limit. Set `MAX_UPLOAD_SIZE` to change it.
+Multipart overhead is accommodated by `MAX_UPLOAD_REQUEST_SIZE` (25 MB by
+default); increase that value alongside the file limit when needed.
+
+## Dataset deletion
+
+Use the Delete action in My datasets to remove a dataset and its generated
+versions and reports. The API marks the dataset unavailable before deleting
+stored files and then removes the dataset row; PostgreSQL cascades the related
+analysis, chat, report, and embedding records. If file cleanup fails, the
+dataset remains inaccessible and the same delete action can be retried. After
+deletion succeeds, another DELETE request for that dataset returns 404.
+
+Deletion jobs retain their status and request/completion timestamps for
+operational troubleshooting. Dataset and requester IDs are retained while a
+deletion is pending or failed so it can be retried, then cleared in the same
+transaction that completes deletion.
+
+This local setup does not define backup retention or guarantee deletion from
+external AI providers or infrastructure backups. Such copies may persist under
+their respective retention policies; do not treat active-storage deletion as
+proof that backup copies have expired. Production backup retention and provider
+data-retention policies have not been verified.
+
+Generate and run the seeded demo:
+
+```sh
+python3 demo/make_demo_csv.py
+bash scripts/smoke_test.sh
+```
+
+The smoke test assumes the compose stack is already running and requires
+`curl` and `jq`. Set `BASE_URL` to target a different API gateway URL.
+
+## Demo walkthrough
+
+1. **Upload the demo CSV.** Register or sign in, open Upload, and select
+   `demo/demo_missing.csv`. It contains 800 rows, three numeric columns, a
+   category, a date, and an x1-dependent missingness pattern in `x2`.
+2. **Check health.** Open Overview and run the health score to see completeness,
+   uniqueness, and the overall dataset grade.
+3. **Compare inference methods.** Open Inference, select `x2` and its mean or
+   `x1` as the predictor for the `x2 ~ x1` slope, then compare proper and
+   improper multiple-imputation results and their intervals. The API analyzes
+   the authorized dataset stored on the server, not browser-submitted rows.
+   Results are temporary and are not saved to your account; use **Download
+   results CSV** before leaving the page if you need to keep them.
+4. **Explore MNAR sensitivity.** In Inference, compare delta values `-1`, `0`,
+   and `1`; these are sensitivity scenarios, not tests that identify the
+   missingness mechanism.
+5. **Open Research.** Select Research in the app navigation to see the
+   simulation results. For methods, evidence, and caveats, also read the
+   [research matrix](research/research-matrix.md) and
+   [research status](research/research-upgrade-status.md).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser["React frontend<br/>:3000"] -->|"HTTP /api"| Gateway["Spring Boot API<br/>:8080"]
+    Gateway -->|"datasets, users, reports"| DB[("PostgreSQL / pgvector<br/>:5432")]
+    Gateway -->|"JSON ML requests"| ML["FastAPI ML service<br/>:8000"]
+    ML -. "optional configured LLM provider" .-> LLM["OpenAI or Ollama"]
+```
+
+## Limitations
+
+- The demo and reported benchmark results are simulation- and dataset-scoped;
+  they do not establish performance for arbitrary real-world missing-data
+  mechanisms or datasets.
+- MNAR is not identifiable from observed data alone. Delta analyses show
+  user-selected sensitivity scenarios; they cannot determine which scenario is
+  true.
+- Proper multiple imputation is an implementation approach, not a guarantee of
+  nominal confidence-interval coverage. The project has not established that
+  its intervals are calibrated across settings.
+- This repository provides a local Docker Compose setup, not a cloud deployment
+  configuration or a production-readiness guarantee.
+
 ## Research experiments
 
 Reproducible experiment methodology, limitations, and results are documented in

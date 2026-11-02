@@ -23,7 +23,8 @@ class DatasetAccessServiceTest {
         User user = mock(User.class);
         when(user.getId()).thenReturn(42L);
         when(userRepository.findByEmailIgnoreCase("analyst@example.test")).thenReturn(Optional.of(user));
-        when(datasetRepository.findByIdAndUploadedBy(17L, 42L)).thenReturn(Optional.empty());
+        when(datasetRepository.findByIdAndUploadedByAndDeletionStatus(17L, 42L, "ACTIVE"))
+                .thenReturn(Optional.empty());
         DatasetAccessService accessService = new DatasetAccessService(datasetRepository, userRepository);
 
         ResponseStatusException exception = assertThrows(
@@ -31,6 +32,6 @@ class DatasetAccessServiceTest {
                 () -> accessService.requireOwnedDataset(17L, "analyst@example.test"));
 
         assertEquals(404, exception.getStatusCode().value());
-        verify(datasetRepository).findByIdAndUploadedBy(17L, 42L);
+        verify(datasetRepository).findByIdAndUploadedByAndDeletionStatus(17L, 42L, "ACTIVE");
     }
 }

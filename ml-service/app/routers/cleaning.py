@@ -14,7 +14,10 @@ def clean_dataset(req: CleaningRequest):
     repair_log = []
 
     df, missing_repairs = svc.fill_missing_values(
-        df, strategy=req.strategy, custom_strategies=req.custom_strategies
+        df,
+        strategy=req.strategy,
+        custom_strategies=req.custom_strategies,
+        mnar_deltas=req.mnar_deltas,
     )
     repair_log.extend(missing_repairs)
 

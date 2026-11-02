@@ -1,0 +1,79 @@
+% Generated from saved raw.csv; no experiment was run by this table builder.
+
+\section*{Rubin coverage benchmark tables}
+
+% Headline cluster bootstrap resamples datasets with replacement; 2,000 replicates, seed 42.
+
+\subsection*{Per-dataset coverage by mechanism, method, rate, estimand, m, and delta}
+
+\begin{tabular}{lllllllllllllll}
+\hline
+dataset & estimand & mechanism & method & mask\_rate & m & delta\_sd & coverage & coverage\_mc\_se & successful\_runs & noncovering\_runs & finite\_interval\_runs & failed\_runs & attempted\_runs & complete\_100\_seed\_cell \\
+\hline
+\hline
+\end{tabular}
+
+\subsection*{Headline coverage pooled across datasets (dataset-cluster bootstrap SE)}
+
+\begin{tabular}{llllllllllllllllll}
+\hline
+estimand & mechanism & method & mask\_rate & m & delta\_sd & coverage & coverage\_mc\_se & dataset\_cluster\_bootstrap\_mc\_se & contributing\_datasets & successful\_runs & failed\_runs & attempted\_runs & noncovering\_runs & finite\_interval\_runs & cluster\_bootstrap\_replicates & cluster\_bootstrap\_seed & sanity\_failed\_datasets\_excluded \\
+\hline
+\hline
+\end{tabular}
+
+\subsection*{Mean interval width}
+
+\begin{tabular}{llllllllll}
+\hline
+dataset & estimand & mechanism & method & mask\_rate & m & delta\_sd & mean\_ci\_width & finite\_interval\_runs & successful\_runs \\
+\hline
+\hline
+\end{tabular}
+
+\subsection*{Mean bias}
+
+\begin{tabular}{lllllllll}
+\hline
+dataset & estimand & mechanism & method & mask\_rate & m & delta\_sd & mean\_bias & successful\_runs \\
+\hline
+\hline
+\end{tabular}
+
+\subsection*{MNAR coverage by delta}
+
+\begin{tabular}{lllllllllllllll}
+\hline
+dataset & estimand & mechanism & method & mask\_rate & m & delta\_sd & coverage & coverage\_mc\_se & successful\_runs & noncovering\_runs & finite\_interval\_runs & failed\_runs & attempted\_runs & complete\_100\_seed\_cell \\
+\hline
+\hline
+\end{tabular}
+
+\subsection*{No-missing sanity coverage (sanity-failed outside 91-99%)}
+
+\begin{tabular}{lllllllll}
+\hline
+dataset & estimand & coverage & coverage\_mc\_se & successful\_runs & expected\_runs & failed\_runs & attempted\_runs & sanity\_status \\
+\hline
+adult & mean & 0.97 & 0.017058722109231986 & 100 & 100 & 0 & 100 & sanity-passed \\
+adult & ols\_slope & 0.94 & 0.023748684174075843 & 100 & 100 & 0 & 100 & sanity-passed \\
+bank-marketing & mean & 0.92 & 0.027129319932501065 & 100 & 100 & 0 & 100 & sanity-passed \\
+bank-marketing & ols\_slope & 0.94 & 0.023748684174075843 & 100 & 100 & 0 & 100 & sanity-passed \\
+breast-w & mean & 0.96 & 0.019595917942265433 & 100 & 100 & 0 & 100 & sanity-passed \\
+breast-w & ols\_slope & 0.95 & 0.021794494717703377 & 100 & 100 & 0 & 100 & sanity-passed \\
+credit-approval & mean & 0.92 & 0.027129319932501065 & 100 & 100 & 0 & 100 & sanity-passed \\
+credit-approval & ols\_slope & 0.95 & 0.021794494717703377 & 100 & 100 & 0 & 100 & sanity-passed \\
+credit-g & mean & 0.95 & 0.021794494717703377 & 100 & 100 & 0 & 100 & sanity-passed \\
+credit-g & ols\_slope & 0.93 & 0.02551470164434614 & 100 & 100 & 0 & 100 & sanity-passed \\
+diabetes & mean & 0.95 & 0.021794494717703377 & 100 & 100 & 0 & 100 & sanity-passed \\
+diabetes & ols\_slope & 0.96 & 0.019595917942265433 & 100 & 100 & 0 & 100 & sanity-passed \\
+heart-statlog & mean & 0.93 & 0.02551470164434614 & 100 & 100 & 0 & 100 & sanity-passed \\
+heart-statlog & ols\_slope & 0.96 & 0.019595917942265433 & 100 & 100 & 0 & 100 & sanity-passed \\
+pc1 & mean & 0.93 & 0.02551470164434614 & 100 & 100 & 0 & 100 & sanity-passed \\
+pc1 & ols\_slope & 0.93 & 0.02551470164434614 & 100 & 100 & 0 & 100 & sanity-passed \\
+telco-customer-churn & mean & 0.97 & 0.017058722109231986 & 100 & 100 & 0 & 100 & sanity-passed \\
+telco-customer-churn & ols\_slope & 0.98 & 0.014000000000000005 & 100 & 100 & 0 & 100 & sanity-passed \\
+wine-quality-red & mean & 0.97 & 0.017058722109231986 & 100 & 100 & 0 & 100 & sanity-passed \\
+wine-quality-red & ols\_slope & 0.91 & 0.028618176042508364 & 100 & 100 & 0 & 100 & sanity-passed \\
+\hline
+\end{tabular}

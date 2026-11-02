@@ -2,16 +2,23 @@ server:
   port: 8080
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_SIZE:20MB}
+      max-request-size: ${MAX_UPLOAD_REQUEST_SIZE:25MB}
   datasource:
-    url: jdbc:postgresql://localhost:5432/ai_data_analyst
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 1
 
 ml:
   service:
@@ -20,9 +27,14 @@ ml:
     read-timeout-ms: 90000
 
 jwt:
-  secret: change-me-in-production
+  secret: ${JWT_SECRET}
   expiration-ms: 86400000
   refresh-expiration-ms: 2592000000 # 30 days — long-lived since it's revocable server-side (see refresh_tokens table)
 
 storage:
   local-path: /tmp/ai-data-analyst/uploads
+
+research:
+  summary:
+    path: ${RESEARCH_SUMMARY_PATH:classpath:research/v4_summary.json}
+    expected-sha256: ${RESEARCH_SUMMARY_SHA256:58b2f46f6136beb404a7f7e8f17df49a0c9f062ff344d0fdf56360d970b72a32}

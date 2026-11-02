@@ -26,4 +26,10 @@ class CsvParserTest {
     void rejectsAnUnterminatedQuotedField() {
         assertThrows(IllegalArgumentException.class, () -> CsvParser.parseRows("name,value\nitem,\"unfinished"));
     }
+
+    @Test
+    void rejectsRowsWithDifferentWidths() {
+        assertThrows(IllegalArgumentException.class, () -> CsvParser.validateRowWidths(
+                CsvParser.parseRows("name,value\nitem,1\nanother,2,extra")));
+    }
 }

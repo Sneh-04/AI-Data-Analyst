@@ -52,6 +52,21 @@ public final class CsvParser {
         return rows;
     }
 
+    public static void validateRowWidths(List<List<String>> rows) {
+        if (rows.isEmpty()) {
+            return;
+        }
+        int expectedWidth = rows.get(0).size();
+        for (int index = 1; index < rows.size(); index++) {
+            int actualWidth = rows.get(index).size();
+            if (actualWidth != expectedWidth) {
+                throw new IllegalArgumentException(
+                        "CSV row " + (index + 1) + " has " + actualWidth
+                                + " columns; expected " + expectedWidth + ".");
+            }
+        }
+    }
+
     private static void addRow(List<List<String>> rows, List<String> row, StringBuilder value) {
         row.add(value.toString());
         if (!(row.size() == 1 && row.get(0).isBlank())) {

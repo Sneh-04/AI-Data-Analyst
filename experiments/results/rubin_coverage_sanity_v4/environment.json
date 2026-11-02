@@ -1,0 +1,11 @@
+{
+  "git_commit": "a671a8cb997df6893ee83e6acbd876b4316281ae",
+  "numpy": "2.5.3",
+  "pandas": "3.0.6",
+  "protocol_sha256": "74c2ff3179244fe72f1de9b727ab49637b905c7e83ac013af0abffe4865cbcfe",
+  "python": "3.14.5",
+  "run_tag": "sanity_v4",
+  "scikit-learn": "1.9.1",
+  "scipy": "1.18.1",
+  "statsmodels": "0.15.0"
+}

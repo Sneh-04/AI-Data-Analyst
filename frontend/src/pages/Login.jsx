@@ -30,12 +30,14 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="card auth-card">
+        <div className="auth-brand"><span className="brand-mark" aria-hidden="true">A</span><strong>AI Data Analyst</strong></div>
         <h2>Sign in</h2>
+        <p className="auth-subtitle">Welcome back. Sign in to continue to your data workspace.</p>
         <form onSubmit={submit}>
           <label>Email<input name="email" type="email" value={form.email} onChange={updateField} required /></label>
           <label>Password<input name="password" type="password" value={form.password} onChange={updateField} required /></label>
-          {error && <p className="auth-error">{error}</p>}
-          <button type="submit" disabled={submitting}>{submitting ? 'Signing in...' : 'Sign in'}</button>
+          {error && <p className="auth-error" role="alert">{error}</p>}
+          <button type="submit" disabled={submitting} data-loading={submitting}>{submitting ? 'Signing in...' : 'Sign in'}</button>
         </form>
         <p>New to AI Data Analyst? <Link to="/register">Create an account</Link></p>
       </div>

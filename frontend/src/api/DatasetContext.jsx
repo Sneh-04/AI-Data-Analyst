@@ -47,6 +47,10 @@ function parseCsv(text) {
   if (headers.length === 0 || headers.some(header => header === '')) {
     throw new Error('CSV headers must not be empty.')
   }
+  const invalidRow = rows.slice(1).findIndex(values => values.length !== headers.length)
+  if (invalidRow !== -1) {
+    throw new Error(`CSV row ${invalidRow + 2} must contain exactly ${headers.length} columns.`)
+  }
   const records = rows.slice(1).map(values => {
     const row = {}
     headers.forEach((h, i) => {
@@ -86,7 +90,7 @@ export function DatasetProvider({ children }) {
   })
 
   return (
-    <DatasetContext.Provider value={{ fileName, headers, records, setRecords, setHeaders, loadFile, datasetId, setDatasetId }}>
+    <DatasetContext.Provider value={{ fileName, headers, records, setRecords, setHeaders, loadFile, datasetId, setDatasetId, setFileName }}>
       {children}
     </DatasetContext.Provider>
   )

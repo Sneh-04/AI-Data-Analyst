@@ -12,6 +12,10 @@ class DatasetPayload(BaseModel):
 class CleaningRequest(DatasetPayload):
     strategy: str = Field("auto", description="'auto' | 'knn' | 'multiple' | 'custom'")
     custom_strategies: Optional[Dict[str, str]] = None
+    mnar_deltas: Optional[Dict[str, float]] = Field(
+        None,
+        description="Optional additive numeric delta adjustments for MNAR sensitivity scenarios",
+    )
     remove_duplicates: bool = True
     outlier_method: str = Field("iqr", description="'iqr' | 'isolation_forest' | 'none'")
     outlier_columns: Optional[List[str]] = None

@@ -1,0 +1,128 @@
+{
+  "study_id": "rubin-study-2",
+  "protocol_version": "5.1",
+  "status": "implementation-validation-only; no experiments authorized",
+  "baseline": {
+    "run_config": "experiments/results/rubin_coverage_full_v4/run_config.json",
+    "raw_results": "experiments/results/rubin_coverage_full_v4/raw.csv",
+    "access": "read-only",
+    "commit": "e2c46187cdb4087ed725bd431e8e84a833a624c0"
+  },
+  "methods": [
+    {
+      "id": "posterior_only",
+      "bootstrap_rows": false,
+      "posterior_coefficient_sampling": true,
+      "description": "Fit to observed rows; draw coefficients only, without bootstrap or residual noise."
+    },
+    {
+      "id": "bootstrap_only",
+      "bootstrap_rows": true,
+      "posterior_coefficient_sampling": false,
+      "description": "Bootstrap-resampled fitting with posterior coefficient sampling disabled."
+    },
+    {
+      "id": "bootstrap_pmm_candidate",
+      "bootstrap_rows": true,
+      "posterior_coefficient_sampling": true,
+      "description": "Bootstrap PMM candidate with a conditional BayesianRidge coefficient draw."
+    }
+  ],
+  "ablation_role": "diagnostic only; not part of the primary confirmatory ranking",
+  "ablation_outcomes": [
+    "bias",
+    "estimate variance",
+    "coverage among finite intervals",
+    "interval width among finite intervals",
+    "failure rate",
+    "all-scheduled operational success-adjusted coverage"
+  ],
+  "pmm_candidate": {
+    "method_id": "bootstrap_pmm_candidate",
+    "donor_count": 5,
+    "posterior_hyperparameters": "empirical-Bayes alpha_ and lambda_ held fixed",
+    "explicit_intercept": true,
+    "intercept_prior": "same empirical-Bayes coefficient prior as other columns",
+    "donor_pool": "bootstrap copies with originally observed target values",
+    "donor_distance": "absolute conditional-prediction difference after predictor standardization",
+    "insufficient_donor_rule": "fail if fewer than donor_count bootstrap donor records",
+    "experimental_claim": "candidate only; not classified as statistically proper"
+  },
+  "study2_primary_m": 20,
+  "real_data_extension": {
+    "datasets": "read from baseline run_config",
+    "mechanisms": "read from baseline run_config",
+    "missing_rates": "read from baseline run_config",
+    "trials": "read from baseline run_config",
+    "paired_reference_method": "mice_proper",
+    "paired_reference_m": 20,
+    "paired_reference_delta_sd": 0.0,
+    "expected_cells": "derive from run_config and reconcile against raw.csv; never hardcode"
+  },
+  "evaluation": {
+    "coverage_among_finite_intervals": "covered valid finite intervals / valid finite intervals",
+    "coverage_interval": "two-sided 95% Clopper-Pearson exact binomial interval per cell",
+    "no_missing_gate": "pass iff nominal 0.95 lies inside the two-sided exact 95% Clopper-Pearson interval; compatibility check only, not proof of calibration",
+    "failure_rate": "failed runs + invalid intervals + undefined intervals / scheduled runs",
+    "all_scheduled_operational_success_adjusted_coverage": "covered valid finite intervals / scheduled runs",
+    "failure_categories": [
+      "failed_run",
+      "invalid_interval",
+      "undefined_interval"
+    ],
+    "rubin_variance_diagnostics": {
+      "retained": ["W", "B", "T", "SE", "relative_increase_in_variance", "FMI"],
+      "added": [
+        "relative_efficiency",
+        "within_variance_share",
+        "between_variance_share"
+      ],
+      "definitions": {
+        "relative_increase_in_variance": "(1 + 1/m) * B / W",
+        "fraction_of_missing_information": "(1 + 1/m) * B / T",
+        "relative_efficiency": "1 / (1 + FMI/m)",
+        "within_variance_share": "W/T",
+        "between_variance_share": "((1 + 1/m) * B)/T"
+      }
+    },
+    "primary_comparison_rule": "report each DGP x mechanism x rate x estimand x method cell with its exact Monte Carlo interval; method contrasts are paired replicate-level differences; do not aggregate cells or claim superiority/equivalence without a prespecified margin, weights, and multiplicity rule"
+  },
+  "robust_inference_validation": {
+    "ols_within_imputation_variance": "HC3 sandwich slope variance from each completed-data fit",
+    "complete_data_df": "OLS residual degrees of freedom",
+    "reference_tested": true,
+    "interpretation": "Barnard-Rubin df adjustment does not by itself guarantee valid robust-HC3 inference"
+  },
+  "pmm_diagnostics": {
+    "distance_units": "target-variable units; absolute conditional-prediction difference after within-donor-pool predictor standardization",
+    "distance_outlier_rule": "above Q3 + 1.5 * IQR within an imputation",
+    "donor_reuse": "track bootstrap-copy and original source-row usage separately",
+    "default_detail_limit": 0,
+    "failure_stages": ["donor_pool", "conditional_model_fit"]
+  },
+  "synthetic_conditional_diagnostics": {
+    "scope": "known-DGP synthetic data only; never presented as real-data performance",
+    "reports": [
+      "analytic conditional mean",
+      "imputation-model predicted conditional mean",
+      "conditional-mean bias and RMSE by x1 quantile region",
+      "masked-truth prediction RMSE"
+    ]
+  },
+  "benchmark": {
+    "script": "experiments/benchmark_rubin_study.py",
+    "scope": "performance-only fixture; no coverage evaluation",
+    "full_study_execution_authorized": false,
+    "active_v5_1_condition_count": 6300,
+    "illustrative_1000_replicate_condition_count": 63000
+  },
+  "seed_streams": {
+    "derivation": "numpy SeedSequence entropy [seed, draw_index, stream_id]",
+    "bootstrap_rows": 1,
+    "coefficient_posterior": 2,
+    "donor_selection": 3,
+    "iterative_imputer": 4
+  },
+  "dgp_parameters": "TODO: freeze in reviewed protocol before any experiment",
+  "results_directory": "TODO: new unique experiments/results/rubin_study2_<tag>/"
+}

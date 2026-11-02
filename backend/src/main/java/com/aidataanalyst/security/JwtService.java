@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 @Service
@@ -43,8 +41,15 @@ public class JwtService {
     public boolean isTokenValid(String token, String email) {
         try {
             Claims claims = parseClaims(token);
+            Date now = new Date();
+            Date issuedAt = claims.getIssuedAt();
+            Date expiration = claims.getExpiration();
             return email.equalsIgnoreCase(claims.getSubject())
-                    && claims.getExpiration().after(new Date());
+                    && issuedAt != null
+                    && !issuedAt.after(now)
+                    && expiration != null
+                    && expiration.after(now)
+                    && expiration.getTime() <= issuedAt.getTime() + expirationMs;
         } catch (RuntimeException exception) {
             return false;
         }
@@ -59,17 +64,10 @@ public class JwtService {
     }
 
     private SecretKey createSigningKey(String secret) {
-        // Refresh-token rotation is implemented separately in RefreshTokenService
-        // (opaque, DB-backed, revocable tokens — not JWTs, so they can be
-        // invalidated server-side before their own expiry).
-        // TODO: still use a production-managed random secret instead of the
-        // placeholder value in application.yml before deploying.
-        try {
-            byte[] digest = MessageDigest.getInstance("SHA-256")
-                    .digest(secret.getBytes(StandardCharsets.UTF_8));
-            return Keys.hmacShaKeyFor(digest);
-        } catch (NoSuchAlgorithmException exception) {
-            throw new IllegalStateException("SHA-256 is unavailable", exception);
+        byte[] key = secret.getBytes(StandardCharsets.UTF_8);
+        if (key.length < 32) {
+            throw new IllegalArgumentException("JWT_SECRET must be at least 32 bytes");
         }
+        return Keys.hmacShaKeyFor(key);
     }
 }

@@ -5,6 +5,10 @@ Upgrades over the original repo's utils/data_cleaner.py:
 - Automated dtype inference suggestions
 - Every operation returns a diff summary for audit/versioning (DB-ready)
 """
+from collections.abc import Mapping
+import math
+from numbers import Real
+
 import numpy as np
 import pandas as pd
 from sklearn.experimental import enable_iterative_imputer as _enable_iterative_imputer
@@ -15,8 +19,15 @@ from sklearn.linear_model import BayesianRidge
 _MICE_MAX_CELLS = 2_000_000
 
 
-def _multiple_impute_column(series: pd.Series, n_imputations: int = 5, random_state: int = 42) -> tuple[pd.Series, dict]:
+def _multiple_impute_column(
+    series: pd.Series,
+    n_imputations: int = 5,
+    random_state: int = 42,
+    delta: float = 0.0,
+) -> tuple[pd.Series, dict]:
     """Marginal bootstrap baseline used when no feature can inform imputation."""
+    if n_imputations < 2:
+        raise ValueError("n_imputations must be at least 2")
     rng = np.random.RandomState(random_state)
     observed = series.dropna()
     missing_idx = series[series.isna()].index
@@ -24,8 +35,9 @@ def _multiple_impute_column(series: pd.Series, n_imputations: int = 5, random_st
         return series, {}
 
     draws = rng.choice(observed.values, size=(len(missing_idx), n_imputations), replace=True)
+    draws = draws + delta
     point_estimates = draws.mean(axis=1)
-    uncertainties = draws.std(axis=1)
+    uncertainties = draws.std(axis=1, ddof=1)
 
     filled = series.copy()
     filled.loc[missing_idx] = point_estimates
@@ -34,9 +46,14 @@ def _multiple_impute_column(series: pd.Series, n_imputations: int = 5, random_st
 
 
 def _multiple_impute_dataframe(
-    df: pd.DataFrame, n_imputations: int = 5, random_state: int = 42
+    df: pd.DataFrame,
+    n_imputations: int = 5,
+    random_state: int = 42,
+    mnar_deltas: Mapping[str, float] | None = None,
 ) -> tuple[pd.DataFrame, dict]:
     """Impute numeric columns from other features using stochastic chained models."""
+    if n_imputations < 2:
+        raise ValueError("n_imputations must be at least 2")
     numeric_columns = df.select_dtypes(include=[np.number]).columns.tolist()
     usable_columns = [col for col in numeric_columns if df[col].notna().any()]
     if not usable_columns:
@@ -45,14 +62,14 @@ def _multiple_impute_dataframe(
     missing_masks = df[usable_columns].isna()
     if not missing_masks.to_numpy().any():
         return df.copy(), {}
-    if n_imputations < 2:
-        raise ValueError("n_imputations must be at least 2 to estimate between-imputation variability")
-
     numeric_data = df[usable_columns].astype(float)
     if len(usable_columns) == 1:
         col = usable_columns[0]
         filled_column, uncertainty = _multiple_impute_column(
-            numeric_data[col], n_imputations=n_imputations, random_state=random_state
+            numeric_data[col],
+            n_imputations=n_imputations,
+            random_state=random_state,
+            delta=(mnar_deltas or {}).get(col, 0.0),
         )
         filled_df = df.copy()
         filled_df[col] = filled_column
@@ -72,7 +89,12 @@ def _multiple_impute_dataframe(
             max_value=upper_bounds,
             skip_complete=True,
         )
-        samples.append(imputer.fit_transform(numeric_data))
+        sample = imputer.fit_transform(numeric_data)
+        for column_index, col in enumerate(usable_columns):
+            delta = (mnar_deltas or {}).get(col, 0.0)
+            if delta:
+                sample[missing_masks[col].to_numpy(), column_index] += delta
+        samples.append(sample)
 
     sample_array = np.stack(samples)
     point_estimates = sample_array.mean(axis=0)
@@ -98,12 +120,39 @@ def _multiple_impute_dataframe(
 
 
 def fill_missing_values(
-    df: pd.DataFrame, strategy="auto", custom_strategies=None, random_state: int = 42
+    df: pd.DataFrame,
+    strategy="auto",
+    custom_strategies=None,
+    random_state: int = 42,
+    mnar_deltas: Mapping[str, float] | None = None,
 ) -> tuple[pd.DataFrame, list[dict]]:
+    """Fill missing cells; optional additive deltas provide MNAR sensitivity scenarios.
+
+    ``imputation_uncertainty`` in the repair log remains the spread of predictive
+    draws. It is not a Rubin-pooled inferential standard error; use
+    ``pool_rubins_rules`` with estimates and model-based variances from analyses
+    fitted separately to every imputed dataset.
+    """
     cleaned_df = df.copy()
     repair_log = []
+    deltas = dict(mnar_deltas or {})
 
-    def record_filled_cells(before_missing: pd.Series, col: str, strategy_used: str, uncertainty_map: dict | None = None) -> None:
+    if deltas and strategy != "multiple":
+        raise ValueError("mnar_deltas can only be used with strategy='multiple'")
+    for col, delta in deltas.items():
+        if col not in cleaned_df.columns:
+            raise ValueError(f"mnar_deltas contains unknown column: {col}")
+        if col not in cleaned_df.select_dtypes(include=[np.number]).columns:
+            raise ValueError(f"MNAR delta requires a numeric column: {col}")
+        if isinstance(delta, bool) or not isinstance(delta, Real) or not math.isfinite(delta):
+            raise ValueError(f"MNAR delta for {col} must be a finite number")
+
+    def record_filled_cells(
+        before_missing: pd.Series,
+        col: str,
+        strategy_used: str,
+        uncertainty_map: dict | None = None,
+    ) -> None:
         for row_index in cleaned_df.index[before_missing & cleaned_df[col].notna()]:
             value = cleaned_df.at[row_index, col]
             entry = {
@@ -114,6 +163,9 @@ def fill_missing_values(
             }
             if uncertainty_map and row_index in uncertainty_map:
                 entry["imputation_uncertainty"] = round(uncertainty_map[row_index], 4)
+                entry["imputation_uncertainty_type"] = "predictive_draw_spread"
+            if col in deltas:
+                entry["mnar_delta"] = float(deltas[col])
             repair_log.append(entry)
 
     if strategy == "multiple":
@@ -128,7 +180,7 @@ def fill_missing_values(
         if feature_aware:
             missing_masks = {col: cleaned_df[col].isna() for col in cols_with_gaps}
             cleaned_df, uncertainty_by_column = _multiple_impute_dataframe(
-                cleaned_df, random_state=random_state
+                cleaned_df, random_state=random_state, mnar_deltas=deltas
             )
             for col in cols_with_gaps:
                 record_filled_cells(
@@ -141,7 +193,9 @@ def fill_missing_values(
             for col in cols_with_gaps:
                 before_missing = cleaned_df[col].isna()
                 cleaned_df[col], uncertainty_map = _multiple_impute_column(
-                    cleaned_df[col], random_state=random_state
+                    cleaned_df[col],
+                    random_state=random_state,
+                    delta=deltas.get(col, 0.0),
                 )
                 record_filled_cells(
                     before_missing, col, "multiple_imputation_marginal_fallback", uncertainty_map

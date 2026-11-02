@@ -1,0 +1,5 @@
+{
+  "status": "invalidated_not_for_analysis",
+  "reason": "Preliminary pilot output omitted the explicit estimand column required by the raw schema; table generation also exposed an optional Jinja2 dependency. Both issues were corrected before the final pilot rerun.",
+  "superseded_by": "rubin_coverage_pilot-20261031T1905"
+}

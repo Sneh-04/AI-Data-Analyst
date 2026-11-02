@@ -6,15 +6,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 
 @Entity
 @Table(name = "datasets")
+@DynamicInsert
+@DynamicUpdate
 public class Dataset {
 
     @Id
@@ -33,6 +36,9 @@ public class Dataset {
     @Column(name = "storage_path", nullable = false, length = 1000)
     private String storagePath;
 
+    @Column(name = "deletion_status", nullable = false, length = 16)
+    private String deletionStatus = "ACTIVE";
+
     @Column(name = "row_count")
     private Integer rowCount;
 
@@ -45,14 +51,6 @@ public class Dataset {
 
     @Column(name = "health_score")
     private Integer healthScore;
-
-    @JdbcTypeCode(SqlTypes.VECTOR)
-    @Column(name = "schema_embedding_openai", columnDefinition = "vector(1536)")
-    private List<Double> schemaEmbeddingOpenai;
-
-    @JdbcTypeCode(SqlTypes.VECTOR)
-    @Column(name = "schema_embedding_ollama", columnDefinition = "vector(768)")
-    private List<Double> schemaEmbeddingOllama;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -81,6 +79,18 @@ public class Dataset {
 
     public String getStoragePath() {
         return storagePath;
+    }
+
+    public String getDeletionStatus() {
+        return deletionStatus;
+    }
+
+    public Long getUploadedBy() {
+        return uploadedBy;
+    }
+
+    public void markDeletionPending() {
+        this.deletionStatus = "DELETING";
     }
 
     public Integer getRowCount() {

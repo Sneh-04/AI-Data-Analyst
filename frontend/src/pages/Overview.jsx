@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDataset } from '../api/DatasetContext.jsx'
 import { datasetApi } from '../api/client.js'
+import EmptyState from '../components/EmptyState.jsx'
+import PageHeading from '../components/PageHeading.jsx'
 
 export default function Overview() {
   const { records, headers, datasetId } = useDataset()
@@ -58,12 +60,13 @@ export default function Overview() {
     setUseCustomWeights(!useCustomWeights)
   }
 
-  if (records.length === 0) return <p>Upload a dataset first.</p>
-  if (!datasetId) return <p>Upload this dataset to the platform before assessing its health.</p>
+  if (records.length === 0) return <EmptyState title="Start with a dataset" description="Upload a CSV to see its structure and assess data quality." />
+  if (!datasetId) return <EmptyState title="Save your dataset to continue" description="Upload this dataset to the platform before assessing its health." />
 
   return (
     <div>
-      <h2>Overview & data quality</h2>
+      <PageHeading eyebrow="DATA QUALITY" title="Overview & data quality"
+        description="A clear snapshot of your dataset and its quality signals." />
       <div className="card">
         <div className="grid">
           <div className="metric"><div className="value">{records.length}</div><div className="label">Rows</div></div>
@@ -80,7 +83,7 @@ export default function Overview() {
           </label>
         </div>
         {useCustomWeights && (
-          <div style={{ background: '#1d2130', padding: 14, borderRadius: 6, marginBottom: 16 }}>
+          <div className="weight-settings">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
               <div>
                 <label>Completeness</label>
@@ -107,12 +110,12 @@ export default function Overview() {
                   style={{ width: '100%', marginTop: 4 }} />
               </div>
             </div>
-            {weightError && <p style={{ color: '#d4a04f', marginTop: 8, fontSize: 12 }}>{weightError}</p>}
-            {!weightError && <p style={{ color: '#52b788', marginTop: 8, fontSize: 12 }}>✓ Weights valid</p>}
+            {weightError && <p className="alert alert-info" style={{ marginTop: 10 }}>{weightError}</p>}
+            {!weightError && <p className="weight-valid">✓ Weights valid</p>}
           </div>
         )}
-        {loading && <p>Scoring...</p>}
-        {error && <p style={{ color: '#e06c75' }}>{error} — is the Spring Boot backend running on :8080?</p>}
+        {loading && <p className="loading-inline">Scoring...</p>}
+        {error && <p className="alert alert-error" role="alert">{error} — is the Spring Boot backend running on :8080?</p>}
         {health && (
           <>
             <div className="grid">
@@ -123,12 +126,12 @@ export default function Overview() {
               <div className="metric"><div className="value">{health.outliers_score}%</div><div className="label">Outlier score</div></div>
             </div>
             {health.sentinel_missing_count > 0 && (
-              <p style={{ background: '#1d2130', padding: 10, borderRadius: 6, marginTop: 12, fontSize: 12, color: '#d4a04f' }}>
+              <p className="alert alert-info" style={{ marginTop: 12 }}>
                 Found {health.sentinel_missing_count} placeholder values (e.g. '-99', 'N/A', 'none') that may represent hidden missing data.
               </p>
             )}
             {health.score_trend && (
-              <p style={{ marginTop: 12, fontSize: 12, color: health.score_trend === 'declining' ? '#e06c75' : '#52b788' }}>
+              <p className={`trend-note ${health.score_trend === 'declining' ? 'is-declining' : 'is-improving'}`}>
                 Quality trend vs. the previous check ({health.previous_score}%): {health.score_trend}.
               </p>
             )}
@@ -146,18 +149,20 @@ export default function Overview() {
       <div className="card">
         <h3>Health-score history</h3>
         {scoreHistory.length === 0 ? <p>No health assessments recorded yet.</p> : (
-          <table>
-            <thead><tr><th>Assessed</th><th>Score</th><th>Grade</th></tr></thead>
-            <tbody>
-              {scoreHistory.map(entry => (
-                <tr key={entry.id}>
-                  <td>{new Date(entry.assessedAt).toLocaleString()}</td>
-                  <td>{entry.score}%</td>
-                  <td>{entry.grade}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="table-wrap">
+            <table>
+              <thead><tr><th>Assessed</th><th>Score</th><th>Grade</th></tr></thead>
+              <tbody>
+                {scoreHistory.map(entry => (
+                  <tr key={entry.id}>
+                    <td>{new Date(entry.assessedAt).toLocaleString()}</td>
+                    <td>{entry.score}%</td>
+                    <td>{entry.grade}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

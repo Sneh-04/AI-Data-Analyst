@@ -48,4 +48,8 @@ public class Report {
         this.generatedBy = generatedBy;
         this.createdAt = Instant.now();
     }
+
+    public String getStoragePath() {
+        return storagePath;
+    }
 }

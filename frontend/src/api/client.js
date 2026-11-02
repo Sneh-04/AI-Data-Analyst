@@ -62,6 +62,7 @@ api.interceptors.response.use(
 
 export const datasetApi = {
   clean: (id, payload) => api.post(`/datasets/${id}/clean`, payload).then(r => r.data),
+  inference: (id, payload) => api.post(`/datasets/${id}/inference`, payload).then(r => r.data),
   healthScore: (id, payload) => api.post(`/datasets/${id}/health-score`, payload).then(r => r.data),
   healthScoreHistory: (id) => api.get(`/datasets/${id}/health-score/history`).then(r => r.data),
   forecast: (id, payload) => api.post(`/datasets/${id}/forecast`, payload).then(r => r.data),
