@@ -49,6 +49,61 @@ their respective retention policies; do not treat active-storage deletion as
 proof that backup copies have expired. Production backup retention and provider
 data-retention policies have not been verified.
 
+Generate and run the seeded demo:
+
+```sh
+python3 demo/make_demo_csv.py
+bash scripts/smoke_test.sh
+```
+
+The smoke test assumes the compose stack is already running and requires
+`curl` and `jq`. Set `BASE_URL` to target a different API gateway URL.
+
+## Demo walkthrough
+
+1. **Upload the demo CSV.** Register or sign in, open Upload, and select
+   `demo/demo_missing.csv`. It contains 800 rows, three numeric columns, a
+   category, a date, and an x1-dependent missingness pattern in `x2`.
+2. **Check health.** Open Overview and run the health score to see completeness,
+   uniqueness, and the overall dataset grade.
+3. **Compare inference methods.** Open Inference, select `x2` and its mean or
+   `x1` as the predictor for the `x2 ~ x1` slope, then compare proper and
+   improper multiple-imputation results and their intervals. The API analyzes
+   the authorized dataset stored on the server, not browser-submitted rows.
+   Results are temporary and are not saved to your account; use **Download
+   results CSV** before leaving the page if you need to keep them.
+4. **Explore MNAR sensitivity.** In Inference, compare delta values `-1`, `0`,
+   and `1`; these are sensitivity scenarios, not tests that identify the
+   missingness mechanism.
+5. **Open Research.** Select Research in the app navigation to see the
+   simulation results. For methods, evidence, and caveats, also read the
+   [research matrix](research/research-matrix.md) and
+   [research status](research/research-upgrade-status.md).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser["React frontend<br/>:3000"] -->|"HTTP /api"| Gateway["Spring Boot API<br/>:8080"]
+    Gateway -->|"datasets, users, reports"| DB[("PostgreSQL / pgvector<br/>:5432")]
+    Gateway -->|"JSON ML requests"| ML["FastAPI ML service<br/>:8000"]
+    ML -. "optional configured LLM provider" .-> LLM["OpenAI or Ollama"]
+```
+
+## Limitations
+
+- The demo and reported benchmark results are simulation- and dataset-scoped;
+  they do not establish performance for arbitrary real-world missing-data
+  mechanisms or datasets.
+- MNAR is not identifiable from observed data alone. Delta analyses show
+  user-selected sensitivity scenarios; they cannot determine which scenario is
+  true.
+- Proper multiple imputation is an implementation approach, not a guarantee of
+  nominal confidence-interval coverage. The project has not established that
+  its intervals are calibrated across settings.
+- This repository provides a local Docker Compose setup, not a cloud deployment
+  configuration or a production-readiness guarantee.
+
 ## Research experiments
 
 Reproducible experiment methodology, limitations, and results are documented in

@@ -19,8 +19,11 @@ class RubinPooledEstimate:
     standard_error: float
     degrees_of_freedom: float
     confidence_interval: tuple[float, float] | None
-    relative_increase_in_variance: float
-    missing_information_fraction: float
+    relative_increase_in_variance: float | None
+    missing_information_fraction: float | None
+    lambda_fraction: float | None
+    finite_df_adjusted_fmi: float | None
+    relative_efficiency: float | None
     imputations: int
 
 
@@ -102,48 +105,84 @@ def pool_rubins_rules(
     standard_error = math.sqrt(total_variance)
 
     if within_variance == 0:
-        relative_increase = math.inf if between_variance > 0 else 0.0
+        relative_increase = None
     else:
         ratio = between_variance / within_variance
-        relative_increase = (
-            math.inf if ratio > max_float / between_multiplier else between_multiplier * ratio
-        )
+        if ratio > max_float / between_multiplier:
+            relative_increase = None
+        else:
+            relative_increase = between_multiplier * ratio
 
     if total_variance == 0:
-        missing_information_fraction = 0.0
+        lambda_fraction = None
+        relative_efficiency = None
+        finite_df_adjusted_fmi = None
+        missing_information_fraction = None
     else:
-        missing_information_fraction = (
-            between_multiplier * between_variance / total_variance
-        )
+        lambda_fraction = between_multiplier * between_variance / total_variance
+        relative_efficiency = 1.0 / (1.0 + lambda_fraction / m)
+        missing_information_fraction = lambda_fraction
 
-    if missing_information_fraction == 0:
-        old_degrees_of_freedom = math.inf
-    else:
-        old_degrees_of_freedom = (m - 1) / missing_information_fraction**2
-    observed_degrees_of_freedom = (
-        (complete_data_df + 1.0)
-        / (complete_data_df + 3.0)
-        * complete_data_df
-        * (1.0 - missing_information_fraction)
-    )
-    if observed_degrees_of_freedom <= 0:
+        if within_variance == 0 and between_variance > 0:
+            finite_df_adjusted_fmi = None
+        else:
+            if within_variance > 0:
+                r_value = relative_increase if relative_increase is not None else 0.0
+            else:
+                r_value = 0.0
+            old_degrees_of_freedom = (
+                (m - 1) / lambda_fraction**2 if lambda_fraction > 0 else math.inf
+            )
+            observed_degrees_of_freedom = (
+                (complete_data_df + 1.0)
+                / (complete_data_df + 3.0)
+                * complete_data_df
+                * (1.0 - lambda_fraction)
+            )
+            if old_degrees_of_freedom == math.inf and observed_degrees_of_freedom <= 0:
+                finite_df_adjusted_fmi = None
+            elif observed_degrees_of_freedom <= 0:
+                finite_df_adjusted_fmi = None
+            else:
+                barnard_degrees_of_freedom = 1.0 / (
+                    1.0 / old_degrees_of_freedom + 1.0 / observed_degrees_of_freedom
+                )
+                finite_df_adjusted_fmi = (
+                    r_value + 2.0 / (barnard_degrees_of_freedom + 3.0)
+                ) / (1.0 + r_value)
+
+    if total_variance == 0:
         degrees_of_freedom = 0.0
-    else:
-        degrees_of_freedom = 1.0 / (
-            1.0 / old_degrees_of_freedom + 1.0 / observed_degrees_of_freedom
-        )
-
-    if total_variance == 0:
-        confidence_interval = (estimate, estimate)
-    elif degrees_of_freedom <= 0:
         confidence_interval = None
     else:
-        critical_value = float(t.ppf((1.0 + confidence_level) / 2.0, degrees_of_freedom))
-        margin = critical_value * standard_error
-        lower, upper = estimate - margin, estimate + margin
-        if not math.isfinite(lower) or not math.isfinite(upper):
-            raise ValueError("confidence interval exceeds floating-point range")
-        confidence_interval = (lower, upper)
+        if lambda_fraction is None or lambda_fraction == 0:
+            old_degrees_of_freedom = math.inf
+        else:
+            old_degrees_of_freedom = (m - 1) / lambda_fraction**2
+        observed_degrees_of_freedom = (
+            (complete_data_df + 1.0)
+            / (complete_data_df + 3.0)
+            * complete_data_df
+            * (1.0 - lambda_fraction)
+            if lambda_fraction is not None
+            else 0.0
+        )
+        if observed_degrees_of_freedom <= 0:
+            degrees_of_freedom = 0.0
+            confidence_interval = None
+        else:
+            degrees_of_freedom = 1.0 / (
+                1.0 / old_degrees_of_freedom + 1.0 / observed_degrees_of_freedom
+            )
+            if degrees_of_freedom <= 0:
+                confidence_interval = None
+            else:
+                critical_value = float(t.ppf((1.0 + confidence_level) / 2.0, degrees_of_freedom))
+                margin = critical_value * standard_error
+                lower, upper = estimate - margin, estimate + margin
+                if not math.isfinite(lower) or not math.isfinite(upper):
+                    raise ValueError("confidence interval exceeds floating-point range")
+                confidence_interval = (lower, upper)
 
     return RubinPooledEstimate(
         estimate=estimate,
@@ -155,5 +194,8 @@ def pool_rubins_rules(
         confidence_interval=confidence_interval,
         relative_increase_in_variance=relative_increase,
         missing_information_fraction=missing_information_fraction,
+        lambda_fraction=lambda_fraction,
+        finite_df_adjusted_fmi=finite_df_adjusted_fmi,
+        relative_efficiency=relative_efficiency,
         imputations=m,
     )

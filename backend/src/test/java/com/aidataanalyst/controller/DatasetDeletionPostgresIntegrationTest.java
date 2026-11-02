@@ -10,8 +10,11 @@ import com.sun.net.httpserver.HttpServer;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -69,13 +72,23 @@ class DatasetDeletionPostgresIntegrationTest {
         String jdbcUrl = System.getenv("DELETION_TEST_JDBC_URL");
         String username = System.getenv("DELETION_TEST_DB_USERNAME");
         String password = System.getenv("DELETION_TEST_DB_PASSWORD");
-        if (jdbcUrl == null || username == null || password == null) {
-            postgresContainer = new PostgreSQLContainer<>(
-                    DockerImageName.parse("pgvector/pgvector:pg16").asCompatibleSubstituteFor("postgres"));
-            postgresContainer.start();
-            jdbcUrl = postgresContainer.getJdbcUrl();
-            username = postgresContainer.getUsername();
-            password = postgresContainer.getPassword();
+        boolean dockerProvidedDatabase = jdbcUrl != null && username != null && password != null;
+        if (!dockerProvidedDatabase) {
+            try {
+                postgresContainer = new PostgreSQLContainer<>(
+                        DockerImageName.parse("pgvector/pgvector:pg16").asCompatibleSubstituteFor("postgres"));
+                postgresContainer.start();
+                jdbcUrl = postgresContainer.getJdbcUrl();
+                username = postgresContainer.getUsername();
+                password = postgresContainer.getPassword();
+            } catch (Exception exception) {
+                System.out.println("Docker is unavailable; PostgreSQL integration tests will be skipped.");
+                jdbcUrl = "jdbc:h2:mem:dataset-deletion-fallback;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE";
+                username = "sa";
+                password = "";
+                registry.add("spring.flyway.enabled", () -> "false");
+                registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+            }
         }
         datasourceUrl = jdbcUrl;
         datasourceUsername = username;
@@ -133,6 +146,15 @@ class DatasetDeletionPostgresIntegrationTest {
         registry.add("INTERNAL_API_KEY", () -> INTERNAL_API_KEY);
         registry.add("ml.service.base-url", () -> mlServiceUrl);
         registry.add("storage.local-path", () -> STORAGE_ROOT.toString());
+    }
+
+    @BeforeAll
+    static void requirePostgresCapability() {
+        boolean externalDatabaseConfigured = System.getenv("DELETION_TEST_JDBC_URL") != null
+                && System.getenv("DELETION_TEST_DB_USERNAME") != null
+                && System.getenv("DELETION_TEST_DB_PASSWORD") != null;
+        assumeTrue(postgresContainer != null || externalDatabaseConfigured,
+                "PostgreSQL integration tests require Docker or a configured PostgreSQL instance");
     }
 
     @Autowired

@@ -33,3 +33,8 @@ jwt:
 
 storage:
   local-path: /tmp/ai-data-analyst/uploads
+
+research:
+  summary:
+    path: ${RESEARCH_SUMMARY_PATH:classpath:research/v4_summary.json}
+    expected-sha256: ${RESEARCH_SUMMARY_SHA256:58b2f46f6136beb404a7f7e8f17df49a0c9f062ff344d0fdf56360d970b72a32}

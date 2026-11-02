@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useDataset } from '../api/DatasetContext.jsx'
 import api, { datasetApi } from '../api/client.js'
+import EmptyState from '../components/EmptyState.jsx'
+import PageHeading from '../components/PageHeading.jsx'
 
 export default function Cleaning() {
   const { records, setRecords, datasetId } = useDataset()
@@ -28,8 +31,8 @@ export default function Cleaning() {
     loadVersions()
   }, [datasetId])
 
-  if (records.length === 0) return <p>Upload a dataset first.</p>
-  if (!datasetId) return <p>Upload this dataset to the platform before cleaning it.</p>
+  if (records.length === 0) return <EmptyState title="Bring in data to clean" description="Upload a CSV dataset to explore missing values, duplicates, and repair options." />
+  if (!datasetId) return <EmptyState title="Save your dataset to continue" description="Upload this dataset to the platform before cleaning it." />
 
   const runCleaning = async () => {
     setLoading(true)
@@ -55,14 +58,18 @@ export default function Cleaning() {
 
   return (
     <div>
-      <h2>Cleaning studio</h2>
-      <div className="card">
+      <PageHeading eyebrow="PREPARE YOUR DATA" title="Cleaning studio"
+        description="Choose a strategy, review the changes, and restore an earlier version whenever you need." />
+      <div className="card control-panel cleaning-controls">
         <label>Missing value strategy: </label>
         <select value={strategy} onChange={e => setStrategy(e.target.value)} style={{ marginRight: 16 }}>
           <option value="auto">Auto (median / mode)</option>
           <option value="knn">KNN imputation</option>
-          <option value="multiple">Multiple imputation (MICE-style, uncertainty reported)</option>
+          <option value="multiple">Multiple imputation (point fill only - not valid for inference)</option>
         </select>
+        <p className="muted-copy cleaning-inference-link">
+          For inferential intervals, use <Link to="/inference">Inference</Link>.
+        </p>
 
         <label>Outlier handling: </label>
         <select value={outlierMethod} onChange={e => setOutlierMethod(e.target.value)}>
@@ -72,9 +79,9 @@ export default function Cleaning() {
         </select>
 
         <div style={{ marginTop: 16 }}>
-          <button onClick={runCleaning} disabled={loading}>{loading ? 'Cleaning...' : 'Run cleaning'}</button>
+          <button onClick={runCleaning} disabled={loading} data-loading={loading}>{loading ? 'Cleaning...' : 'Run cleaning'}</button>
         </div>
-        {error && <p style={{ color: '#e06c75' }}>{error}</p>}
+        {error && <p className="alert alert-error" role="alert">{error}</p>}
       </div>
 
       {summary && (
@@ -91,25 +98,29 @@ export default function Cleaning() {
       {repairLog.length > 0 && (
         <div className="card">
           <h3>Repair log ({repairLog.length}{repairTruncated ? '+' : ''} automated changes)</h3>
-          <p style={{ fontSize: 12, color: '#a9adba' }}>
+          <p className="muted-copy">
             The cleaner records each repair. Multiple-imputation uncertainty is the spread across imputations,
             not a calibrated prediction interval.
           </p>
-          <table>
-            <thead><tr><th>Row</th><th>Column</th><th>Method</th><th>New value</th><th>Uncertainty</th></tr></thead>
-            <tbody>
-              {repairLog.slice(0, 15).map((entry, i) => (
-                <tr key={i}>
-                  <td>{entry.row_index}</td>
-                  <td>{entry.column ?? (entry.columns_affected || []).join(', ')}</td>
-                  <td>{entry.strategy_used ?? entry.reason}</td>
-                  <td>{entry.imputed_value ?? entry.capped_value ?? '—'}</td>
-                  <td>{entry.imputation_uncertainty != null ? `± ${entry.imputation_uncertainty}` : '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {(repairLog.length > 15 || repairTruncated) && <p style={{ fontSize: 12 }}>Showing the first 15 entries.</p>}
+          <div className="table-wrap">
+            <table>
+              <thead><tr><th>Row</th><th>Column</th><th>Method</th><th>New value</th><th>Uncertainty</th></tr></thead>
+              <tbody>
+                {repairLog.slice(0, 15).map((entry, i) => (
+                  <tr key={i}>
+                    <td>{entry.row_index}</td>
+                    <td>{entry.column ?? (entry.columns_affected || []).join(', ')}</td>
+                    <td>{entry.strategy_used === 'multiple_imputation'
+                      ? 'Point fill only - not valid for inference'
+                      : entry.strategy_used ?? entry.reason}</td>
+                    <td>{entry.imputed_value ?? entry.capped_value ?? '—'}</td>
+                    <td>{entry.imputation_uncertainty != null ? `± ${entry.imputation_uncertainty}` : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {(repairLog.length > 15 || repairTruncated) && <p className="muted-copy">Showing the first 15 entries.</p>}
         </div>
       )}
 
@@ -118,10 +129,10 @@ export default function Cleaning() {
         {!datasetId && <p>Upload this dataset to the platform to enable version history.</p>}
         {datasetId && versions.length === 0 && <p>No cleaning versions yet.</p>}
         {versions.map(version => (
-          <div key={version.versionNumber} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #262b3a' }}>
+          <div key={version.versionNumber} className="version-row">
             <div>
               <strong>Version {version.versionNumber}</strong>
-              <div style={{ color: '#a9adba', fontSize: 12 }}>{version.operation} · {new Date(version.createdAt).toLocaleString()}</div>
+              <div className="muted-copy">{version.operation} · {new Date(version.createdAt).toLocaleString()}</div>
             </div>
             <button onClick={async () => {
               setRestoring(version.versionNumber)
@@ -135,7 +146,7 @@ export default function Cleaning() {
               } finally {
                 setRestoring(null)
               }
-            }} disabled={restoring !== null}>
+            }} disabled={restoring !== null} data-loading={restoring === version.versionNumber}>
               {restoring === version.versionNumber ? 'Restoring...' : 'Restore'}
             </button>
           </div>

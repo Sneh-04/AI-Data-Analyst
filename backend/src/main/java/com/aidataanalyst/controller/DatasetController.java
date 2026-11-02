@@ -13,13 +13,17 @@ import com.aidataanalyst.service.ReportGenerationService;
 import com.aidataanalyst.service.ForecastPersistenceService;
 import com.aidataanalyst.service.ChatPersistenceService;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Authenticated gateway endpoints consumed by the React frontend.
@@ -27,6 +31,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/datasets")
 public class DatasetController {
+
+    private static final Set<String> INFERENCE_SETTINGS = Set.of(
+            "target_column", "estimand", "predictor_column", "method", "m", "seed", "deltas");
 
     private final MlServiceClient mlServiceClient;
     private final DatasetHealthScoreRepository healthScoreRepository;
@@ -130,6 +137,50 @@ public class DatasetController {
                                         Authentication authentication) {
         datasetAccessService.requireOwnedDataset(id, authentication.getName());
         return mlServiceClient.generateInsights(request);
+    }
+
+    @PostMapping("/{id}/inference")
+    public Map<String, Object> inference(@PathVariable Long id, @RequestBody Map<String, Object> request,
+                                         Authentication authentication) {
+        Dataset dataset = datasetAccessService.requireOwnedDataset(id, authentication.getName());
+        if (request.containsKey("records")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "records must be loaded from the authorized dataset");
+        }
+        Object targetColumn = request.get("target_column");
+        if (!(targetColumn instanceof String column) || column.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "target_column must not be blank");
+        }
+        for (String field : request.keySet()) {
+            if (!INFERENCE_SETTINGS.contains(field)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported inference setting");
+            }
+        }
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("records", datasetStorageService.readRecords(dataset));
+        payload.putAll(request);
+        return mlServiceClient.runInference(payload);
+    }
+
+    @PostMapping("/{id}/stats/numeric")
+    public Map<String, Object> numericStats(@PathVariable Long id, @RequestBody Map<String, Object> request,
+                                            Authentication authentication) {
+        datasetAccessService.requireOwnedDataset(id, authentication.getName());
+        return mlServiceClient.numericStats(request);
+    }
+
+    @PostMapping("/{id}/stats/categorical")
+    public Map<String, Object> categoricalStats(@PathVariable Long id, @RequestBody Map<String, Object> request,
+                                                Authentication authentication) {
+        datasetAccessService.requireOwnedDataset(id, authentication.getName());
+        return mlServiceClient.categoricalStats(request);
+    }
+
+    @PostMapping("/{id}/stats/correlation")
+    public Map<String, Object> correlationStats(@PathVariable Long id, @RequestBody Map<String, Object> request,
+                                                 Authentication authentication) {
+        datasetAccessService.requireOwnedDataset(id, authentication.getName());
+        return mlServiceClient.correlationStats(request);
     }
 
     @PostMapping("/{id}/chat")

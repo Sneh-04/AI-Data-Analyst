@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -19,14 +20,15 @@ import java.util.Map;
 /**
  * Thin client for the Python FastAPI ML microservice.
  * Spring Boot never runs pandas/sklearn itself — it authenticates the user,
- * loads the dataset from storage, forwards it here as JSON, persists the
- * result, and returns it to React. Keeps the ML service stateless and
- * independently scalable.
+ * loads an authorized dataset from storage, and forwards analysis requests
+ * here as JSON. Inference results are returned to React without persistence;
+ * the ML service remains stateless and independently scalable.
  */
 @Service
 public class MlServiceClient {
 
     private final RestTemplate restTemplate;
+    private final RestTemplate inferenceRestTemplate;
 
     @Value("${ml.service.base-url:http://localhost:8000}")
     private String mlServiceBaseUrl;
@@ -36,6 +38,10 @@ public class MlServiceClient {
 
     public MlServiceClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(5_000);
+        requestFactory.setReadTimeout(120_000);
+        this.inferenceRestTemplate = new RestTemplate(requestFactory);
     }
 
     @PostConstruct
@@ -85,6 +91,22 @@ public class MlServiceClient {
 
     public Map<String, Object> chat(Map<String, Object> body) {
         return post("/api/ml/chat/ask", body);
+    }
+
+    public Map<String, Object> runInference(Map<String, Object> body) {
+        return post(inferenceRestTemplate, "/api/ml/inference/pooled", body);
+    }
+
+    public Map<String, Object> numericStats(Map<String, Object> body) {
+        return post("/api/ml/stats/numeric", body);
+    }
+
+    public Map<String, Object> categoricalStats(Map<String, Object> body) {
+        return post("/api/ml/stats/categorical", body);
+    }
+
+    public Map<String, Object> correlationStats(Map<String, Object> body) {
+        return post("/api/ml/stats/correlation", body);
     }
 
     private String requireInternalApiKey() {

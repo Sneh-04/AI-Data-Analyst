@@ -8,10 +8,10 @@ import os
 import secrets
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from app.routers import cleaning, stats, forecasting, insights, health, chat
+from app.routers import cleaning, stats, forecasting, insights, health, chat, inference
 from app.routers import reports
 
 app = FastAPI(
@@ -49,6 +49,7 @@ app.include_router(forecasting.router, prefix="/api/ml/forecasting", tags=["Fore
 app.include_router(insights.router, prefix="/api/ml/insights", tags=["AI Insights"])
 app.include_router(chat.router, prefix="/api/ml/chat", tags=["Chat with Data"])
 app.include_router(reports.router, prefix="/api/ml/reports", tags=["Reports"])
+app.include_router(inference.router, prefix="/api/ml/inference", tags=["Inference"])
 
 
 @app.get("/")

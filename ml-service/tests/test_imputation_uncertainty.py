@@ -23,12 +23,15 @@ class RubinPoolingTests(unittest.TestCase):
         self.assertAlmostEqual(pooled.confidence_interval[0], -12.297192921016105)
         self.assertAlmostEqual(pooled.confidence_interval[1], 20.297192921016105)
 
-    def test_zero_within_and_between_variance_produces_degenerate_interval(self):
+    def test_zero_within_and_between_variance_has_no_finite_interval(self):
         pooled = pool_rubins_rules([3.0, 3.0], [0.0, 0.0], complete_data_df=10)
 
         self.assertEqual(pooled.total_variance, 0.0)
         self.assertEqual(pooled.standard_error, 0.0)
-        self.assertEqual(pooled.confidence_interval, (3.0, 3.0))
+        self.assertIsNone(pooled.confidence_interval)
+        self.assertIsNone(pooled.lambda_fraction)
+        self.assertIsNone(pooled.missing_information_fraction)
+        self.assertIsNone(pooled.relative_efficiency)
 
     def test_positive_between_variance_without_within_variance_has_no_finite_interval(self):
         pooled = pool_rubins_rules([1.0, 3.0], [0.0, 0.0], complete_data_df=10)

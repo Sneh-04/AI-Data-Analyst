@@ -60,13 +60,20 @@ def _restore_observed_values(completed: np.ndarray, original: pd.DataFrame) -> p
 
 
 def _iterative_imputer(seed: int) -> IterativeImputer:
+    """Use sklearn's default empty-feature handling for compatibility.
+
+    Older sklearn versions can incorrectly mark valid features as missing when
+    `keep_empty_features=True`, which leads to a no-op imputation sequence. The
+    study code requires actual stochastic iterations, so we keep feature
+    retention disabled across supported environments.
+    """
     return IterativeImputer(
         estimator=BayesianRidge(),
         sample_posterior=True,
         max_iter=10,
         random_state=seed,
         skip_complete=True,
-        keep_empty_features=True,
+        keep_empty_features=False,
     )
 
 

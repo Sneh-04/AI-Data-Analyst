@@ -125,7 +125,7 @@ def test_hc3_slope_variance_matches_numpy_sandwich_reference():
         design.T @ (design * adjusted_residual_squared[:, None])
     ) @ bread
 
-    assert estimate == 2.0
+    assert np.isclose(estimate, 2.0, rtol=0, atol=1e-15)
     assert complete_df == 3.0
     np.testing.assert_allclose(covariance[1, 1], 65.0 / 98.0, rtol=0, atol=1e-14)
     np.testing.assert_allclose(variance, covariance[1, 1], rtol=0, atol=1e-14)
@@ -175,6 +175,46 @@ def test_rubin_pooling_matches_hand_computed_example():
     assert pooled.confidence_interval is not None
     assert np.isclose(pooled.confidence_interval[0], -226725.47092045852)
     assert np.isclose(pooled.confidence_interval[1], 226731.47092045852)
+
+
+def test_rubin_pooling_uses_hc3_slope_variances_with_barnard_rubin_df():
+    base = _heteroskedastic_ols_frame()
+    completed_datasets = []
+    for slope_shift, residual_scale in ((-0.2, 0.8), (0.0, 1.0), (0.1, 1.2), (0.3, 1.5)):
+        frame = base.copy()
+        frame["y"] = (
+            (2.0 + slope_shift) * frame["x"]
+            + np.array([1.0, -2.0, 2.0, -2.0, 1.0]) * residual_scale
+        )
+        completed_datasets.append(frame)
+
+    analyses = [
+        analyze_ols_coefficient(frame, outcome="y", predictor="x")
+        for frame in completed_datasets
+    ]
+    pooled = pool_scalar_analysis(
+        completed_datasets,
+        lambda frame: analyze_ols_coefficient(frame, outcome="y", predictor="x"),
+    )
+    expected_within = float(np.mean([result[1] for result in analyses]))
+    expected_between = float(np.var([result[0] for result in analyses], ddof=1))
+    expected_total = expected_within + (1 + 1 / len(analyses)) * expected_between
+    fmi = (1 + 1 / len(analyses)) * expected_between / expected_total
+    old_df = (len(analyses) - 1) / fmi**2
+    complete_data_df = analyses[0][2]
+    observed_df = (
+        (complete_data_df + 1)
+        / (complete_data_df + 3)
+        * complete_data_df
+        * (1 - fmi)
+    )
+    expected_barnard_rubin_df = 1 / (1 / old_df + 1 / observed_df)
+
+    assert np.isclose(pooled.within_imputation_variance, expected_within)
+    assert np.isclose(pooled.between_imputation_variance, expected_between)
+    assert np.isclose(pooled.total_variance, expected_total)
+    assert np.isclose(pooled.degrees_of_freedom, expected_barnard_rubin_df)
+    assert pooled.confidence_interval is not None
 
 
 def test_single_imputation_interval_is_explicitly_labeled_naive():

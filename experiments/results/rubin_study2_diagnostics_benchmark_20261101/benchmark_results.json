@@ -1,0 +1,545 @@
+{
+  "benchmark_status": "performance-only; no Study 2 coverage results generated",
+  "fixture_note": "One synthetic fixture per DGP/mechanism and 10%/50% missingness; fixture parameters are not protocol DGP parameters.",
+  "sample_size": 500,
+  "imputations_per_method": 20,
+  "seed": 20261101,
+  "scenario_count": 6,
+  "method_count": 3,
+  "environment": {
+    "python": "3.14.5",
+    "platform": "macOS-26.7.2-arm64-arm-64bit-Mach-O",
+    "cpu_count": 8,
+    "physical_memory_bytes": 8589934592,
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1",
+    "scikit_learn": "1.9.1",
+    "declared_experiments_requirements": {
+      "numpy": "2.3.5",
+      "pandas": "2.3.3",
+      "scikit_learn": "1.7.2",
+      "scipy": "1.16.3",
+      "statsmodels": "0.14.5",
+      "tabulate": "0.9.0",
+      "matplotlib": "3.11.2"
+    },
+    "version_differences_vs_requirements": {
+      "numpy": {
+        "declared": "2.3.5",
+        "actual": "2.5.3"
+      },
+      "pandas": {
+        "declared": "2.3.3",
+        "actual": "3.0.6"
+      },
+      "scipy": {
+        "declared": "1.16.3",
+        "actual": "1.18.1"
+      },
+      "scikit_learn": {
+        "declared": "1.7.2",
+        "actual": "1.9.1"
+      }
+    }
+  },
+  "measurements": [
+    {
+      "dgp": "dgp1_bivariate_normal",
+      "mechanism": "MCAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261101,
+      "method": "mice_improper",
+      "imputation_seconds": 0.2287051249986689,
+      "imputation_seconds_per_draw": 0.011435256249933445,
+      "analysis_and_pooling_seconds": 0.012854915999923833,
+      "analysis_and_pooling_seconds_per_draw": 0.0006427457999961916,
+      "end_to_end_seconds": 0.24156004099859274,
+      "end_to_end_seconds_per_draw": 0.012078002049929638,
+      "peak_process_rss_bytes": 215580672,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp1_bivariate_normal",
+      "mechanism": "MCAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261101,
+      "method": "mice_proper",
+      "imputation_seconds": 0.3332408749993192,
+      "imputation_seconds_per_draw": 0.01666204374996596,
+      "analysis_and_pooling_seconds": 0.01288274999933492,
+      "analysis_and_pooling_seconds_per_draw": 0.000644137499966746,
+      "end_to_end_seconds": 0.3461236249986541,
+      "end_to_end_seconds_per_draw": 0.017306181249932707,
+      "peak_process_rss_bytes": 219185152,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp1_bivariate_normal",
+      "mechanism": "MCAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261101,
+      "method": "bootstrap_pmm_candidate",
+      "imputation_seconds": 0.07286999999996624,
+      "imputation_seconds_per_draw": 0.003643499999998312,
+      "analysis_and_pooling_seconds": 0.013017375000345055,
+      "analysis_and_pooling_seconds_per_draw": 0.0006508687500172527,
+      "end_to_end_seconds": 0.0858873750003113,
+      "end_to_end_seconds_per_draw": 0.004294368750015565,
+      "peak_process_rss_bytes": 202260480,
+      "pmm_donor_diagnostic_draws": 20,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp1_bivariate_normal",
+      "mechanism": "MCAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261102,
+      "method": "mice_improper",
+      "imputation_seconds": 0.22674545900008525,
+      "imputation_seconds_per_draw": 0.011337272950004262,
+      "analysis_and_pooling_seconds": 0.013107082999340491,
+      "analysis_and_pooling_seconds_per_draw": 0.0006553541499670246,
+      "end_to_end_seconds": 0.23985254199942574,
+      "end_to_end_seconds_per_draw": 0.011992627099971287,
+      "peak_process_rss_bytes": 219316224,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp1_bivariate_normal",
+      "mechanism": "MCAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261102,
+      "method": "mice_proper",
+      "imputation_seconds": 0.34569058300075994,
+      "imputation_seconds_per_draw": 0.017284529150037996,
+      "analysis_and_pooling_seconds": 0.013176083000871586,
+      "analysis_and_pooling_seconds_per_draw": 0.0006588041500435793,
+      "end_to_end_seconds": 0.35886666600163153,
+      "end_to_end_seconds_per_draw": 0.017943333300081576,
+      "peak_process_rss_bytes": 219480064,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp1_bivariate_normal",
+      "mechanism": "MCAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261102,
+      "method": "bootstrap_pmm_candidate",
+      "imputation_seconds": 0.16135666700029105,
+      "imputation_seconds_per_draw": 0.008067833350014552,
+      "analysis_and_pooling_seconds": 0.014482041999144712,
+      "analysis_and_pooling_seconds_per_draw": 0.0007241020999572356,
+      "end_to_end_seconds": 0.17583870899943577,
+      "end_to_end_seconds_per_draw": 0.008791935449971788,
+      "peak_process_rss_bytes": 211877888,
+      "pmm_donor_diagnostic_draws": 20,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp2_lognormal",
+      "mechanism": "MAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261103,
+      "method": "mice_improper",
+      "imputation_seconds": 0.24179045900018536,
+      "imputation_seconds_per_draw": 0.012089522950009268,
+      "analysis_and_pooling_seconds": 0.013632624999445397,
+      "analysis_and_pooling_seconds_per_draw": 0.0006816312499722699,
+      "end_to_end_seconds": 0.25542308399963076,
+      "end_to_end_seconds_per_draw": 0.012771154199981538,
+      "peak_process_rss_bytes": 200916992,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp2_lognormal",
+      "mechanism": "MAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261103,
+      "method": "mice_proper",
+      "imputation_seconds": 0.3423465000014403,
+      "imputation_seconds_per_draw": 0.017117325000072015,
+      "analysis_and_pooling_seconds": 0.01343891599935887,
+      "analysis_and_pooling_seconds_per_draw": 0.0006719457999679434,
+      "end_to_end_seconds": 0.35578541600079916,
+      "end_to_end_seconds_per_draw": 0.017789270800039957,
+      "peak_process_rss_bytes": 219250688,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp2_lognormal",
+      "mechanism": "MAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261103,
+      "method": "bootstrap_pmm_candidate",
+      "imputation_seconds": 0.07492329199885717,
+      "imputation_seconds_per_draw": 0.003746164599942858,
+      "analysis_and_pooling_seconds": 0.013186916999984533,
+      "analysis_and_pooling_seconds_per_draw": 0.0006593458499992266,
+      "end_to_end_seconds": 0.0881102089988417,
+      "end_to_end_seconds_per_draw": 0.004405510449942085,
+      "peak_process_rss_bytes": 214646784,
+      "pmm_donor_diagnostic_draws": 20,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp2_lognormal",
+      "mechanism": "MAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261104,
+      "method": "mice_improper",
+      "imputation_seconds": 0.23059804199874634,
+      "imputation_seconds_per_draw": 0.011529902099937317,
+      "analysis_and_pooling_seconds": 0.014864791999571025,
+      "analysis_and_pooling_seconds_per_draw": 0.0007432395999785512,
+      "end_to_end_seconds": 0.24546283399831736,
+      "end_to_end_seconds_per_draw": 0.012273141699915868,
+      "peak_process_rss_bytes": 210567168,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp2_lognormal",
+      "mechanism": "MAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261104,
+      "method": "mice_proper",
+      "imputation_seconds": 0.3448262500005512,
+      "imputation_seconds_per_draw": 0.017241312500027563,
+      "analysis_and_pooling_seconds": 0.011244875000556931,
+      "analysis_and_pooling_seconds_per_draw": 0.0005622437500278465,
+      "end_to_end_seconds": 0.35607112500110816,
+      "end_to_end_seconds_per_draw": 0.01780355625005541,
+      "peak_process_rss_bytes": 219594752,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp2_lognormal",
+      "mechanism": "MAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261104,
+      "method": "bootstrap_pmm_candidate",
+      "imputation_seconds": 0.16079120799986413,
+      "imputation_seconds_per_draw": 0.008039560399993206,
+      "analysis_and_pooling_seconds": 0.013071083998511313,
+      "analysis_and_pooling_seconds_per_draw": 0.0006535541999255657,
+      "end_to_end_seconds": 0.17386229199837544,
+      "end_to_end_seconds_per_draw": 0.008693114599918773,
+      "peak_process_rss_bytes": 218906624,
+      "pmm_donor_diagnostic_draws": 20,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp3_quadratic",
+      "mechanism": "MNAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261105,
+      "method": "mice_improper",
+      "imputation_seconds": 0.22952095800064853,
+      "imputation_seconds_per_draw": 0.011476047900032427,
+      "analysis_and_pooling_seconds": 0.013050875000772066,
+      "analysis_and_pooling_seconds_per_draw": 0.0006525437500386033,
+      "end_to_end_seconds": 0.2425718330014206,
+      "end_to_end_seconds_per_draw": 0.01212859165007103,
+      "peak_process_rss_bytes": 216203264,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp3_quadratic",
+      "mechanism": "MNAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261105,
+      "method": "mice_proper",
+      "imputation_seconds": 0.3402864159997989,
+      "imputation_seconds_per_draw": 0.017014320799989945,
+      "analysis_and_pooling_seconds": 0.013712333000512444,
+      "analysis_and_pooling_seconds_per_draw": 0.0006856166500256222,
+      "end_to_end_seconds": 0.35399874900031136,
+      "end_to_end_seconds_per_draw": 0.01769993745001557,
+      "peak_process_rss_bytes": 205619200,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp3_quadratic",
+      "mechanism": "MNAR",
+      "missing_rate": 0.1,
+      "n": 500,
+      "m": 20,
+      "seed": 20261105,
+      "method": "bootstrap_pmm_candidate",
+      "imputation_seconds": 0.07650441599980695,
+      "imputation_seconds_per_draw": 0.0038252207999903477,
+      "analysis_and_pooling_seconds": 0.011903624999831663,
+      "analysis_and_pooling_seconds_per_draw": 0.0005951812499915832,
+      "end_to_end_seconds": 0.08840804099963862,
+      "end_to_end_seconds_per_draw": 0.00442040204998193,
+      "peak_process_rss_bytes": 218251264,
+      "pmm_donor_diagnostic_draws": 20,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp3_quadratic",
+      "mechanism": "MNAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261106,
+      "method": "mice_improper",
+      "imputation_seconds": 0.24000391700064938,
+      "imputation_seconds_per_draw": 0.01200019585003247,
+      "analysis_and_pooling_seconds": 0.01163891699980013,
+      "analysis_and_pooling_seconds_per_draw": 0.0005819458499900065,
+      "end_to_end_seconds": 0.2516428340004495,
+      "end_to_end_seconds_per_draw": 0.012582141700022476,
+      "peak_process_rss_bytes": 218087424,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp3_quadratic",
+      "mechanism": "MNAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261106,
+      "method": "mice_proper",
+      "imputation_seconds": 0.3500115419992653,
+      "imputation_seconds_per_draw": 0.017500577099963267,
+      "analysis_and_pooling_seconds": 0.012715750001007109,
+      "analysis_and_pooling_seconds_per_draw": 0.0006357875000503555,
+      "end_to_end_seconds": 0.3627272920002724,
+      "end_to_end_seconds_per_draw": 0.01813636460001362,
+      "peak_process_rss_bytes": 218038272,
+      "pmm_donor_diagnostic_draws": null,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    },
+    {
+      "dgp": "dgp3_quadratic",
+      "mechanism": "MNAR",
+      "missing_rate": 0.5,
+      "n": 500,
+      "m": 20,
+      "seed": 20261106,
+      "method": "bootstrap_pmm_candidate",
+      "imputation_seconds": 0.1957267910001974,
+      "imputation_seconds_per_draw": 0.00978633955000987,
+      "analysis_and_pooling_seconds": 0.013903332999689155,
+      "analysis_and_pooling_seconds_per_draw": 0.0006951666499844577,
+      "end_to_end_seconds": 0.20963012399988656,
+      "end_to_end_seconds_per_draw": 0.010481506199994328,
+      "peak_process_rss_bytes": 218267648,
+      "pmm_donor_diagnostic_draws": 20,
+      "pooled_estimate_finite": true,
+      "benchmark_scope": "synthetic performance fixture; no coverage evaluation"
+    }
+  ],
+  "feasibility": {
+    "extrapolation_scope": "performance-only extrapolation from six synthetic timing fixtures; not a study result or feasibility guarantee",
+    "per_method_measurements": {
+      "mice_improper": {
+        "scenario_count": 6,
+        "mean_seconds_per_draw": 0.011644699666658197,
+        "median_seconds_per_draw": 0.011502974999984872,
+        "minimum_seconds_per_draw": 0.011337272950004262,
+        "maximum_seconds_per_draw": 0.012089522950009268,
+        "mean_analysis_and_pooling_seconds": 0.01319153466647549,
+        "mean_complete_method_seconds": 0.24608552799963945,
+        "mean_end_to_end_seconds_per_draw": 0.012304276399981972,
+        "minimum_complete_method_seconds": 0.23985254199942574,
+        "maximum_complete_method_seconds": 0.25542308399963076,
+        "maximum_peak_process_rss_bytes": 219316224
+      },
+      "mice_proper": {
+        "scenario_count": 6,
+        "mean_seconds_per_draw": 0.017136684716676124,
+        "median_seconds_per_draw": 0.01717931875004979,
+        "minimum_seconds_per_draw": 0.01666204374996596,
+        "maximum_seconds_per_draw": 0.017500577099963267,
+        "mean_analysis_and_pooling_seconds": 0.012861784500273643,
+        "mean_complete_method_seconds": 0.3555954788337961,
+        "mean_end_to_end_seconds_per_draw": 0.017779773941689805,
+        "minimum_complete_method_seconds": 0.3461236249986541,
+        "maximum_complete_method_seconds": 0.3627272920002724,
+        "maximum_peak_process_rss_bytes": 219594752
+      },
+      "bootstrap_pmm_candidate": {
+        "scenario_count": 6,
+        "mean_seconds_per_draw": 0.006184769783324859,
+        "median_seconds_per_draw": 0.005932390599991777,
+        "minimum_seconds_per_draw": 0.003643499999998312,
+        "maximum_seconds_per_draw": 0.00978633955000987,
+        "mean_analysis_and_pooling_seconds": 0.013260729332917739,
+        "mean_complete_method_seconds": 0.1369561249994149,
+        "mean_end_to_end_seconds_per_draw": 0.006847806249970745,
+        "minimum_complete_method_seconds": 0.0858873750003113,
+        "maximum_complete_method_seconds": 0.20963012399988656,
+        "maximum_peak_process_rss_bytes": 218906624
+      }
+    },
+    "workload_scenarios": {
+      "active_protocol_v5_1_100_replicates": {
+        "condition_count": 6300,
+        "methods_per_condition": 3,
+        "m_per_method": 20,
+        "sequential_estimated_hours_mean": 1.2926149807074883,
+        "estimated_cpu_hours_at_single_worker": 1.2926149807074883,
+        "sequential_estimated_hours_median": 1.289642047749794,
+        "sequential_estimated_hours_range": [
+          1.1787493217457268,
+          1.4420004375010649
+        ],
+        "parallel_estimates": {
+          "1": {
+            "assumed_parallel_efficiency": 1.0,
+            "estimated_wall_seconds": 4653.413930546958,
+            "estimated_peak_worker_rss_bytes": 219594752
+          },
+          "4": {
+            "assumed_parallel_efficiency": 0.75,
+            "estimated_wall_seconds": 1551.137976848986,
+            "estimated_peak_worker_rss_bytes": 878379008
+          },
+          "8": {
+            "assumed_parallel_efficiency": 0.55,
+            "estimated_wall_seconds": 1057.5940751243086,
+            "estimated_peak_worker_rss_bytes": 1756758016
+          }
+        },
+        "parallel_memory_note": "max single-worker process peak RSS multiplied by workers; conservative and excludes scheduler/IPC overhead"
+      },
+      "illustrative_1000_replicates": {
+        "condition_count": 63000,
+        "methods_per_condition": 3,
+        "m_per_method": 20,
+        "sequential_estimated_hours_mean": 12.926149807074884,
+        "estimated_cpu_hours_at_single_worker": 12.926149807074884,
+        "sequential_estimated_hours_median": 12.89642047749794,
+        "sequential_estimated_hours_range": [
+          11.787493217457268,
+          14.420004375010649
+        ],
+        "parallel_estimates": {
+          "1": {
+            "assumed_parallel_efficiency": 1.0,
+            "estimated_wall_seconds": 46534.13930546958,
+            "estimated_peak_worker_rss_bytes": 219594752
+          },
+          "4": {
+            "assumed_parallel_efficiency": 0.75,
+            "estimated_wall_seconds": 15511.37976848986,
+            "estimated_peak_worker_rss_bytes": 878379008
+          },
+          "8": {
+            "assumed_parallel_efficiency": 0.55,
+            "estimated_wall_seconds": 10575.940751243086,
+            "estimated_peak_worker_rss_bytes": 1756758016
+          }
+        },
+        "parallel_memory_note": "max single-worker process peak RSS multiplied by workers; conservative and excludes scheduler/IPC overhead"
+      }
+    },
+    "host_resource_assessment": {
+      "physical_memory_bytes": 8589934592,
+      "current_free_disk_bytes": 11194945536,
+      "study_output_storage_estimate_bytes": null,
+      "storage_estimate_status": "not estimated because the primary run output schema and runner are still blocked by protocol TODOs",
+      "parallel_scenarios": {
+        "active_protocol_v5_1_100_replicates": {
+          "1": {
+            "projected_peak_worker_rss_bytes": 219594752,
+            "physical_memory_bytes": 8589934592,
+            "projected_within_physical_memory": true,
+            "estimated_wall_hours": 1.2926149807074883
+          },
+          "4": {
+            "projected_peak_worker_rss_bytes": 878379008,
+            "physical_memory_bytes": 8589934592,
+            "projected_within_physical_memory": true,
+            "estimated_wall_hours": 0.43087166023582946
+          },
+          "8": {
+            "projected_peak_worker_rss_bytes": 1756758016,
+            "physical_memory_bytes": 8589934592,
+            "projected_within_physical_memory": true,
+            "estimated_wall_hours": 0.2937761319789746
+          }
+        },
+        "illustrative_1000_replicates": {
+          "1": {
+            "projected_peak_worker_rss_bytes": 219594752,
+            "physical_memory_bytes": 8589934592,
+            "projected_within_physical_memory": true,
+            "estimated_wall_hours": 12.926149807074884
+          },
+          "4": {
+            "projected_peak_worker_rss_bytes": 878379008,
+            "physical_memory_bytes": 8589934592,
+            "projected_within_physical_memory": true,
+            "estimated_wall_hours": 4.308716602358294
+          },
+          "8": {
+            "projected_peak_worker_rss_bytes": 1756758016,
+            "physical_memory_bytes": 8589934592,
+            "projected_within_physical_memory": true,
+            "estimated_wall_hours": 2.9377613197897463
+          }
+        }
+      },
+      "wall_time_feasibility": "not classified; no maximum acceptable wall-time was prespecified"
+    }
+  }
+}
