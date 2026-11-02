@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.post("/clean")
 def clean_dataset(req: CleaningRequest):
-    df = pd.DataFrame(req.records)
+    df = svc.normalize_missing_values(pd.DataFrame(req.records))
     original_df = df.copy()
     repair_log = []
 

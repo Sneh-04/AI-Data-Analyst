@@ -19,6 +19,14 @@ from sklearn.linear_model import BayesianRidge
 _MICE_MAX_CELLS = 2_000_000
 
 
+def normalize_missing_values(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize serialized empty CSV cells before pandas missing-value analysis."""
+    normalized = df.replace(r"^\s*$", np.nan, regex=True)
+    normalized = normalized.replace(["NA", "N/A", "NULL", "null"], np.nan)
+    normalized = normalized.infer_objects(copy=False)
+    return normalized
+
+
 def _multiple_impute_column(
     series: pd.Series,
     n_imputations: int = 5,

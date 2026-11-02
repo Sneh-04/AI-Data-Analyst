@@ -102,7 +102,7 @@ public class DatasetStorageService {
 
     private Object parseValue(String value) {
         if (value.isBlank()) {
-            return "";
+            return null;
         }
         try {
             return Double.parseDouble(value);

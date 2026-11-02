@@ -1,10 +1,20 @@
 import numpy as np
 import pandas as pd
-import pytest
 from sklearn.datasets import load_diabetes
+
+import pytest
 
 from app.services.cleaning_service import (
     _multiple_impute_column, _multiple_impute_dataframe, fill_missing_values, handle_outliers_iqr)
+
+from app.services.cleaning_service import normalize_missing_values
+
+
+def test_normalize_missing_values_handles_csv_empty_strings():
+    df = pd.DataFrame({"x": ["", "1", "   ", "NA"], "label": ["ok", "N/A", "null", "yes"]})
+    normalized = normalize_missing_values(df)
+    assert normalized["x"].isna().sum() == 3
+    assert normalized["label"].isna().sum() == 2
 
 
 @pytest.fixture
